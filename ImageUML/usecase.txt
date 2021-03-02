@@ -13,7 +13,7 @@ package 機能 as func{
 
 package 登録画面 as form{
 	usecase UC1 as "貸した人
-	—
+	--
 	貸したもの
 	==
 	返す期限"
@@ -37,8 +37,6 @@ limit --> B
 recommend --> B 
 B --> UC2 :URLをクリック
 form --> UC2 :貸した人からの招待
-
-
 @enduml
 
 
