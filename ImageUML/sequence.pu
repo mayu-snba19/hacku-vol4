@@ -1,0 +1,75 @@
+@startuml sequence
+actor       "貸す人（Aさん）"      as usera
+participant "LINE Bot（Aさん側）" as bota
+participant "LIFF(React)（Aさん側）" as liffa
+participant "サーバー" as server
+participant "LINE Platform" as platform
+participant "LIFF（Bさん側）" as liffb
+participant "LINE Bot（Bさん側）" as botb
+actor "借りる人（Bさん）" as userb
+
+bota -> usera: RichMenu内でURLを表示
+
+== ログイン ==
+usera -> liffa: サービスにアクセス
+liffa -> liffa: ユーザー情報（アクセストークン）を取得
+liffa -> server ++: アクセストークン
+opt トークン検証（今回は無くても良いかも？）
+  server -> platform: アクセストークンを検証
+  platform -> server: 検証結果
+end
+server -> platform: ユーザー情報（userId）をリクエスト
+platform -> server: ユーザー情報（userId）
+opt 初回利用時のみ
+  server -> server: ユーザー情報（userId）を保存
+end
+server -> liffa --: ログイン成功
+
+== 貸し借り ==
+usera -> liffa: 貸す物を選択/期限などを入力
+liffa -> server ++: 貸出情報（貸す物/期限など）を送信
+server -> server: 貸出情報を保存
+server -> liffa --: 貸出トークン?（貸出ID？）
+usera -> liffa: 貸す相手を選択
+liffa -> platform: 貸出トークン付きURLをBさんに送信（shareTargetPicker）
+liffa -> usera: Botを友達登録していない場合は登録を促す
+platform -> userb: Aさんに代わってURLを（AさんとBさんの間の個人チャットに）送信
+userb -> liffb: 届いたURLにアクセス
+group ログイン
+  liffb -> liffb: ユーザー情報（アクセストークン）を取得
+  liffb -> server ++: アクセストークン
+  opt トークン検証（今回は無くても良いかも？）
+    server -> platform: アクセストークンを検証
+    platform -> server: 検証結果
+  end
+  server -> platform: ユーザー情報（userId）をリクエスト
+  platform -> server: ユーザー情報（userId）
+  opt 初回利用時のみ
+    server -> server: ユーザー情報（userId）を保存
+  end
+  server -> liffb --: ログイン成功
+end
+liffb -> liffb: URLから貸出トークンを取得
+liffb -> server ++: 貸出トークンを送信
+server -> liffb --: （Aさんが登録した）貸出情報を取得
+liffb -> userb: 貸出情報を表示
+userb -> liffb: 貸出に同意
+liffb -> server ++: 貸出に同意（貸出IDを送信）
+server -> server: 貸出IDを元に貸出情報とBさんを紐付け
+server -> liffb: 貸出処理成功
+liffb -> userb: Botを友達登録していない場合は登録を促す
+server -> bota --: 貸出処理完了通知
+
+
+== リマインド ==
+loop 定期的に実行
+  server -> botb: リマインド
+end
+
+== 貸出終了 ==
+usera -> liffa: 返却報告
+liffa -> server: 返却報告
+server -> server: 定期リマインドを停止
+server -> botb: 返却完了通知・お礼の提案
+
+@enduml
