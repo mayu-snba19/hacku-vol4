@@ -87,6 +87,9 @@ Docker, AWS, CircleCIを使ってパイプラインを構築しています。
 mainブランチに変更がpushされると、自動的に最新の変更がCircleCIを通してAWSのECSに反映されます。
 
 
+## エンドポイント
+`https://sotesote.tk`でホストしています。
+
 
 ## 参考
 - [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/#command-reference)
