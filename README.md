@@ -12,7 +12,7 @@
 |  - | 使用技術 |
 |:--|:--|
 |フロント| TypeScript / React / LIFF / Tailwind.css |
-|バック  | Python Flask |
+|バック  | Python / Flask /... |
 
 
 ## API Spec
