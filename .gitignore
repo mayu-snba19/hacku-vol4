@@ -1,2 +1,7 @@
 .DS_Store
-venv/
+.idea
+.env
+
+__pycache__/
+
+back/postgres/db_data
