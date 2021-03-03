@@ -16,7 +16,7 @@
 
 
 ## API Spec
-[Wiki](/wiki/API-Document)
+[Wiki](https://github.com/mayu-snba19/hacku-vol4/wiki/API-Document)
 ## ユースケース図
 ![usecase](/ImageUML/usecase.png)
 
