@@ -10,66 +10,66 @@ actor "借りる人（Bさん）" as userb
 
 bota -> usera: RichMenu内でURLを表示
 
-== ログイン ==
+== 貸す側の手続き ==
 usera -> liffa: サービスにアクセス
 liffa -> liffa: ユーザー情報（アクセストークン）を取得
-liffa -> server ++: アクセストークン
-opt トークン検証（今回は無くても良いかも？）
+usera -> liffa: 貸す物を選択/期限などを入力
+liffa -> server ++: 貸出情報（貸す物/期限など）を送信
+opt トークン検証
   server -> platform: アクセストークンを検証
   platform -> server: 検証結果
 end
 server -> platform: ユーザー情報（userId）をリクエスト
 platform -> server: ユーザー情報（userId）
-opt 初回利用時のみ
-  server -> server: ユーザー情報（userId）を保存
-end
-server -> liffa --: ログイン成功
-
-== 貸し借り ==
-usera -> liffa: 貸す物を選択/期限などを入力
-liffa -> server ++: 貸出情報（貸す物/期限など）を送信
 server -> server: 貸出情報を保存
 server -> liffa --: 貸出トークン?（貸出ID？）
 usera -> liffa: 貸す相手を選択
 liffa -> platform: 貸出トークン付きURLをBさんに送信（shareTargetPicker）
-liffa -> usera: Botを友達登録していない場合は登録を促す
 platform -> userb: Aさんに代わってURLを（AさんとBさんの間の個人チャットに）送信
+liffa -> usera: Botを友達登録していない場合は登録を促す
+
+== 借りる側の手続き ==
 userb -> liffb: 届いたURLにアクセス
-group ログイン
-  liffb -> liffb: ユーザー情報（アクセストークン）を取得
-  liffb -> server ++: アクセストークン
-  opt トークン検証（今回は無くても良いかも？）
-    server -> platform: アクセストークンを検証
-    platform -> server: 検証結果
-  end
-  server -> platform: ユーザー情報（userId）をリクエスト
-  platform -> server: ユーザー情報（userId）
-  opt 初回利用時のみ
-    server -> server: ユーザー情報（userId）を保存
-  end
-  server -> liffb --: ログイン成功
-end
+liffb -> liffb: ユーザー情報（アクセストークン）を取得
 liffb -> liffb: URLから貸出トークンを取得
-liffb -> server ++: 貸出トークンを送信
-server -> liffb --: （Aさんが登録した）貸出情報を取得
-liffb -> userb: 貸出情報を表示
-userb -> liffb: 貸出に同意
-liffb -> server ++: 貸出に同意（貸出IDを送信）
+opt 貸出同意画面（今回は優先順位低）
+  liffb -> server ++: 貸出トークンを送信
+  server -> liffb --: （Aさんが登録した）貸出情報を取得
+  liffb -> userb: 貸出情報を表示
+  userb -> liffb: 貸出に同意
+end
+liffb -> server ++: 貸出トークン（貸出ID）を送信
+server <-> platform: [略]アクセストークン検証とユーザー情報取得
 server -> server: 貸出IDを元に貸出情報とBさんを紐付け
-server -> liffb: 貸出処理成功
+opt 優先順位低
+  server -> bota: 貸出処理完了通知
+end
+server -> liffb --: 貸出処理成功・お礼のリコメンド
+liffb -> userb: お礼の候補を提案する
 liffb -> userb: Botを友達登録していない場合は登録を促す
-server -> bota --: 貸出処理完了通知
 
-
-== リマインド ==
-loop 定期的に実行
-  server -> botb: リマインド
+== 返却日のリマインド（botが聞くパターン） ==
+server -> bota: 返却済みか確認するメッセージ
+bota -> usera: 返却済みか確認
+alt 返却済みの場合
+  usera -> bota: 返却済みボタンをタップ
+  bota -> server ++: 返却済み
+  server -> server: 返却完了処理
+  opt 優先順位低
+    server -> botb --: 返却処理の完了通知（お礼の提案）
+  end
+else 返却がまだの場合
+  usera -> bota: 返却まだボタンをタップ
+  bota -> server: 返却まだ
+  loop 定期リマインド
+    server -> botb: リマインド
+  end
 end
 
-== 貸出終了 ==
+== 返却終了（ユーザーから登録パターン） ==
 usera -> liffa: 返却報告
 liffa -> server: 返却報告
-server -> server: 定期リマインドを停止
-server -> botb: 返却完了通知・お礼の提案
+server -> server: 返却完了処理
+server -> botb: 返却処理の完了通知（お礼の提案）
 
 @enduml

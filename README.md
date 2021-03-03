@@ -1,5 +1,24 @@
-# 初めに
+# 返してほしいでチュン
 [Open Hack U 2020 Online Vol.4](https://hacku.connpass.com/event/201528/)
-での制作物です。  
-ユースケース図は、こちらになります
+での **そてそてすずめ** の制作物です。
+
+## サービス概要
+🚧
+
+## 仕様
+🚧
+
+## 使用技術
+|  - | 使用技術 |
+|:--|:--|
+|フロント| TypeScript / React / LIFF / Tailwind.css |
+|バック  | Python Flask |
+
+
+## API Spec
+[Wiki](/wiki/API-Document)
+## ユースケース図
 ![usecase](/ImageUML/usecase.png)
+
+## シーケンス図
+![sequence figure](/ImageUML/sequence.png)
