@@ -16,6 +16,11 @@ def health() -> str:
 from src.api.test import api as api_test
 from src.api.users import api as api_users
 
+from src.api_mock import api as api_mock
+
 app.register_blueprint(api_test, url_prefix="/api")
 app.register_blueprint(api_users, url_prefix="/api")
+
+app.register_blueprint(api_mock, url_prefix="/mock")
+
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
