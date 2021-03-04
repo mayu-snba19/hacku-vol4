@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 const LIFF_ID = process.env.LIFF_ID ?? ''
 
-type LIFF = typeof liff
+export type LIFF = typeof liff
 type LiffState =
   // LIFFの初期化が正常に終了
   | {
