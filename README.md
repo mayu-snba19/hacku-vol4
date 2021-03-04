@@ -2,6 +2,9 @@
 [Open Hack U 2020 Online Vol.4](https://hacku.connpass.com/event/201528/)
 での **そてそてすずめ** の制作物です。
 
+## 実装状況
+[Wiki](https://github.com/mayu-snba19/hacku-vol4/wiki#%E5%AE%9F%E8%A3%85%E7%8A%B6%E6%B3%81)
+
 ## サービス概要
 🚧
 
