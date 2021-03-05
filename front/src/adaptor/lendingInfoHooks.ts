@@ -27,7 +27,7 @@ export const useLendingInfo = () => {
   const accessToken = useLiffAccessToken()
   return useSWR(
     accessToken ? ['lendingInfo', accessToken] : null,
-    (_, accessToken) => fetchLendingList({ accessToken }),
+    (_, accessToken) => fetchLendingList(accessToken),
   )
 }
 
@@ -52,7 +52,7 @@ export const useBorrowingInfo = () => {
   const accessToken = useLiffAccessToken()
   return useSWR(
     accessToken ? ['borrowingInfo', accessToken] : null,
-    (_, accessToken) => fetchBorrowingList({ accessToken }),
+    (_, accessToken) => fetchBorrowingList(accessToken),
   )
 }
 

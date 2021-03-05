@@ -20,8 +20,8 @@ export const fetchBorrowingList: typeof _fetchBorrowingList = async () => {
 
 export const fetchLendingAndBorrowingList: typeof _fetchLendingAndBorrowingList = async () => {
   const [lendingList, borrowingList] = await Promise.all([
-    fetchLendingList({ accessToken: 'ACCESS_TOKEN' }),
-    fetchBorrowingList({ accessToken: 'ACCESS_TOKEN' }),
+    fetchLendingList('DUMMY_ACCESS_TOKEN'),
+    fetchBorrowingList('DUMMY_ACCESS_TOKEN'),
   ])
   return [...lendingList, ...borrowingList].sort((a, b) =>
     a.createdAt > b.createdAt ? 1 : a.createdAt < b.createdAt ? -1 : 0,
