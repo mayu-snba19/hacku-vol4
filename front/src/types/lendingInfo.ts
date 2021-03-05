@@ -2,7 +2,7 @@ type LendingBase = {
   lendingId: string
   content: string
   deadline: Date
-  createdAt: Date
+  // createdAt: Date
 }
 
 /**
