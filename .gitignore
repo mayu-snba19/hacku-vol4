@@ -1,7 +1,0 @@
-.DS_Store
-.idea
-.env
-
-__pycache__/
-
-back/postgres/db_data
