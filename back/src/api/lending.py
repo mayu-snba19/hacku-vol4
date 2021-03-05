@@ -27,5 +27,4 @@ def register_lending():
     lending = LendingService(token)
     lendingId: int = lending.register(content, deadline)
 
-    print(token, content, deadline, lendingId)
     return jsonify({"lendingId": lendingId})
