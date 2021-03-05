@@ -1,0 +1,43 @@
+@startuml
+actor 貸す人 as L
+actor 借りる人 as B
+
+package ChatBot as CB{
+
+package 機能 as func{
+	usecase 貸したものリスト as list
+	usecase 貸し借りの期限の通知 as limit
+	usecase お礼のレコメンド as recommend
+	} 
+
+
+package 登録画面 as form{
+	usecase UC1 as "貸した人
+	--
+	貸したもの
+	==
+	返す期限"
+	
+  }
+}
+package 二人のチャット as CR{
+usecase UC2 as "貸したよ通知
+--
+００さんから▲▲を☆月☆日に返す
+	約束で借りました！！
+==
+	URLをクリックして、
+	忘れないようにしましょう！！"
+}
+
+L --> form :フォーム画面に沿って入力
+L --> list : 貸したものリストを確認できる
+limit --> L
+limit --> B
+recommend --> B 
+B --> UC2 :URLをクリック
+form --> UC2 :貸した人からの招待
+@enduml
+
+
+http://www.plantuml.com/plantuml/png/TLD1Rn9153xl-nKJxXpqI5BJB5TEJVe3DkkgZTrYsEL4I9YPjbAWIQDeYsspsegcQ3H13qgn_1TUTnTE_Gk-cK50ZCbaylXuxtlV-zxiUX0wfR3iRuFZXiKIc_H_8E_S3WRC2LXX1iQr24K3HNE6sm3F7FUfyzXZ-ITEQ1T3XURjoW9FhgA9_ANWH-KTjm9MEV1S9_1CWsFan2YGVq7PG_4JPLsbRcy5uMgcwKsPoLaqxHnHCAszIQEkoVUtbWgGDzBtGqtw6SKtbEzGqdsWKakUM_HzR-SXM5K62vrfvthQwgVjw-dvXLPRBFbBQZVpznIQcQic1y0QrzfWhGm2rjeQWQCssMUaPi02ngfGdJUx7RIeNWlaA2zHojdW-OqAB5hU_xibYheP6R9Pk1iUqK7-2iLBv4qK1-FNVJeeNenFzfEpkhgFkyW_6IbWfTzta_C8-SS_JjuOshiXfmDAzUP6WUfHV5NRa982dV81QnoiU7I2eeMyXtoNf23V9tBrlo4IpmanN1aQ5GeictsWRMGvb2Jp2kKGvLjZCPKc_H7oIsAFzxfnuzGKwDMpt7zV1ybBBmQJtY7DWVmGHHFqydLjOIcsORvfyvk1hG9jQ-xVGK4hdISixzdOgrvUypI-sGE0TM9Ldmhy1W00
