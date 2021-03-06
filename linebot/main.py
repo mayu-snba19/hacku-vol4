@@ -46,8 +46,8 @@ def handle_message(event):
   profile = line_bot_api.get_profile(user_id) #ユーザidを取得
   line_bot_api.replyMessage(event.replyToken, {
     type: 'image',
-    originalContentUrl: 'profile.picture_url',
-    previewImageUrl: 'profile.picture_url'
+    originalContentUrl: profile.picture_url,
+    previewImageUrl: profile.picture_url
   });
   s=profile.display_name+"「"+event.message.text+"」"
   line_bot_api.reply_message(
