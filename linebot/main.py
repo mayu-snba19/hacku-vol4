@@ -63,12 +63,12 @@ def handle_message(event):
           confirm_message = json.load(f)
       reply_messages=[]
       if request_message=='はい':
-        reply_messages.append(TextSendMessage(text='返ってきてよかったチュン！'))
+        reply_messages.append[TextSendMessage(text='返ってきてよかったチュン！')]
       elif request_message=='いいえ':
-        reply_messages.append(TextSendMessage(text='悲しいチュン...'))
-        reply_messages.append(TextSendMessage(text='早く返してって言ってくるチュン！'))
+        reply_messages.append[TextSendMessage(text='悲しいチュン...')]
+        reply_messages.append[TextSendMessage(text='早く返してって言ってくるチュン！')]
+      isAnswer=False
       line_bot_api.reply_message(event.reply_token, reply_messages)
-      isAnswer=Flase
     else :
       # ランダムなメッセージを送る
       random_message=['チュン！','チュンチュン！','メッセージありがとチュン！']
