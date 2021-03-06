@@ -30,7 +30,7 @@ class LendingRepositoryImpl(LendingRepository):
         return new_lending.id
 
     def associate_borrower(self, lending_id: int, borrower: UserEntity) -> LendingEntity:
-        fetched_borrower = db.session.qurey(User).filter(User.id == borrower.id)
+        fetched_borrower = db.session.query(User).filter(User.id == borrower.id).first()
         if fetched_borrower is None:
             self.user_use_case.add_user(borrower)
 
