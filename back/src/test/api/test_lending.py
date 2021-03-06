@@ -4,7 +4,7 @@ from flask import json
 
 # 正常系
 def test_register_lending():
-    data = json.dumps({"accessToken": "sample1234", "content": "hogefuga", "deadline": "2021/1/1"})
+    data = json.dumps({"content": "hogefuga", "deadline": "2021/1/1"})
     response = client.post(
         "/api/lending",
         data=data,
