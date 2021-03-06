@@ -11,6 +11,7 @@ class Lending(db.Model):
     borrower_id = db.Column(db.String(100), db.ForeignKey("users.id"))
     content = db.Column(db.String(100), nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
+    is_returned = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(
         db.DateTime,
         nullable=False,
@@ -25,6 +26,9 @@ class Lending(db.Model):
         onupdate=datetime.now,
         server_onupdate=text("CURRENT_TIMESTAMP"),
     )
+
+    owner = db.relationship("User", foreign_keys=[owner_id])
+    borrower = db.relationship("User", foreign_keys=[borrower_id])
 
     def to_dict(self):
         return dict(
