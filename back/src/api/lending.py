@@ -25,6 +25,6 @@ def register_lending():
     deadline: str = payload.get("deadline")
 
     lending = LendingService(token)
-    lendingId: int = lending.register(content, deadline)
+    lending_id, time = lending.register(content, deadline)
 
-    return jsonify({"lendingId": lendingId})
+    return jsonify({"lendingId": lending_id})
