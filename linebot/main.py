@@ -18,7 +18,6 @@ app = Flask(__name__)
 # 環境変数取得
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
-
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
@@ -47,7 +46,7 @@ isAnswer=False
 
 @handler.add(FollowEvent)
 def handle_follow(event):
-    isAnswer=True
+    # isAnswer=True
     with open('./confirm_message.json') as f:
       confirm_message = json.load(f)
     line_bot_api.reply_message(
@@ -59,8 +58,6 @@ def handle_follow(event):
 def handle_message(event):
     if isAnswer==True:
       request_message = event.message.text
-      with open('./confirm_message.json') as f:
-          confirm_message = json.load(f)
       reply_messages=[]
       if request_message=='はい':
         reply_messages.append(TextSendMessage(text='返ってきてよかったチュン！'))
@@ -75,8 +72,8 @@ def handle_message(event):
         with open('./confirm_message.json') as f:
           confirm_message = json.load(f)
         line_bot_api.reply_message(
-            event.reply_token,
-            FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
+          event.reply_token,
+          FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
         )
     else :
       # ランダムなメッセージを送る
