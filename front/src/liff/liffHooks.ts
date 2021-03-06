@@ -8,7 +8,18 @@ export { useLiff }
 /**
  * 認証状態とユーザー情報を取得するhooks
  *
- * @return `{ user: ユーザー情報, logout: ログアウト関数}`
+ * @return `{ user: ユーザー情報, logout: ログアウト関数 }`
+ *
+ * @example
+ * const SomeComponent: React.FC = () => {
+ *  const { user } = useLiffAuth()
+ *
+ *  return (
+ *    <div>
+ *      {user == null ? <p>未ログインです</p> : <p>ユーザー名: {user.displayName}</p>}
+ *    </div>
+ *  )
+ * }
  */
 export const useLiffAuth = () => {
   const [user, setUser] = useState<User | null>(null)
@@ -48,6 +59,17 @@ export const useLiffAuth = () => {
 /**
  * アクセストークンを取得するhooks
  * よく使いそうなので個別で用意しておく
+ *
+ * @example
+ * const SomeComponent: React.FC = () => {
+ *  const accessToken = useAccessToken()
+ *
+ *  return (
+ *    <div>
+ *      <button onClick={() => fetchAPI(accessToken)}>APIを叩く</button>
+ *    </div>
+ *  )
+ * }
  */
 export const useLiffAccessToken = () => useLiff().liff?.getAccessToken() ?? null
 
