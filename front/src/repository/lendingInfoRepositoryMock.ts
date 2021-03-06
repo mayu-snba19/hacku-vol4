@@ -23,7 +23,5 @@ export const fetchLendingAndBorrowingList: typeof _fetchLendingAndBorrowingList 
     fetchLendingList('DUMMY_ACCESS_TOKEN'),
     fetchBorrowingList('DUMMY_ACCESS_TOKEN'),
   ])
-  return [...lendingList, ...borrowingList].sort((a, b) =>
-    a.createdAt > b.createdAt ? 1 : a.createdAt < b.createdAt ? -1 : 0,
-  )
+  return [...lendingList, ...borrowingList]
 }
