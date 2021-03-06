@@ -2,11 +2,9 @@ from datetime import datetime
 from typing import List
 
 from src import db
-from src.domain.entity.lending_entity import LendingEntity
-from src.domain.entity.user_entity import UserEntity
-from src.domain.repository.lending_repository import LendingRepository
-from src.domain.repository.user_repository import UserRepository
-from src.domain.use_case.user_use_case import UserUseCase
+from src.domain.entity import UserEntity, LendingEntity
+from src.domain.repository import UserRepository, LendingRepository
+from src.domain.use_case import UserUseCase
 from src.model import Lending, User
 
 

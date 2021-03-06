@@ -1,8 +1,8 @@
-from src.domain.entity.user_entity import UserEntity
-from src.domain.repository.user_repository import UserRepository
+from src.domain.entity import UserEntity
+from src.domain.repository import UserRepository
 
 
-class UserUseCase():
+class UserUseCase:
     def __init__(self, repository: UserRepository):
         self.repository = repository
 

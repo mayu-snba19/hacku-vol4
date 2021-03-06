@@ -2,8 +2,7 @@ from abc import ABCMeta, abstractmethod
 from datetime import datetime
 from typing import List
 
-from src.domain.entity.lending_entity import LendingEntity
-from src.domain.entity.user_entity import UserEntity
+from src.domain.entity import UserEntity, LendingEntity
 
 
 class LendingRepository(metaclass=ABCMeta):

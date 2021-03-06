@@ -1,12 +1,11 @@
 from datetime import datetime
 from typing import List
 
-from src.domain.entity.lending_entity import LendingEntity
-from src.domain.entity.user_entity import UserEntity
-from src.domain.repository.lending_repository import LendingRepository
+from src.domain.entity import UserEntity, LendingEntity
+from src.domain.repository import LendingRepository
 
 
-class LendingUseCase():
+class LendingUseCase:
     def __init__(self, repository: LendingRepository):
         self.repository = repository
 

@@ -1,5 +1,5 @@
 from src import db
-from src.domain.entity.user_entity import UserEntity
+from src.domain.entity import UserEntity
 from src.domain.repository.user_repository import UserRepository
 from src.model import User
 
