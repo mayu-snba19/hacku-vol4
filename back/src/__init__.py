@@ -14,12 +14,13 @@ def health() -> str:
 
 
 from src.api.test import api as api_test
-from src.api.users import api as api_users
+# 貸出系
+from src.api.lending import api as api_lending
 
 from src.api_mock import api as api_mock
 
 app.register_blueprint(api_test, url_prefix="/api")
-app.register_blueprint(api_users, url_prefix="/api")
+app.register_blueprint(api_lending, url_prefix="/api")
 
 app.register_blueprint(api_mock, url_prefix="/mock")
 
