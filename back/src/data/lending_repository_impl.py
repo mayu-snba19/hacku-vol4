@@ -3,14 +3,27 @@ from typing import List
 
 from src import db
 from src.domain.entity.lending_entity import LendingEntity
+from src.domain.entity.user_entity import UserEntity
 from src.domain.repository.lending_repository import LendingRepository
 from src.model import Lending, User
 
 
+# todo(kondo): エラーハンドリング
 class LendingRepositoryImpl(LendingRepository):
-    def add_lending(self, owner_id: str, content: str, deadline: datetime) -> int:
+    def add_lending(self, owner: UserEntity, content: str, deadline: datetime) -> int:
+        fetched_owner = db.session.query(User).filter(User.id == owner.id).first()
+
+        if fetched_owner is None:
+            new_user = User()
+            new_user.id = owner.id
+            new_user.name = owner.name
+            new_user.picture_url = owner.picture_url
+            new_user.status_message = owner.status_message
+
+            db.session.add(new_user)
+
         new_lending = Lending()
-        new_lending.owner_id = owner_id
+        new_lending.owner_id = owner.id
         new_lending.content = content
         new_lending.deadline = deadline
         db.session.add(new_lending)

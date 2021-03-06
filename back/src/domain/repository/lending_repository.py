@@ -3,11 +3,12 @@ from datetime import datetime
 from typing import List
 
 from src.domain.entity.lending_entity import LendingEntity
+from src.domain.entity.user_entity import UserEntity
 
 
 class LendingRepository(metaclass=ABCMeta):
     @abstractmethod
-    def add_lending(self, owner_id: str, content: str, deadline: datetime) -> int:
+    def add_lending(self, owner: UserEntity, content: str, deadline: datetime) -> int:
         pass
 
     @abstractmethod

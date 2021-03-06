@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 
 from src.domain.entity.lending_entity import LendingEntity
+from src.domain.entity.user_entity import UserEntity
 from src.domain.repository.lending_repository import LendingRepository
 
 
@@ -9,8 +10,8 @@ class LendingUseCase():
     def __init__(self, repository: LendingRepository):
         self.repository = repository
 
-    def add_lending(self, owner_id: str, content: str, deadline: datetime) -> int:
-        return self.repository.add_lending(owner_id, content, deadline)
+    def add_lending(self, owner: UserEntity, content: str, deadline: datetime) -> int:
+        return self.repository.add_lending(owner, content, deadline)
 
     def associate_borrower(self, lending_id: int, borrower_id: str) -> LendingEntity:
         return self.repository.associate_borrower(lending_id, borrower_id)
