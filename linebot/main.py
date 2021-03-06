@@ -42,13 +42,39 @@ def callback():
 
     return 'OK'
 
-random_message=['チュン！','チュンチュン！','メッセージありがとチュン！']
+isAnswer=False
+
+@handler.add(FollowEvent)
+def handle_follow(event):
+    isAnswer=True
+    with open('./confirm_message.json') as f:
+        confirm_message = json.load(f)
+    line_bot_api.reply_message(
+        event.reply_token,
+        FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
+    )
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=random.choice(random_message)))
+    if isAnswer==True:
+      request_message = event.message.text
+      with open('./confirm_message.json') as f:
+          confirm_message = json.load(f)
+      reply_messages=[]
+      if request_message=='はい':
+        reply_messages.append(TextSendMessage(text='返ってきてよかったチュン！'))
+      elif request_message=='いいえ':
+        reply_messages.append(TextSendMessage(text='悲しいチュン...'))
+        reply_messages.append(TextSendMessage(text='早く返してって言ってくるチュン！'))
+      line_bot_api.reply_message(event.reply_token, reply_messages)
+      isAnswer=Flase
+    else :
+      # ランダムなメッセージを送る
+      random_message=['チュン！','チュンチュン！','メッセージありがとチュン！']
+      def handle_message(event):
+          line_bot_api.reply_message(
+              event.reply_token,
+              TextSendMessage(text=random.choice(random_message)))
 
 if __name__ == "__main__":
 #    app.run()
