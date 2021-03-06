@@ -18,6 +18,7 @@ entity Lending {
     ~borrower_id: string <<FK>>
     #content: string
     #deadline: Datetime
+    #is_returned: boolean
 }
 
 User }--o{ Lending
