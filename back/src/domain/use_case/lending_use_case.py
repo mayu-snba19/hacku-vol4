@@ -12,8 +12,8 @@ class LendingUseCase:
     def add_lending(self, owner: UserEntity, content: str, deadline: datetime) -> int:
         return self.repository.add_lending(owner, content, deadline)
 
-    def associate_borrower(self, lending_id: int, borrower_id: str) -> LendingEntity:
-        return self.repository.associate_borrower(lending_id, borrower_id)
+    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> LendingEntity:
+        return self.repository.associate_borrower(lending_id, borrower)
 
     def fetch_lent_list(self, owner_id: str) -> List[LendingEntity]:
         return self.repository.fetch_lent_list(owner_id)
