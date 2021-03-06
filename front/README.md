@@ -10,7 +10,16 @@ front/
       ├─ components/  UIコンポーネント
       ├─ liff/        liffの初期化処理及びContextAPIでの配信
       ├─ pages/       Next.jsのページ
-      └─ repository/  APIとのやりとりを行う部分
+      ├─ repository/  APIとのやりとりを行う部分
+      ├─ style/       scss/cssファイル
+      ├─ test/        テストの設定（環境変数の読み込み）のみ
+      ├─ types/       型ファイル
+      └─ util/        上記に当てはまらないファイル
+```
+
+### テスト対象ファイル
+```
+**/*.test.ts
 ```
 
 ## 開発
@@ -46,6 +55,15 @@ front/
 7. デプロイ
 
     🚧
+
+## テスト
+1. （初回のみ）`.env.test`ファイルを作成し、`.env.example`の内容をコピペし、正しい環境変数を設定。
+2. テストの実行
+    ```bash
+    npm test
+    ```
+
+現在はrepositoryのみテストを書いています（Reactに依存しない部分）
 
 ### その他
 - 型チェック

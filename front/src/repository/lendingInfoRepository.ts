@@ -26,7 +26,7 @@ export const postLendingInfo = async (
   const res = await axios.post('/lending', data, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
-  return res.data.id.toString()
+  return res.data.lendingId.toString()
 }
 
 export type PostLendingInfoParams = {
@@ -66,15 +66,19 @@ export type PostHaveReturnedParams = {
 export const fetchLendingList = async (
   accessToken: string,
 ): Promise<LendingInfo[]> => {
+  checkAccessToken(accessToken)
   const res = await axios.get('/owner/lending', {
     headers: { Authorization: `Bearer ${accessToken}` },
     params: {
       accessToken,
     },
   })
-  checkAccessToken(accessToken)
-  return res.data.map((data: Record<string, unknown>) => ({
-    ...data,
+  const lendingList: Record<string, unknown>[] = res.data.lendingList
+  return lendingList.map<LendingInfo>((data) => ({
+    lendingId: `${data.lendingId}`,
+    content: data.content as string,
+    deadline: new Date(data.deadline as string),
+    borrowerName: data.borrowerName as string,
     kind: 'lending',
   })) as LendingInfo[]
 }
@@ -88,15 +92,19 @@ export const fetchLendingList = async (
 export const fetchBorrowingList = async (
   accessToken: string,
 ): Promise<BorrowingInfo[]> => {
+  checkAccessToken(accessToken)
   const res = await axios.get('/borrower/lending', {
     headers: { Authorization: `Bearer ${accessToken}` },
     params: {
       accessToken,
     },
   })
-  checkAccessToken(accessToken)
-  return res.data.map((data: Record<string, unknown>) => ({
-    ...data,
+  const borrowingList: Record<string, unknown>[] = res.data.lendingList
+  return borrowingList.map((data) => ({
+    lendingId: `${data.lendingId}`,
+    content: data.content as string,
+    deadline: new Date(data.deadline as string),
+    ownerName: data.borrowerName as string,
     kind: 'borrowing',
   })) as BorrowingInfo[]
 }
@@ -114,7 +122,5 @@ export const fetchLendingAndBorrowingList = async (
     fetchLendingList(accessToken),
     fetchBorrowingList(accessToken),
   ])
-  return [...lendingList, ...borrowingList].sort((a, b) =>
-    a.createdAt > b.createdAt ? 1 : a.createdAt < b.createdAt ? -1 : 0,
-  )
+  return [...lendingList, ...borrowingList]
 }
