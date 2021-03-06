@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router'
-import Head from 'next/head'
 import Link from 'next/link'
 import React from 'react'
 import Button from '~/components/Button'
 import styles from '~/styles/Home.module.css'
+import Meta from '~/components/Meta'
 
 const Home: React.FC = () => {
   const router = useRouter()
@@ -14,10 +14,7 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <Meta />
       <div>asa</div>
 
       <main className={styles.main}>

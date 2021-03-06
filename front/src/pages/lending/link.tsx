@@ -1,12 +1,18 @@
 import React from 'react'
 import type { GetServerSideProps } from 'next'
+import Meta from '~/components/Meta'
 
 type Props = {
   lendingId: string
 }
 
 const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
-  return <div>{lendingId}</div>
+  return (
+    <>
+      <Meta title="借物登録完了" />
+      <div>{lendingId}</div>
+    </>
+  )
 }
 
 export default LendingLinkPage
