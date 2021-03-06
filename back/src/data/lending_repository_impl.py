@@ -5,22 +5,20 @@ from src import db
 from src.domain.entity.lending_entity import LendingEntity
 from src.domain.entity.user_entity import UserEntity
 from src.domain.repository.lending_repository import LendingRepository
+from src.domain.repository.user_repository import UserRepository
+from src.domain.use_case.user_use_case import UserUseCase
 from src.model import Lending, User
 
 
 # todo(kondo): エラーハンドリング
 class LendingRepositoryImpl(LendingRepository):
+    def __init__(self, user_repository: UserRepository):
+        self.user_use_case = UserUseCase(user_repository)
+
     def add_lending(self, owner: UserEntity, content: str, deadline: datetime) -> int:
         fetched_owner = db.session.query(User).filter(User.id == owner.id).first()
-
         if fetched_owner is None:
-            new_user = User()
-            new_user.id = owner.id
-            new_user.name = owner.name
-            new_user.picture_url = owner.picture_url
-            new_user.status_message = owner.status_message
-
-            db.session.add(new_user)
+            self.user_use_case.add_user(owner)
 
         new_lending = Lending()
         new_lending.owner_id = owner.id
@@ -33,11 +31,15 @@ class LendingRepositoryImpl(LendingRepository):
 
         return new_lending.id
 
-    def associate_borrower(self, lending_id: int, borrower_id: str) -> LendingEntity:
+    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> LendingEntity:
+        fetched_borrower = db.session.qurey(User).filter(User.id == borrower.id)
+        if fetched_borrower is None:
+            self.user_use_case.add_user(borrower)
+
         lending = db.session.query(Lending) \
             .filter(Lending.id == lending_id) \
             .first()
-        lending.borrower_id = borrower_id
+        lending.borrower_id = borrower.id
 
         db.session.commit()
 
@@ -54,7 +56,7 @@ class LendingRepositoryImpl(LendingRepository):
             lending_id,
             associated_lending.content,
             associated_lending.deadline,
-            owner_name=associated_lending.borrower_name,
+            owner_name=associated_lending.owner_name,
         )
 
     def fetch_lent_list(self, owner_id: str) -> List[LendingEntity]:

@@ -12,7 +12,7 @@ class LendingRepository(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def associate_borrower(self, lending_id: int, borrower_id: str) -> LendingEntity:
+    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> LendingEntity:
         pass
 
     @abstractmethod
