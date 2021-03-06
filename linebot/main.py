@@ -18,6 +18,7 @@ app = Flask(__name__)
 # 環境変数取得
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
+
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
@@ -42,48 +43,33 @@ def callback():
 
     return 'OK'
 
-isAnswer=False
-
 @handler.add(FollowEvent)
 def handle_follow(event):
-    # isAnswer=True
-    with open('./confirm_message.json') as f:
-      confirm_message = json.load(f)
-    line_bot_api.reply_message(
-        event.reply_token,
-        FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
-    )
+  with open('./confirm_message.json') as f:
+    confirm_message = json.load(f)
+  line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    if isAnswer==True:
-      request_message = event.message.text
-      reply_messages=[]
-      if request_message=='はい':
-        reply_messages.append(TextSendMessage(text='返ってきてよかったチュン！'))
-        isAnswer=False
-        line_bot_api.reply_message(event.reply_token, reply_messages)
-      elif request_message=='いいえ':
-        reply_messages.append(TextSendMessage(text='悲しいチュン...'))
-        reply_messages.append(TextSendMessage(text='早く返してって言ってくるチュン！'))
-        isAnswer=False
-        line_bot_api.reply_message(event.reply_token, reply_messages)
-      else:
-        with open('./confirm_message.json') as f:
-          confirm_message = json.load(f)
-        line_bot_api.reply_message(
-          event.reply_token,
-          FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
-        )
-    else :
-      # ランダムなメッセージを送る
-      random_message=['チュン！','チュンチュン！','メッセージありがとチュン！']
-      def handle_message(event):
-          line_bot_api.reply_message(
-              event.reply_token,
-              TextSendMessage(text=random.choice(random_message)))
+  reply_messages=[]
+  request_message = event.message.text
+  if request_message=='はい':
+    reply_messages.append(TextSendMessage(text='返ってきてよかったチュン！'))
+    line_bot_api.reply_message(event.reply_token, reply_messages)
+  elif request_message=='いいえ':
+    reply_messages.append(TextSendMessage(text='悲しいチュン...'))
+    reply_messages.append(TextSendMessage(text='早く返してって言ってくるチュン！'))
+    line_bot_api.reply_message(event.reply_token, reply_messages)
+  else:
+    with open('./confirm_message.json') as f:
+      confirm_message = json.load(f)
+    line_bot_api.reply_message(event.reply_token,FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message))
+
+  # # ランダムなメッセージを送る
+  # random_message=['チュン！','チュンチュン！','メッセージありがとチュン！']
+  # def handle_message(event):
+  #   line_bot_api.reply_message(event.reply_token,TextSendMessage(text=random.choice(random_message)))
+
 
 if __name__ == "__main__":
-#    app.run()
-    port = int(os.getenv("PORT"))
-    app.run(host="0.0.0.0", port=port)
+    app.run()
