@@ -49,7 +49,7 @@ isAnswer=False
 def handle_follow(event):
     isAnswer=True
     with open('./confirm_message.json') as f:
-        confirm_message = json.load(f)
+      confirm_message = json.load(f)
     line_bot_api.reply_message(
         event.reply_token,
         FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
@@ -73,12 +73,11 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, reply_messages)
       else:
         with open('./confirm_message.json') as f:
-        confirm_message = json.load(f)
+          confirm_message = json.load(f)
         line_bot_api.reply_message(
             event.reply_token,
             FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
         )
-
     else :
       # ランダムなメッセージを送る
       random_message=['チュン！','チュンチュン！','メッセージありがとチュン！']
