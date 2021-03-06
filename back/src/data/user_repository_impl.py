@@ -5,12 +5,12 @@ from src.model import User
 
 
 class UserRepositoryImpl(UserRepository):
-    def add_user(self, new_user: UserEntity):
+    def add_user(self, user: UserEntity):
         new_user = User()
-        new_user.id = new_user.id
-        new_user.name = new_user.name
-        new_user.picture_url = new_user.picture_url
-        new_user.status_message = new_user.status_message
+        new_user.id = user.id
+        new_user.name = user.name
+        new_user.picture_url = user.picture_url
+        new_user.status_message = user.status_message
 
         db.session.add(new_user)
         db.session.commit()
