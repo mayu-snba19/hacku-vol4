@@ -9,12 +9,12 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage,FollowEvent
 )
 
 app = Flask(__name__)
 
-#環境変数取得
+# 環境変数取得
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 
