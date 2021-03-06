@@ -14,3 +14,6 @@ class UserRepositoryImpl(UserRepository):
 
         db.session.add(new_user)
         db.session.commit()
+
+    def __repr__(self):
+        return f'UserRepositoryImpl'

@@ -16,3 +16,6 @@ class UserUseCase:
             追加するユーザー
         """
         self.repository.add_user(new_user)
+
+    def __repr__(self):
+        return f'UserUseCase("{self.repository}")'

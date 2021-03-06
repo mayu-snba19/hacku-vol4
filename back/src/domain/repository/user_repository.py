@@ -7,3 +7,6 @@ class UserRepository(metaclass=ABCMeta):
     @abstractmethod
     def add_user(self, new_user: UserEntity):
         pass
+
+    def __repr__(self):
+        return "UserRepository"

@@ -25,3 +25,6 @@ class LendingRepository(metaclass=ABCMeta):
     @abstractmethod
     def register_return_lending(self, lending_id: int) -> LendingEntity:
         pass
+
+    def __repr__(self):
+        return "LendingRepository"

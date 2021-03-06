@@ -132,3 +132,6 @@ class LendingRepositoryImpl(LendingRepository):
             returned_lending.deadline,
             returned_lending.borrower_name
         )
+
+    def __repr__(self):
+        return f'LendingRepositoryImpl("{self.user_use_case}")'

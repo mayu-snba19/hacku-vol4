@@ -23,3 +23,6 @@ class LendingUseCase:
 
     def register_return_lending(self, lending_id: int) -> LendingEntity:
         return self.repository.register_return_lending(lending_id)
+
+    def __repr__(self):
+        return f'LendingUseCase("{self.repository}")'
