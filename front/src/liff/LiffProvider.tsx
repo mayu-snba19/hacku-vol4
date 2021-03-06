@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 const LIFF_ID = process.env.LIFF_ID ?? ''
 
 export type LIFF = typeof liff
-type LiffState =
+export type LiffState =
   // LIFFの初期化が正常に終了
   | {
       liff: LIFF
@@ -34,7 +34,7 @@ const LiffContext = createContext<LiffState>({
 /**
  * LIFFの初期化とliffオブジェクトの配信を行う
  */
-export const LiffProvider: React.FC = ({ ...props }) => {
+const LiffProvider: React.FC = ({ ...props }) => {
   const [_liff, setLiff] = useState<LiffState>({
     liff: null,
     isLoading: true,
@@ -55,9 +55,10 @@ export const LiffProvider: React.FC = ({ ...props }) => {
           } else {
             // LIFFが動いているのであれば
             setLiff({ liff, isLoading: false, error: null })
+            console.log('[LIFF] 初期化に成功しました')
           }
         } catch (error) {
-          console.error('LIFFの初期化に失敗しました')
+          console.error('[LIFF] 初期化に失敗しました')
           console.error(error)
           setLiff({ liff: null, isLoading: false, error })
         }
@@ -69,19 +70,25 @@ export const LiffProvider: React.FC = ({ ...props }) => {
   return <LiffContext.Provider value={_liff} {...props} />
 }
 
+export default LiffProvider
+
 /**
  * LIFF SDKを使うためのhooks
  *
  * ※ローディング中及びエラー発生時はliffがnullになる
  *
  * @return `{ liff, isLoading, error }`
+ *
+ * @example
+ * const Component = () => {
+ *    const liff = useLiff()
+ *    const context = liff?.getContext()
+ *    return (
+ *      <div>
+ *        <h1>テスト</h1>
+ *        {context != null && <div>LIFFアプリが起動された画面は{context.type}です</div>}
+ *      </div>
+ *    )
+ * }
  */
-const useLiff = () => useContext(LiffContext)
-export default useLiff
-
-/**
- * アクセストークンを取得するhooks
- * よく使いそうなので個別で用意しておく
- */
-export const useLiffAccessToken = () =>
-  useContext(LiffContext).liff?.getAccessToken() ?? null
+export const useLiff = () => useContext(LiffContext)

@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import { useLiffAccessToken } from '~/liff/useLiff'
+import { useLiffAccessToken } from '~/liff/liffHooks'
 import {
   fetchBorrowingList,
   fetchLendingList,
