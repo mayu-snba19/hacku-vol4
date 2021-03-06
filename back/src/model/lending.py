@@ -4,12 +4,13 @@ from sqlalchemy import text
 from . import db
 
 
-class User(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.String(100), primary_key=True)
-    name = db.Column(db.String(100))
-    picture_url = db.Column(db.String(200))
-    status_message = db.Column(db.String(200))
+class Lending(db.Model):
+    __tablename__ = "lendings"
+    id = db.Column(db.Integer, primary_key=True)
+    owner_id = db.Column(db.String(100), db.ForeignKey("users.id"), nullable=False)
+    borrower_id = db.Column(db.String(100), db.ForeignKey("users.id"))
+    content = db.Column(db.String(100), nullable=False)
+    deadline = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(
         db.DateTime,
         nullable=False,
@@ -25,17 +26,16 @@ class User(db.Model):
         server_onupdate=text("CURRENT_TIMESTAMP"),
     )
 
-    lendings = db.relationship("Lending")
-
     def to_dict(self):
         return dict(
             id=self.id,
-            name=self.name,
-            picture_url=self.picture_url,
-            status_message=self.status_message,
+            owner_id=self.owner_id,
+            borrower_id=self.borrower_id,
+            content=self.content,
+            deadline=self.deadline,
             created_at=self.created_at,
             updated_at=self.updated_at
         )
 
     def __repr__(self):
-        return f"<User {self.id}:{self.name},{self.created_at}>"
+        return f"<Leading {self.id}:{self.owner_id},{self.borrower_id},{self.content},{self.deadline}>"
