@@ -133,5 +133,12 @@ class LendingRepositoryImpl(LendingRepository):
             returned_lending.borrower_name
         )
 
+    def is_valid_owner(self, lending_id: int, user_id: str) -> bool:
+        lending_owner_id = db.session.query(Lending.owner_id) \
+            .filter(Lending.id == lending_id) \
+            .first().owner_id
+
+        return lending_owner_id == user_id
+
     def __repr__(self):
         return f'LendingRepositoryImpl("{self.user_use_case}")'

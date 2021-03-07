@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, abort
 import datetime
 
 from src.api.service.lending import LendingService
 from src.api.service.auth import required_auth, get_token
+from src.consts.exceptions import InvalidOwnerException
 
 from src.domain.entity import *
 
@@ -113,7 +114,8 @@ def get_borrower_lending():
     """
     token = get_token()
     lending = LendingService(token)
-    data = lending.get_owner_lending()
+    data = lending.get_borrower_lending()
+
     return jsonify({"lendingList": data})
 
 
@@ -141,11 +143,14 @@ def register_lending_return(lending_id):
     """
     token = get_token()
     lending = LendingService(token)
-    content, deadline, owner_name = lending.register_borrower(lending_id)
 
-    return jsonify({
-        "lending_id": lending_id,
-        "content": content,
-        "deadline": deadline,
-        "borrowerName": owner_name
-    })
+    try:
+        returned_lending = lending.register_lending_return(lending_id)
+    except InvalidOwnerException:
+        abort(403, {
+            "code": "invalid_user",
+            "description": "The user who requested is not a owner of the lending."
+        })
+        return
+
+    return jsonify(returned_lending)

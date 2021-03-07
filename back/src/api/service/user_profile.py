@@ -21,5 +21,10 @@ def get_user_profile(access_token) -> UserEntity:
         "Authorization": f"Bearer {access_token}",
     }
     response = requests.get(url, headers=headers).json()
-    profile: UserEntity = UserEntity(response["userId"], response["displayName"], response["pictureUrl"], response["statusMessage"])
+    profile: UserEntity = UserEntity(
+        response.get("userId", ""),
+        response.get("displayName", ""),
+        response.get("pictureUrl", ""),
+        response.get("statusMessage", "")
+    )
     return profile

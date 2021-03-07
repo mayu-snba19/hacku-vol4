@@ -95,5 +95,24 @@ class LendingUseCase:
         """
         return self.repository.register_return_lending(lending_id)
 
+    def is_valid_owner(self, lending_id: int, user_id: str) -> bool:
+        """
+        user_idのユーザーが、lending_idの貸出の貸出者であればTrueを返し、
+        そうでなければFalseを返す。
+
+        Parameters
+        ----------
+        lending_id: int
+            貸出id
+        user_id: str
+            返却方向をしてきたユーザーのid
+
+        Returns
+        -------
+        is_valid_owner: bool
+            返却報告をしてきたユーザーが、貸出の正当な貸出者かどうか
+        """
+        return self.repository.is_valid_owner(lending_id, user_id)
+
     def __repr__(self):
         return f'LendingUseCase("{self.repository}")'
