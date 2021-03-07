@@ -25,8 +25,6 @@ class User(db.Model):
         server_onupdate=text("CURRENT_TIMESTAMP"),
     )
 
-    lendings = db.relationship("Lending")
-
     def to_dict(self):
         return dict(
             id=self.id,
