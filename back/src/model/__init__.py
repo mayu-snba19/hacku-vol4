@@ -7,8 +7,12 @@ migrate = Migrate(app, db)
 
 from .user import User
 from .lending import Lending
+from .friend import Friend
+from .want_to_borrow import WantToBorrow
 
 __all__ = [
     User,
     Lending,
+    Friend,
+    WantToBorrow
 ]
