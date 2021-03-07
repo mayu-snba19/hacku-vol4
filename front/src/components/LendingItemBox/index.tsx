@@ -6,6 +6,7 @@ import { differenceInDays } from 'date-fns'
 
 type Props = {
   item: LendingInfo | BorrowingInfo
+  onClick: () => void
 }
 
 /**
@@ -13,7 +14,7 @@ type Props = {
  */
 const ALERT_BORDER = 1
 
-const LendingItemBox: React.FC<Props> = ({ item }) => {
+const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
   const remaindDays = differenceInDays(item.deadline, new Date())
   console.log(remaindDays)
   return (
@@ -22,6 +23,7 @@ const LendingItemBox: React.FC<Props> = ({ item }) => {
         'flex flex-col m-2 px-4 py-2 text-text rounded-md shadow-sm relative overflow-hidden ' +
         (item.kind === 'lending' ? 'bg-brand-400' : 'bg-brand-300')
       }
+      onClick={onClick}
     >
       <Icon
         type={item.kind === 'lending' ? 'uparrow' : 'downarrow'}

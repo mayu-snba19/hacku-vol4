@@ -1,5 +1,5 @@
+import React, { useState } from 'react'
 import Head from 'next/head'
-import React from 'react'
 import LiffProvider from '~/liff/LiffProvider'
 import '~/styles/globals.scss'
 import type { AppProps } from 'next/app'
