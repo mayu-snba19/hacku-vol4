@@ -1,4 +1,10 @@
 from typing import Tuple
+import datetime
+
+from src.api.service.user_profile import get_user_profile
+
+from src.domain.use_case import *
+from src.data import *
 
 
 class LendingService:
@@ -7,6 +13,7 @@ class LendingService:
 
     def __init__(self, token):
         self.token = token
+        self.LendingUseCase = LendingUseCase(LendingRepositoryImpl(UserRepositoryImpl()))
 
     def register_lending(self, content: str, deadline: str) -> Tuple[int, str]:
         """ 貸出情報の登録
@@ -14,7 +21,7 @@ class LendingService:
         ----------
         content: str
             貸出内容
-        deadline: str
+        deadline: datetime
             返却日
 
         Returns
@@ -24,6 +31,8 @@ class LendingService:
         created_at: str
             登録時間
         """
+        get_user_profile(access_token=self.token)
+
         return 1, "2020/1/1"
 
     def register_borrower(self, lending_id: int) -> Tuple[str, str, str]:
@@ -37,7 +46,7 @@ class LendingService:
         -------
         content: str
             貸出内容
-        deadline: str
+        deadline: datetime
             返却日
         ownerName: str
             貸した人の名前
@@ -53,17 +62,17 @@ class LendingService:
                 貸出ID
             content: str
                 貸出内容
-            deadline: str
+            deadline: datetime
                 返却日
             borrowerName: str
                 借りた人の名前
         """
         return [{
-                    'lendingId': "貸出id",
-                    'content': "貸したもの",
-                    'deadline': "期限",
-                    'borrowerName': "借りた人の名前"
-                }]
+            'lendingId': "貸出id",
+            'content': "貸したもの",
+            'deadline': "期限",
+            'borrowerName': "借りた人の名前"
+        }]
 
     def get_borrower_lending(self) -> list:
         """ 借りたもの一覧
@@ -74,7 +83,7 @@ class LendingService:
                貸出ID
            content: str
                貸出内容
-           deadline: str
+           deadline: datetime
                返却日
            borrowerName: str
                借りた人の名前
@@ -97,7 +106,7 @@ class LendingService:
         -------
         content: str
             貸出内容
-        deadline: str
+        deadline: datetime
             返却日
         ownerName: str
             借りた人の名前
