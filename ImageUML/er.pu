@@ -14,20 +14,43 @@ entity User {
 entity Lending {
     +id: int <<AUTO INCREMENT>>
     --
-    ~owner_id: string <<FK>>
-    ~borrower_id: string <<FK>>
+    ~owner_id: string
+    ~borrower_id: string
     #content: string
     #deadline: Datetime
     #is_returned: boolean
+    #is_confirming_returned: boolean
+}
+
+entity Friend {
+    + user_id: string
+    + friend_id: string
+    --
+}
+
+note bottom 
+    フレンド登録をする際は、user_idとfriend_idを逆にした2レコードを作成する。
+    例：AさんとBさんをフレンド登録 
+        -> <user_id, friend_id>[{Aさんのid, Bさんのid},{Bさんのid, Aさんのid}]
+        の2レコードを追加する。
+end note
+
+entity WantToBorrow {
+    + id: int <<AUTO INCREMENT>>
+    --
+    ~user_id: string
+    #content: string
 }
 
 User }--o{ Lending
+User }--o{ Friend
+User ||--o{ WantToBorrow
 
 entity Example {
     +primary_key: type
     ~foreign_key: type
     #not null: type  
 }
-note bottom of Example: 上からそれぞれ<<PK>>, <<FK>>, <<NOT NULL>>を表す記号
+note bottom: 上からそれぞれ<<PK>>, <<FK>>, <<NOT NULL>>を表す記号
 
 @enduml
