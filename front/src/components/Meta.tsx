@@ -17,7 +17,6 @@ const Meta: React.FC<Props> = ({
   children,
 } = {}) => {
   const router = useRouter()
-  console.log(router)
   return (
     <Head>
       <meta property="og:title" content={title} />
