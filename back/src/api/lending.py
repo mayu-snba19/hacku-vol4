@@ -4,6 +4,8 @@ import datetime
 from src.api.service.lending import LendingService
 from src.api.service.auth import required_auth, get_token
 
+from src.domain.entity import *
+
 api = Blueprint("api_lending", __name__)
 
 
@@ -52,25 +54,22 @@ def register_borrower(lending_id):
 
     Returns
     -------
-    lending_id: int
-        貸出ID
-    content: str
-        貸出内容
-    deadline: datetime
-        返却期限
-    owner_name: str
-        貸した人の名前
+    lending_info: LendingEntity
+        lending_id: int
+            貸出ID
+        content: str
+            貸出内容
+        deadline: datetime
+            返却期限
+        owner_name: str
+            貸した人の名前
     """
     token: str = get_token()
     lending = LendingService(token)
-    content, deadline, owner_name = lending.register_borrower(lending_id)
+    lending_info: LendingEntity = lending.register_borrower(lending_id)
+    print(lending_info)
 
-    return jsonify({
-        "lending_id": lending_id,
-        "content": content,
-        "deadline": deadline,
-        "ownerName": owner_name
-    })
+    return jsonify(lending_info)
 
 
 @api.route("/owner/lending", methods=["GET"])
@@ -93,15 +92,14 @@ def get_owner_lending():
     """
     token = get_token()
     lending = LendingService(token)
-    data = lending.get_owner_lending()
-    return jsonify({"lendingList": data})
+    lending_list = lending.get_owner_lending()
+    return jsonify({"lendingList": lending_list})
 
 
 @api.route("/borrower/lending", methods=["GET"])
 @required_auth
 def get_borrower_lending():
     """ 借りたもの一覧
-
     Returns
     -------
     lendingList: list
