@@ -71,7 +71,7 @@ class LendingService:
         lending_list: List[LendingEntity] = self.LendingUseCase.fetch_lent_list(profile.id)
         return lending_list
 
-    def get_borrower_lending(self) -> list:
+    def get_borrower_lending(self) -> List[LendingEntity]:
         """ 借りたもの一覧
        Returns
        -------
@@ -88,17 +88,9 @@ class LendingService:
         user = get_user_profile(self.token)
         borrowed_list = self.LendingUseCase.fetch_borrowed_list(user.id)
 
-        return [
-            {
-                "lendingId": lending.id,
-                "content": lending.content,
-                "deadline": lending.deadline,
-                "borrowerName": lending.borrower_name
-            }
-            for lending in borrowed_list
-        ]
+        return borrowed_list
 
-    def register_lending_return(self, lending_id: int):
+    def register_lending_return(self, lending_id: int) -> LendingEntity:
         """ 返却報告
         Parameters
         ----------
@@ -127,4 +119,4 @@ class LendingService:
 
         returned_lending = self.LendingUseCase.register_return_lending(lending_id)
 
-        return returned_lending.content, returned_lending.deadline, returned_lending.borrower_name
+        return returned_lending

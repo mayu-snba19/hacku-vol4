@@ -145,7 +145,7 @@ def register_lending_return(lending_id):
     lending = LendingService(token)
 
     try:
-        content, deadline, borrower_name = lending.register_lending_return(lending_id)
+        returned_lending = lending.register_lending_return(lending_id)
     except InvalidOwnerException:
         abort(403, {
             "code": "invalid_user",
@@ -153,9 +153,4 @@ def register_lending_return(lending_id):
         })
         return
 
-    return jsonify({
-        "lendingId": lending_id,
-        "borrowerName": borrower_name,
-        "content": content,
-        "deadline": deadline
-    })
+    return jsonify(returned_lending)
