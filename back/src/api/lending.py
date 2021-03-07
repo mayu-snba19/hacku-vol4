@@ -15,7 +15,7 @@ def register_lending():
     """ 貸出情報の登録
     Parameters
     -------
-    accessToken: str
+    access_token: str
         貸す人のアクセストークン
     content: str
         貸したもの
@@ -24,9 +24,9 @@ def register_lending():
 
     Returns
     -------
-    lendingId: int
+    lending_id: int
         貸出ID
-    createdAt: str
+    created_at: str
         返却日
     """
     # パラメータの取得
@@ -38,7 +38,7 @@ def register_lending():
     lending = LendingService(token)
     lending_id, created_at = lending.register_lending(content, deadline)
 
-    return jsonify({"lendingId": lending_id, "createdAt": created_at})
+    return jsonify({"lending_id": lending_id, "created_at": created_at})
 
 
 @api.route("/lending/<lending_id>", methods=["PUT"])
@@ -49,7 +49,7 @@ def register_borrower(lending_id):
     -------
     lending_id: int
         貸出ID
-    accessToken: str
+    access_token: str
         借りた人のアクセストークン
 
     Returns
@@ -67,7 +67,6 @@ def register_borrower(lending_id):
     token: str = get_token()
     lending = LendingService(token)
     lending_info: LendingEntity = lending.register_borrower(lending_id)
-    print(lending_info)
 
     return jsonify(lending_info)
 
@@ -76,8 +75,8 @@ def register_borrower(lending_id):
 @required_auth
 def get_owner_lending():
     """ 貸したもの一覧取得
-    accessToken: str
-        accessToken
+    access_token: str
+        アクセストークン
     Returns
     -------
     lendingList: list
@@ -93,7 +92,7 @@ def get_owner_lending():
     token = get_token()
     lending = LendingService(token)
     lending_list = lending.get_owner_lending()
-    return jsonify({"lendingList": lending_list})
+    return jsonify({"lending_list": lending_list})
 
 
 @api.route("/borrower/lending", methods=["GET"])

@@ -27,7 +27,7 @@ class LendingService:
 
         Returns
         -------
-        lendingId: int
+        lending_id: int
             貸出ID
         created_at: str
             登録時間
@@ -57,13 +57,13 @@ class LendingService:
         Returns
         -------
         lending_list: list
-            lendingId: str
+            lending_id: str
                 貸出ID
             content: str
                 貸出内容
             deadline: datetime
                 返却日
-            borrowerName: str
+            borrower_name: str
                 借りた人の名前
         """
         profile: UserEntity = get_user_profile(access_token=self.token)
