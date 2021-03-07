@@ -13,15 +13,11 @@ def health() -> str:
     return '200'
 
 
-from src.api.test import api as api_test
 # 貸出系
 from src.api.lending import api as api_lending
-
 from src.api_mock import api as api_mock
 
-app.register_blueprint(api_test, url_prefix="/api")
 app.register_blueprint(api_lending, url_prefix="/api")
-
 app.register_blueprint(api_mock, url_prefix="/mock")
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
