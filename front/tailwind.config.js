@@ -6,7 +6,16 @@ module.exports = {
   ],
   darkMode: false,
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          100: '#B3CAD7',
+          300: '#97B1C0',
+          400: '#7499A9',
+        },
+        text: '#FDF5E6',
+      },
+    },
   },
   variants: {
     extend: {},

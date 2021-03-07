@@ -1,13 +1,19 @@
-import 'tailwindcss/tailwind.css'
-import type { AppProps } from 'next/app'
+import Head from 'next/head'
 import React from 'react'
 import LiffProvider from '~/liff/LiffProvider'
+import '~/styles/globals.scss'
+import type { AppProps } from 'next/app'
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
-    <LiffProvider>
-      <Component {...pageProps} />
-    </LiffProvider>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+      </Head>
+      <LiffProvider>
+        <Component {...pageProps} />
+      </LiffProvider>
+    </>
   )
 }
 
