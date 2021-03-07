@@ -26,5 +26,9 @@ class LendingRepository(metaclass=ABCMeta):
     def register_return_lending(self, lending_id: int) -> LendingEntity:
         pass
 
+    @abstractmethod
+    def is_valid_owner(self, lending_id: int, user_id: str) -> bool:
+        pass
+
     def __repr__(self):
         return "LendingRepository"
