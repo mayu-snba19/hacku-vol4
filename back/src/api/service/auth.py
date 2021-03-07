@@ -39,11 +39,11 @@ def has_token_auth_header():
 
 
 def get_token() -> str:
-    """ accessToken を返す
+    """ access_token を返す
     Returns
     -------
     token: str
-        accessToken
+        アクセストークン
     """
     auth = get_auth()
     _, token = auth.split()

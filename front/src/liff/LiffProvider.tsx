@@ -1,8 +1,6 @@
 import liff from '@line/liff'
 import { createContext, useContext, useEffect, useState } from 'react'
 
-const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID ?? ''
-
 export type LIFF = typeof liff
 export type LiffState =
   // LIFFの初期化が正常に終了
@@ -42,6 +40,7 @@ const LiffProvider: React.FC = ({ ...props }) => {
   })
   useEffect(() => {
     if (process.browser) {
+      const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID ?? ''
       const init = async () => {
         try {
           const { default: liff } = await import('@line/liff')
@@ -49,9 +48,8 @@ const LiffProvider: React.FC = ({ ...props }) => {
           if (!liff.isLoggedIn()) {
             // ログインしていなければ最初にログインする
             liff.login({
-              // TODO: LINEのソーシャルログイン後、元のページに戻ってきて欲しい
               redirectUri: window.location.href,
-            }) // ログインしていなければ最初にログインする
+            })
           } else {
             // LIFFが動いているのであれば
             setLiff({ liff, isLoading: false, error: null })

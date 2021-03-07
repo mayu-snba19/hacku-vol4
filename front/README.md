@@ -69,9 +69,21 @@ front/
     npm run build
     ```
 
-7. デプロイ
+7. 動作確認
+    ```bash
+    npm run start
+    ```
 
-    🚧
+8. （未インストールの場合は）Vercel cliのインストール
+    ```bash
+    npm i -g vercel
+    ```
+
+9. `vercel`コマンドを実行してデプロイ
+    ```bash
+    vercel --prod
+    ```
+10. Vercel Dashboard 上で環境変数を設定する
 
 ## テスト
 1. （初回のみ）`.env.test`ファイルを作成し、`.env.example`の内容をコピペし、正しい環境変数を設定。
