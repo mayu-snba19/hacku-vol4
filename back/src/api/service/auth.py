@@ -38,7 +38,7 @@ def has_token_auth_header():
                              " Bearer token"}, 401)
 
 
-def get_token():
+def get_token() -> str:
     """ accessToken を返す
     Returns
     -------

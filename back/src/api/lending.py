@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify, request, make_response
-from src.api.service.lending import LendingService
+from flask import Blueprint, jsonify, request
+import datetime
 
+from src.api.service.lending import LendingService
 from src.api.service.auth import required_auth, get_token
 
 api = Blueprint("api_lending", __name__)
@@ -16,7 +17,7 @@ def register_lending():
         貸す人のアクセストークン
     content: str
         貸したもの
-    deadline: str
+    deadline: datetime
         返却期限
 
     Returns
@@ -30,7 +31,7 @@ def register_lending():
     payload = request.json
     token: str = get_token()
     content: str = payload.get("content")
-    deadline: str = payload.get("deadline")
+    deadline: datetime = payload.get("deadline")
 
     lending = LendingService(token)
     lending_id, created_at = lending.register_lending(content, deadline)
@@ -55,7 +56,7 @@ def register_borrower(lending_id):
         貸出ID
     content: str
         貸出内容
-    deadline: str
+    deadline: datetime
         返却期限
     owner_name: str
         貸した人の名前
@@ -85,7 +86,7 @@ def get_owner_lending():
             貸出ID
         content: str
             貸出内容
-        deadline: str
+        deadline: datetime
             返却日
         borrowerName: str
             借りた人の名前
@@ -108,7 +109,7 @@ def get_borrower_lending():
             貸出ID
         content: str
             貸出内容
-        deadline: str
+        deadline: datetime
             返却日
         borrowerName: str
             借りた人の名前
@@ -136,7 +137,7 @@ def register_lending_return(lending_id):
         貸出ID
     content: str
         貸出内容
-    deadline: str
+    deadline: datetime
         返却期限
     borrowerName: str
         借りた人の名前
