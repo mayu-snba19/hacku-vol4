@@ -20,7 +20,10 @@ const Meta: React.FC<Props> = ({
   return (
     <Head>
       <meta property="og:title" content={title} />
-      <meta property="og:url" content={URL + router.asPath ?? url} />
+      <meta
+        property="og:url"
+        content={`https://${URL}${router.asPath ?? url}`}
+      />
       <meta property="og:image" content={imageUrl} />
       <title>{title}</title>
       {children}
