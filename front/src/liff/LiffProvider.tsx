@@ -1,7 +1,7 @@
 import liff from '@line/liff'
 import { createContext, useContext, useEffect, useState } from 'react'
 
-const LIFF_ID = process.env.LIFF_ID ?? ''
+const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID ?? ''
 
 export type LIFF = typeof liff
 export type LiffState =

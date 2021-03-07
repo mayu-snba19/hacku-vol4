@@ -1,6 +1,6 @@
 import LendingToken from '~/types/lendingToken'
 
-const LIFF_BASE_URL = process.env.LIFF_BASE_URL
+const LIFF_BASE_URL = process.env.NEXT_PUBLIC_LIFF_BASE_URL
 
 // TODO: とりあえず適当なURLを入れてます（yuta-ike）
 const liffBorrowerRegisterPageUrl = `${LIFF_BASE_URL}/lending`

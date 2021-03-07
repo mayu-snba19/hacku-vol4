@@ -98,7 +98,7 @@ type LiffContext =
  * - isLiffBrowser  LIFFがLIFFブラウザで開かれたか
  * - talkId?        typeに応じて1対1トークID、グループID、トークルームID、nullのいずれかが入る
  */
-export const useLiffContextType = (): LiffContext => {
+export const useLiffContext = (): LiffContext => {
   const context = useLiff().liff?.getContext()
   const type = context?.type
   if (type === 'utou' || type === 'room' || type === 'group') {
