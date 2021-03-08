@@ -1,49 +1,46 @@
 import React from 'react'
-// import { useLendingInfo } from '~/adaptor/lendingInfoHooks'
 import BottomBar from '~/components/BottomBar'
 import LendingItemBox from '~/components/LendingItemBox'
 import Meta from '~/components/Meta'
 
-const LendingListPage: React.FC = () => {
+const BorrowingPage = () => {
   // TODO: 仮データ
-  const { data: lendingList } = {
+  const { data: borrowingList } = {
     data: [
       {
         lendingId: '0001',
         content: '微積のノート',
         deadline: new Date(2021, 2, 6),
-        borrowerName: '山田太郎',
-        kind: 'lending' as const,
+        ownerName: '山田太郎',
+        kind: 'borrowing' as const,
       },
       {
         lendingId: '0002',
         content: 'マンガ',
         deadline: new Date(2021, 3, 1),
-        borrowerName: '田中次郎',
-        kind: 'lending' as const,
+        ownerName: '田中次郎',
+        kind: 'borrowing' as const,
       },
     ],
-  }
-
-  const handleReturn = (id: string) => {
-    console.log(`RETURN: ${id}`)
   }
 
   return (
     <>
       <Meta title="貸しているもの一覧" />
       <div>
-        {lendingList?.map((lendingInfo) => (
+        {borrowingList?.map((borrowingInfo) => (
           <LendingItemBox
-            key={lendingInfo.lendingId}
-            item={lendingInfo}
-            onClick={() => handleReturn(lendingInfo.lendingId)}
+            key={borrowingInfo.lendingId}
+            item={borrowingInfo}
+            onClick={() => {
+              console.log('CLICK')
+            }}
           />
         ))}
       </div>
-      <BottomBar type="lending" />
+      <BottomBar type="borrowing" />
     </>
   )
 }
 
-export default LendingListPage
+export default BorrowingPage

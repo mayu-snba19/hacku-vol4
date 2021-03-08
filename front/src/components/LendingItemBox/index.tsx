@@ -16,7 +16,6 @@ const ALERT_BORDER = 1
 
 const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
   const remaindDays = differenceInDays(item.deadline, new Date())
-  console.log(remaindDays)
   return (
     <section
       className={
@@ -61,7 +60,9 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
           </div>
           <div className="text-sm flex flex-row items-center">
             <Icon type="return" className="mr-2" />
-            <p>{formatDateDistance(item.deadline)}</p>
+            <p className={remaindDays < 0 ? 'text-red-700' : ''}>
+              {(remaindDays < 0 ? '-' : '') + formatDateDistance(item.deadline)}
+            </p>
           </div>
         </div>
       </div>
