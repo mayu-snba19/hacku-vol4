@@ -114,5 +114,20 @@ class LendingUseCase:
         """
         return self.repository.is_valid_owner(lending_id, user_id)
 
+    def fetch_deadline_lending_list(self) -> {int: List[LendingEntity]}:
+        """
+        各借りた人の、期限が本日の貸し出しのリストを取得する
+
+        Returns
+        -------
+        deadline_lending_list: List[object]
+           各借りた人の、期限が本日の貸し出しのidのリスト
+           {
+                '<借りた人のid>': LendingEntity[],
+                ...
+           }
+        """
+        return self.repository.fetch_deadline_lending_list()
+
     def __repr__(self):
         return f'LendingUseCase("{self.repository}")'

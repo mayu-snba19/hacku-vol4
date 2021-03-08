@@ -30,5 +30,9 @@ class LendingRepository(metaclass=ABCMeta):
     def is_valid_owner(self, lending_id: int, user_id: str) -> bool:
         pass
 
+    @abstractmethod
+    def fetch_deadline_lending_list(self) -> {int: List[LendingEntity]}:
+        pass
+
     def __repr__(self):
         return "LendingRepository"

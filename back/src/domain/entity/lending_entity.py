@@ -19,10 +19,13 @@ class LendingEntity:
         貸したユーザーの名前
     borrower_name: str
         借りたユーザーの名前
+    owner_id: str
+        貸したユーザーのid
     """
-    
+
     id: int
     content: str
     deadline: datetime
     owner_name: str = field(default=None)
     borrower_name: str = field(default=None)
+    owner_id: str = field(default=None)
