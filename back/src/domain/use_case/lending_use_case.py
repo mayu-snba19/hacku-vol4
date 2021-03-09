@@ -114,7 +114,7 @@ class LendingUseCase:
         """
         return self.repository.is_valid_owner(lending_id, user_id)
 
-    def fetch_deadline_lending_list(self) -> object:
+    def fetch_deadline_lending_list(self) -> dict:
         """
         各借りた人の、期限が本日の貸し出しのリストを取得する
 
