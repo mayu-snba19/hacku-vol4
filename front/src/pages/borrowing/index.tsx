@@ -26,7 +26,7 @@ const BorrowingPage = () => {
 
   return (
     <>
-      <Meta title="貸しているもの一覧" />
+      <Meta title="借りているもの一覧" />
       <div>
         {borrowingList?.map((borrowingInfo) => (
           <LendingItemBox
