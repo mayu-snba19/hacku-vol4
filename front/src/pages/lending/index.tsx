@@ -1,12 +1,29 @@
-import React, { useState } from 'react'
+import type { GetServerSideProps } from 'next'
+import React, { useState, useEffect } from 'react'
 // import { useLendingInfo } from '~/adaptor/lendingInfoHooks'
 import BottomBar from '~/components/BottomBar'
 import LendingItemBox from '~/components/LendingItemBox'
 import Meta from '~/components/Meta'
 import Modal from '~/components/Modal'
 
-const LendingListPage: React.FC = () => {
+type Props = {
+  currentlyCreatedlendingId: string | null
+  isFirstVisit: boolean | null
+}
+
+const LendingListPage: React.FC<Props> = ({
+  currentlyCreatedlendingId,
+  isFirstVisit,
+}) => {
   const [selectedLendingId, setSelectedLendingId] = useState<string | null>()
+  const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
+
+  useEffect(() => {
+    if (currentlyCreatedlendingId != null) {
+      const timer = setTimeout(() => setIsOpenFirstModal(true), 300)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   // TODO: 仮データ
   const { data: lendingList } = {
@@ -20,7 +37,7 @@ const LendingListPage: React.FC = () => {
       },
       {
         lendingId: '0002',
-        content: 'マンガ',
+        content: '微分積分学続論の第10回の授業ノート',
         deadline: new Date(2021, 3, 1),
         borrowerName: '田中次郎',
         kind: 'lending' as const,
@@ -70,8 +87,12 @@ const LendingListPage: React.FC = () => {
       <BottomBar type="lending" />
       <Modal
         isOpen={selectedLendingInfo != null}
-        positiveLabel="返却された"
-        negativeLabel="まだ"
+        positiveLabel={
+          selectedLendingInfo?.kind === 'lending' ? '返却された' : 'とじる'
+        }
+        negativeLabel={
+          selectedLendingInfo?.kind === 'lending' ? 'まだ' : undefined
+        }
         onClickConfirm={handleReturn}
         onClose={() => setSelectedLendingId(null)}
       >
@@ -83,8 +104,36 @@ const LendingListPage: React.FC = () => {
           は返却されたちゅんか？
         </p>
       </Modal>
+      <Modal
+        isOpen={isOpenFirstModal}
+        positiveLabel="わかった"
+        onClickConfirm={() => setIsOpenFirstModal(false)}
+        onClose={() => setIsOpenFirstModal(false)}
+        shouldCloseOnOverlayClick={false}
+      >
+        <p>
+          {'マンガ'}
+          の貸し借りを登録したちゅん！この画面から返却期限を確認できるちゅん
+        </p>
+      </Modal>
     </>
   )
 }
 
 export default LendingListPage
+
+type Query = {
+  lendingId?: string
+  first?: string
+}
+
+export const getServerSideProps: GetServerSideProps<Props, Query> = async ({
+  query,
+}) => {
+  return {
+    props: {
+      currentlyCreatedlendingId: query?.lendingId?.toString() ?? null,
+      isFirstVisit: query?.first === 'true',
+    },
+  }
+}

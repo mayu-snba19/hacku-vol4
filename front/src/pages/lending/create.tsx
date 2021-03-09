@@ -4,6 +4,17 @@ import BottomBar from '~/components/BottomBar'
 import Meta from '~/components/Meta'
 import Icon from '~/components/Icon/Icon'
 import Modal from '~/components/Modal'
+import { add } from 'date-fns'
+import { formatDate } from '~/util/formatDate'
+
+const DateDefaultOptions = {
+  明日: () => add(new Date(), { days: 1 }),
+  明後日: () => add(new Date(), { days: 2 }),
+  '1週間後': () => add(new Date(), { weeks: 7 }),
+  '1ヶ月後': () => add(new Date(), { months: 1 }),
+  半年後: () => add(new Date(), { months: 6 }),
+  '1年後': () => add(new Date(), { years: 1 }),
+}
 
 const CreatePage: React.FC = () => {
   const [focusingOnField, setFocusingOnField] = useState(false)
@@ -53,7 +64,7 @@ const CreatePage: React.FC = () => {
                 !(content.length > 0) && 'hidden',
               )}
             >
-              <p className="text-brand-600">OK</p>
+              <p className="text-brand-600 mr-2">OK</p>
             </div>
             <h3 className="text-sm text-gray-600 mt-8">返却はいつ？</h3>
             <input
@@ -65,13 +76,24 @@ const CreatePage: React.FC = () => {
               onFocus={() => setFocusingOnField(true)}
               onBlur={() => setFocusingOnField(false)}
             />
+            <div className="mt-2 flex flex-row overflow-x-scroll whitespace-nowrap">
+              {Object.entries(DateDefaultOptions).map(([label, calc]) => (
+                <button
+                  key={label}
+                  className="px-4 py-1 bg-brand-300 text-white mx-1 rounded-sm"
+                  onClick={() => setDeadline(formatDate(calc(), 'yyyy-MM-dd'))}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
             <div
               className={c(
                 'flex flex-row justify-end text-sm',
                 !(deadline.length > 0) && 'hidden',
               )}
             >
-              <p className="text-brand-600">OK</p>
+              <p className="text-brand-600 mr-2">OK</p>
             </div>
           </div>
 

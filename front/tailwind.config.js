@@ -16,6 +16,7 @@ export const theme = {
       },
       accent: {
         100: '#ECD8D5',
+        300: '#fa9a8c',
         400: '#F57E6B',
         700: '#EC563E',
       },
@@ -35,6 +36,10 @@ export const plugins = [
     const extendUnderline = {
       '.underline': {
         textDecoration: 'underline #F57E6B 4px',
+      },
+      '.link': {
+        textDecoration: 'underline #3B82F6',
+        color: '#3B82F6',
       },
     }
     addUtilities(extendUnderline)

@@ -7,6 +7,7 @@ type Props = {
   negativeLabel?: string
   onClickConfirm: () => void
   onClose: () => void
+  shouldCloseOnOverlayClick?: boolean
 }
 
 // TODO: モーダルを閉じる時のちらつき
@@ -18,12 +19,15 @@ const Modal: React.FC<Props> = ({
   negativeLabel,
   onClose,
   onClickConfirm,
+  shouldCloseOnOverlayClick = true,
 }) => {
   const handleClickOverlay = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     e.preventDefault()
-    onClose()
+    if (shouldCloseOnOverlayClick) {
+      onClose()
+    }
   }
 
   return (
@@ -44,9 +48,8 @@ const Modal: React.FC<Props> = ({
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none',
         )}
-        onClick={onClose}
       >
-        <section className="bg-gray-50 rounded-md shadow-lg px-4 pt-8 pb-4 w-full font-pop">
+        <section className="bg-gray-50 rounded-md shadow-lg px-4 pt-8 pb-4 w-full font-pop tracking-wide">
           {children}
           <div
             className={c(

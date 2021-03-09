@@ -65,7 +65,7 @@ const BottomBar: React.FC<Props> = ({ type }) => {
       />
       <BottomBarItem
         Icon={<Icon type="friends" className="text-2xl" />}
-        label="友達"
+        label="みんな"
         isActive={type === 'timeline'}
         onClick={() => router.push('/timeline')}
       />

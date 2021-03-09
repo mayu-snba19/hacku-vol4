@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import BottomBar from '~/components/BottomBar'
 import Icon from '~/components/Icon/Icon'
 import Meta from '~/components/Meta'
-import formatDateDistance from '~/util/formatDateDistance'
+import { formatDateDistance } from '~/util/formatDate'
 
 const Timeline = () => {
   return (
@@ -13,16 +13,13 @@ const Timeline = () => {
           {Array(15)
             .fill(null)
             .map((_, i) => (
-              <>
+              <Fragment key={i}>
                 {i % 4 === 0 && (
-                  <h2
-                    key={`header-${i}`}
-                    className="bg-brand-400 text-text rounded-md sticky top-0 text-sm px-4 py-2"
-                  >
+                  <h2 className="bg-brand-400 text-text rounded-md sticky top-0 text-sm px-4 py-2">
                     今日
                   </h2>
                 )}
-                <section key={i} className="border-t border-gray-200 py-5 px-6">
+                <section className="border-t border-gray-200 py-5 px-6">
                   <h3>鬼滅の刃全巻</h3>
                   <div className="mt-2 flex flex-row justify-between px-2">
                     <div className="text-sm flex flex-row items-center">
@@ -39,7 +36,7 @@ const Timeline = () => {
                     </div>
                   </div>
                 </section>
-              </>
+              </Fragment>
             ))}
         </div>
       </article>
