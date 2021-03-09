@@ -23,7 +23,7 @@ export default class MyDocument extends Document {
           {/* <meta name="twitter:site" content="@Twitterユーザー名" /> */}
           {/* TODO: favicon, PWAアイコン,  */}
         </Head>
-        <body>
+        <body className="font-sans">
           <Main />
           <NextScript />
         </body>
