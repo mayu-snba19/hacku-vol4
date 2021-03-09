@@ -40,6 +40,18 @@ const LiffProvider: React.FC = ({ ...props }) => {
   })
   useEffect(() => {
     if (process.browser) {
+      const SKIP_LIFF = process.env.NEXT_PUBLIC_SKIP_LIFF === 'true'
+      if (SKIP_LIFF) {
+        console.error(
+          '[LIFF] 初期化に失敗しました（NEXT_PUBLIC_SKIP_LIFFにtrueが指定されたため）',
+        )
+        setLiff({
+          liff: null,
+          isLoading: false,
+          error: new Error('LIFF_INIT_SKIP'),
+        })
+        return
+      }
       const LIFF_ID = process.env.NEXT_PUBLIC_LIFF_ID ?? ''
       const init = async () => {
         try {
