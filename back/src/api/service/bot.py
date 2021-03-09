@@ -20,7 +20,7 @@ def handle_hook(body, signature):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     # lending_use_case = LendingUseCase(LendingRepositoryImpl(UserRepositoryImpl()))
-    is_confirming_returned = False
+    is_confirming_returned = True
     borrower_id = 'U646d24344e76b9a2454a35de1403b604'
 
     request_message = event.message.text
