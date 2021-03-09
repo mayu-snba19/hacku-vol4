@@ -18,7 +18,7 @@ from src.api.bot import api as api_bot
 from src.api_mock import api as api_mock
 
 app.register_blueprint(api_lending, url_prefix="/api")
-app.register_blueprint(api_lending, url_prefix="/bot")
+app.register_blueprint(api_bot, url_prefix="/bot")
 app.register_blueprint(api_mock, url_prefix="/mock")
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
