@@ -1,6 +1,10 @@
 import type { GetServerSideProps } from 'next'
 import React, { useState, useEffect } from 'react'
-// import { useLendingInfo } from '~/adaptor/lendingInfoHooks'
+import {
+  useBorrowingInfo,
+  useLendingInfo,
+  usePostHaveReturned,
+} from '~/adaptor/lendingInfoHooks'
 import BottomBar from '~/components/BottomBar'
 import LendingItemBox from '~/components/LendingItemBox'
 import Meta from '~/components/Meta'
@@ -13,11 +17,15 @@ type Props = {
 
 const LendingListPage: React.FC<Props> = ({
   currentlyCreatedlendingId,
-  isFirstVisit,
+  // isFirstVisit,
 }) => {
   const [selectedLendingId, setSelectedLendingId] = useState<string | null>()
-  const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
 
+  const { data: lendingList } = useLendingInfo()
+  const { data: borrowingList } = useBorrowingInfo()
+  const postHaveReturned = usePostHaveReturned()
+
+  const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
   useEffect(() => {
     if (currentlyCreatedlendingId != null) {
       const timer = setTimeout(() => setIsOpenFirstModal(true), 300)
@@ -26,54 +34,61 @@ const LendingListPage: React.FC<Props> = ({
   }, [])
 
   // TODO: 仮データ
-  const { data: lendingList } = {
-    data: [
-      {
-        lendingId: '0001',
-        content: '微積のノート',
-        deadline: new Date(2021, 2, 6),
-        borrowerName: '山田太郎',
-        kind: 'lending' as const,
-      },
-      {
-        lendingId: '0002',
-        content: '微分積分学続論の第10回の授業ノート',
-        deadline: new Date(2021, 3, 1),
-        borrowerName: '田中次郎',
-        kind: 'lending' as const,
-      },
-      {
-        lendingId: '0003',
-        content: '微積のノート',
-        deadline: new Date(2021, 2, 6),
-        ownerName: '山田太郎',
-        kind: 'borrowing' as const,
-      },
-      {
-        lendingId: '0004',
-        content: 'マンガ',
-        deadline: new Date(2021, 3, 1),
-        ownerName: '田中次郎',
-        kind: 'borrowing' as const,
-      },
-    ],
-  }
+  // const { data: lendingList } = {
+  //   data: [
+  //     {
+  //       lendingId: '0001',
+  //       content: '微積のノート',
+  //       deadline: new Date(2021, 2, 6),
+  //       borrowerName: '山田太郎',
+  //       kind: 'lending' as const,
+  //     },
+  //     {
+  //       lendingId: '0002',
+  //       content: '微分積分学続論の第10回の授業ノート',
+  //       deadline: new Date(2021, 3, 1),
+  //       borrowerName: '田中次郎',
+  //       kind: 'lending' as const,
+  //     },
+  //     {
+  //       lendingId: '0003',
+  //       content: '微積のノート',
+  //       deadline: new Date(2021, 2, 6),
+  //       ownerName: '山田太郎',
+  //       kind: 'borrowing' as const,
+  //     },
+  //     {
+  //       lendingId: '0004',
+  //       content: 'マンガ',
+  //       deadline: new Date(2021, 3, 1),
+  //       ownerName: '田中次郎',
+  //       kind: 'borrowing' as const,
+  //     },
+  //   ],
+  // }
 
   const selectedLendingInfo =
-    selectedLendingId == null
+    lendingList == null
       ? null
       : lendingList.find((item) => item.lendingId === selectedLendingId)
 
-  const handleReturn = () => {
-    console.log('返却処理')
+  const handleReturn = async (lendingId: string | null) => {
+    if (lendingId == null) {
+      return
+    }
+    await postHaveReturned(lendingId)
   }
+
+  const list = [...(borrowingList ?? []), ...(lendingList ?? [])].sort((a, b) =>
+    a.deadline > b.deadline ? 1 : a.deadline < b.deadline ? -1 : 0,
+  )
 
   return (
     <>
       <Meta title="貸しているもの一覧" />
-      <article>
+      <article className="min-h-screen">
         <h2 className="mt-8 mb-6 text-center">貸し借り中のもの</h2>
-        {lendingList?.map((lendingInfo) => (
+        {list.map((lendingInfo) => (
           <LendingItemBox
             key={lendingInfo.lendingId}
             item={lendingInfo}
@@ -93,7 +108,7 @@ const LendingListPage: React.FC<Props> = ({
         negativeLabel={
           selectedLendingInfo?.kind === 'lending' ? 'まだ' : undefined
         }
-        onClickConfirm={handleReturn}
+        onClickConfirm={() => handleReturn(selectedLendingId ?? null)}
         onClose={() => setSelectedLendingId(null)}
       >
         <p>

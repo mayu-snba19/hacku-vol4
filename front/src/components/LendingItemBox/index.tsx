@@ -7,7 +7,7 @@ import { differenceInDays } from 'date-fns'
 
 type Props = {
   item: LendingInfo | BorrowingInfo
-  onClick: () => void
+  onClick?: () => void
 }
 
 /**
@@ -21,10 +21,8 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
   return (
     <section
       className={c(
-        'flex justify-between m-2 py-2 text-text rounded-md shadow-sm relative overflow-hidden',
-        item.kind === 'lending'
-          ? 'pr-4 bg-brand-400 flex-row'
-          : 'pl-4 bg-brand-300 flex-row-reverse',
+        'flex justify-between m-2 px-4 py-2 text-text rounded-md shadow-sm relative overflow-hidden flex-row-reverse',
+        item.kind === 'lending' ? 'bg-brand-400 mr-8' : 'bg-brand-300 ml-8',
       )}
       onClick={onClick}
     >
@@ -40,24 +38,14 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
         height="10rem"
       />
       <div className="flex flex-col justify-center items-center z-10 w-24">
-        <p
-          className={c(
-            'font-bold',
-            isExpired && 'bg-red-700 text-text rounded-md px-2',
-          )}
-        >
+        <p className={c(isExpired && 'bg-red-700 text-text rounded-md px-2')}>
           {formatDateDistance(item.deadline, { addSuffix: true })}
         </p>
         <p className="text-xs mt-1">{formatDate(item.deadline)}</p>
       </div>
       <div className="flex flex-col">
-        <div
-          className={c(
-            'z-10',
-            item.kind === 'lending' ? 'text-right' : 'text-left',
-          )}
-        >
-          <h1 className="mt-2">{item.content}</h1>
+        <div className="z-10">
+          <h1 className="mt-2 font-bold">{item.content}</h1>
           {isExpired ? (
             <div
               className={c(
@@ -77,12 +65,7 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
               </div>
             )
           )}
-          <div
-            className={c(
-              'mt-2 flex flex-row px-2 text-sm items-center',
-              item.kind === 'lending' ? 'justify-end' : 'justify-start',
-            )}
-          >
+          <div className="mt-2 flex flex-row px-2 text-sm items-center justify-start">
             <Icon type="user" className="mr-2" />
             <p>
               {item.kind === 'lending' ? item.borrowerName : item.ownerName}

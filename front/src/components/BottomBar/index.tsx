@@ -8,7 +8,6 @@ export type PageType =
   | 'lending'
   | 'want-to-borrow'
   | 'timeline'
-  | 'others'
 
 export type Props = {
   type: PageType

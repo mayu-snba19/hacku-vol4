@@ -3,9 +3,11 @@ import c from 'classnames'
 import BottomBar from '~/components/BottomBar'
 import Meta from '~/components/Meta'
 import Icon from '~/components/Icon/Icon'
-import Modal from '~/components/Modal'
 import { add } from 'date-fns'
 import { formatDate } from '~/util/formatDate'
+import Modal from '~/components/Modal'
+import { useLiff, useLiffAuth } from '~/liff/liffHooks'
+import { usePostLendingInfo } from '~/adaptor/lendingInfoHooks'
 
 const DateDefaultOptions = {
   明日: () => add(new Date(), { days: 1 }),
@@ -17,6 +19,9 @@ const DateDefaultOptions = {
 }
 
 const CreatePage: React.FC = () => {
+  const { liff } = useLiff()
+  const { user } = useLiffAuth()
+  const postLendingInfo = usePostLendingInfo()
   const [focusingOnField, setFocusingOnField] = useState(false)
 
   const [content, setContent] = useState('')
@@ -27,10 +32,31 @@ const CreatePage: React.FC = () => {
 
   const inputOk = content.length > 0 && deadline.length > 0
 
-  const invokeShareTargetPicker = () => {
-    Promise.resolve().then(() => {
-      setIsOpenConfirmDialog(true)
+  const invokeShareTargetPicker = async () => {
+    if (liff == null || user == null) {
+      return
+    }
+
+    const token = await postLendingInfo({
+      content,
+      deadline: new Date(deadline),
     })
+
+    if (token == null) return
+
+    await liff.shareTargetPicker([
+      {
+        type: 'text',
+        text: `【返してほしいちゅん】
+${user.displayName}さんが「${content}」を貸し出し登録しました。
+
+以下URLから承認してください。
+${
+  process.env.NEXT_PUBLIC_LIFF_URL
+}/borrowing/link?lendingId=${encodeURIComponent(token as string)}`,
+      },
+    ])
+    setIsOpenConfirmDialog(true)
   }
 
   const handleCompleteRegister = () => {

@@ -4,8 +4,14 @@ import LiffProvider from '~/liff/LiffProvider'
 import '~/styles/globals.scss'
 import type { AppProps } from 'next/app'
 import Modal from 'react-modal'
+import { SWRConfig } from 'swr'
 
 Modal.setAppElement('#__next')
+
+const SWROptions = {
+  shouldRetryOnError: false,
+  revalidateOnFocus: false,
+}
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
@@ -22,9 +28,11 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
           rel="stylesheet"
         />
       </Head>
-      <LiffProvider>
-        <Component {...pageProps} />
-      </LiffProvider>
+      <SWRConfig value={SWROptions}>
+        <LiffProvider>
+          <Component {...pageProps} />
+        </LiffProvider>
+      </SWRConfig>
     </>
   )
 }

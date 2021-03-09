@@ -26,12 +26,41 @@ export const postLendingInfo = async (
   const res = await axios.post('/lending', data, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
-  return res.data.lendingId.toString()
+  return res.data.lending_id.toString()
 }
 
 export type PostLendingInfoParams = {
   content: string
   deadline: Date
+}
+
+/**
+ * 貸し出し情報と借りる人を紐付ける
+ */
+
+export const linkLendingInfo = async (
+  accessToken: string,
+  data: PostLinkInfoParams,
+): Promise<LendingInfo> => {
+  checkAccessToken(accessToken)
+  const res = await axios.put(
+    `/lending/${encodeURIComponent(data.lendingId)}`,
+    data,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  )
+  return {
+    lendingId: `${res.data.lending_id}`,
+    content: res.data.content as string,
+    deadline: new Date(res.data.deadline as string),
+    borrowerName: res.data.borrower_name as string,
+    kind: 'lending',
+  } as LendingInfo
+}
+
+export type PostLinkInfoParams = {
+  lendingId: string
 }
 
 /**
@@ -49,7 +78,13 @@ export const postHaveReturned = async ({
   const res = await axios.delete(`/lending/${lendingId}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
-  return { ...res.data, kind: 'borrowing' } as LendingInfo
+  return {
+    lendingId: `${res.data.lending_id}`,
+    content: res.data.content as string,
+    deadline: new Date(res.data.deadline as string),
+    borrowerName: res.data.borrower_name as string,
+    kind: 'lending',
+  } as LendingInfo
 }
 
 export type PostHaveReturnedParams = {
@@ -73,12 +108,12 @@ export const fetchLendingList = async (
       accessToken,
     },
   })
-  const lendingList: Record<string, unknown>[] = res.data.lendingList
+  const lendingList: Record<string, unknown>[] = res.data.lending_list
   return lendingList.map<LendingInfo>((data) => ({
-    lendingId: `${data.lendingId}`,
+    lendingId: `${data.lending_id}`,
     content: data.content as string,
     deadline: new Date(data.deadline as string),
-    borrowerName: data.borrowerName as string,
+    borrowerName: data.borrower_name as string,
     kind: 'lending',
   })) as LendingInfo[]
 }
@@ -101,10 +136,10 @@ export const fetchBorrowingList = async (
   })
   const borrowingList: Record<string, unknown>[] = res.data.lendingList
   return borrowingList.map((data) => ({
-    lendingId: `${data.lendingId}`,
+    lendingId: `${data.lending_id}`,
     content: data.content as string,
     deadline: new Date(data.deadline as string),
-    ownerName: data.borrowerName as string,
+    ownerName: data.owner_name as string,
     kind: 'borrowing',
   })) as BorrowingInfo[]
 }
