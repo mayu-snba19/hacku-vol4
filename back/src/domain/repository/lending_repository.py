@@ -31,7 +31,7 @@ class LendingRepository(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def fetch_deadline_lending_list(self) -> {int: List[LendingEntity]}:
+    def fetch_deadline_lending_list(self) -> object:
         pass
 
     def __repr__(self):

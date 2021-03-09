@@ -141,7 +141,7 @@ class LendingRepositoryImpl(LendingRepository):
 
         return lending_owner_id == user_id
 
-    def fetch_deadline_lending_list(self) -> {int: List[LendingEntity]}:
+    def fetch_deadline_lending_list(self) -> object:
         today_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
         tomorrow_datetime = today_datetime + timedelta(days=1)
 
