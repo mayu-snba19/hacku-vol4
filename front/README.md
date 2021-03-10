@@ -23,6 +23,7 @@ front/
 ```
 
 ## 開発
+### LIFF機能を利用する方法
 1. フロントディレクトに移動
     ```bash
     cd front
@@ -49,7 +50,7 @@ front/
 
     ※うまく行かない場合、ngrok等を利用し公開URLをLINEデベロッパーツール上の`Endpoint URL`に貼り付けても可能（ただし複数人が同時に開発できなくなるので注意）
 
-5. 開発サーバーの起動（デフォルトで`https://localhost:3000`）
+5. 開発サーバーの起動（デフォルトで`https://localhost:3000` ← http**s**）
    
    ※ポート番号は3000以外だと動かないので注意（LINEデベロッパーツール上の`Endpoint URL`を変更すればポート番号の変更が可能。ただし他の人にも影響するので注意）
    
@@ -57,33 +58,37 @@ front/
     npm run dev
     ```
 
-6. ESLint
+### LIFF機能を利用しない（UIだけ開発する）方法
+1. 上記の手順の1から3を行う
+
+2. `.env.local`内でLIFFをスキップするように設定する（`NEXT_PUBLIC_SKIP_LIFF`を`false`にすれば良い）
+
+3. 開発サーバーの起動（デフォルトで`http://localhost:3000` ← http）
     ```bash
-    npm run lint      # linterを走らせる
-    npm run lint:fix  # linterを走らせ修正を行う
+    npm run dev:ui
     ```
 
 ## デプロイ
-6. ビルド
+1. ビルド
     ```bash
     npm run build
     ```
 
-7. 動作確認
+2. 動作確認
     ```bash
     npm run start
     ```
 
-8. （未インストールの場合は）Vercel cliのインストール
+3. （未インストールの場合は）Vercel cliのインストール
     ```bash
     npm i -g vercel
     ```
 
-9. `vercel`コマンドを実行してデプロイ
+4. `vercel`コマンドを実行してデプロイ
     ```bash
     vercel --prod
     ```
-10. Vercel Dashboard 上で環境変数を設定する
+5. Vercel Dashboard 上で環境変数を設定する
 
 ## テスト
 1. （初回のみ）`.env.test`ファイルを作成し、`.env.example`の内容をコピペし、正しい環境変数を設定。
@@ -92,9 +97,15 @@ front/
     npm test
     ```
 
-現在はrepositoryのみテストを書いています（Reactに依存しない部分）
+    現在はrepositoryのみテストを書いています（Reactに依存しない部分）
 
 ### その他
+- ESLint
+    ```bash
+    npm run lint      # linterを走らせる
+    npm run lint:fix  # linterを走らせ修正を行う
+    ```
+
 - 型チェック
     ```bash
     npm run typecheck

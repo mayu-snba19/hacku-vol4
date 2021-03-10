@@ -1,0 +1,39 @@
+{
+  "type": "bubble",
+  "direction": "ltr",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "hogeさんに貸したpiyoは返ってきたチュン？",
+        "align": "center",
+        "wrap": true,
+        "contents": []
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "horizontal",
+    "contents": [
+      {
+        "type": "button",
+        "action": {
+          "type": "message",
+          "label": "はい",
+          "text": "はい"
+        }
+      },
+      {
+        "type": "button",
+        "action": {
+          "type": "message",
+          "label": "いいえ",
+          "text": "いいえ"
+        }
+      }
+    ]
+  }
+}
