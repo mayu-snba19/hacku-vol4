@@ -3,11 +3,13 @@ import c from 'classnames'
 import BottomBar from '~/components/BottomBar'
 import Meta from '~/components/Meta'
 import Icon from '~/components/Icon/Icon'
-import { add } from 'date-fns'
+import { add, format } from 'date-fns'
 import { formatDate } from '~/util/formatDate'
 import Modal from '~/components/Modal'
 import { useLiff, useLiffAuth } from '~/liff/liffHooks'
 import { usePostLendingInfo } from '~/adaptor/lendingInfoHooks'
+import DateInput, { DateString } from '~/components/DateInput'
+import buildLiffLinkMessage from '~/util/generateLiffLinkMessage'
 
 const DateDefaultOptions = {
   明日: () => add(new Date(), { days: 1 }),
@@ -25,7 +27,9 @@ const CreatePage: React.FC = () => {
   const [focusingOnField, setFocusingOnField] = useState(false)
 
   const [content, setContent] = useState('')
-  const [deadline, setDeadline] = useState('')
+  const [deadline, setDeadline] = useState<DateString>(
+    () => format(new Date(), 'yyyy-MM-dd') as DateString,
+  )
 
   const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false)
   const [isOpenCompleteDialog, setIsOpenCompleteDialog] = useState(false)
@@ -47,13 +51,7 @@ const CreatePage: React.FC = () => {
     await liff.shareTargetPicker([
       {
         type: 'text',
-        text: `【返してほしいちゅん】
-${user.displayName}さんが「${content}」を貸し出し登録しました。
-
-以下URLから承認してください。
-${
-  process.env.NEXT_PUBLIC_LIFF_URL
-}/borrowing/link?lendingId=${encodeURIComponent(token as string)}`,
+        text: buildLiffLinkMessage(token, user.displayName, content),
       },
     ])
     setIsOpenConfirmDialog(true)
@@ -62,7 +60,7 @@ ${
   const handleCompleteRegister = () => {
     setIsOpenCompleteDialog(false)
     setContent('')
-    setDeadline('')
+    setDeadline(formatDate(new Date(), 'yyyy-MM-dd') as DateString)
   }
 
   return (
@@ -86,28 +84,27 @@ ${
             />
             <div
               className={c(
-                'flex flex-row justify-end text-sm',
-                !(content.length > 0) && 'hidden',
+                'flex flex-row justify-end text-sm mt-2',
+                !(content.length > 0) && 'opacity-20',
               )}
             >
-              <p className="text-brand-600 mr-2">OK</p>
+              <p className="text-brand-600 mr-2 text-xl">
+                <Icon type="check" />
+              </p>
             </div>
             <h3 className="text-sm text-gray-600 mt-8">返却はいつ？</h3>
-            <input
-              type="date"
-              className="mt-2 px-4 py-2 bg-gray-200 w-full rounded-md text-sm"
-              placeholder="マンガ"
+            <DateInput
               value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-              onFocus={() => setFocusingOnField(true)}
-              onBlur={() => setFocusingOnField(false)}
+              onChange={(date) => setDeadline(date)}
             />
-            <div className="mt-2 flex flex-row overflow-x-scroll whitespace-nowrap">
+            <div className="mt-2 py-1 flex flex-row overflow-x-scroll whitespace-nowrap">
               {Object.entries(DateDefaultOptions).map(([label, calc]) => (
                 <button
                   key={label}
                   className="px-4 py-1 bg-brand-300 text-white mx-1 rounded-sm"
-                  onClick={() => setDeadline(formatDate(calc(), 'yyyy-MM-dd'))}
+                  onClick={() =>
+                    setDeadline(formatDate(calc(), 'yyyy-MM-dd') as DateString)
+                  }
                 >
                   {label}
                 </button>
@@ -116,24 +113,23 @@ ${
             <div
               className={c(
                 'flex flex-row justify-end text-sm',
-                !(deadline.length > 0) && 'hidden',
+                !(deadline.length > 0) && 'opacity-20',
               )}
             >
-              <p className="text-brand-600 mr-2">OK</p>
+              <p className="text-brand-600 mr-2 text-xl">
+                <Icon type="check" />
+              </p>
             </div>
           </div>
 
-          <div
-            className={c(
-              'mx-auto mb-4 transition-all',
-              (!inputOk || focusingOnField) && 'opacity-0',
-            )}
-          >
-            <Icon
-              type="doubledown"
-              className="animate-bounce text-brand-600 text-4xl"
-            />
-          </div>
+          {inputOk && !focusingOnField && (
+            <div className={c('mx-auto mb-4 transition-all')}>
+              <Icon
+                type="doubledown"
+                className="animate-bounce text-brand-600 text-4xl"
+              />
+            </div>
+          )}
 
           <h2 className="bg-brand-400 text-text rounded-md text-sm px-4 py-2 mx-2 mt-4">
             STEP2. 貸す友達を選択するちゅん

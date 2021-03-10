@@ -19,3 +19,13 @@ a {
 * {
   box-sizing: border-box;
 }
+
+@layer base{
+  button {
+    @apply focus:outline-none focus-visible:outline-black;
+  }
+
+  select {
+    @apply appearance-none;
+  }
+}

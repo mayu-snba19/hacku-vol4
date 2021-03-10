@@ -27,23 +27,26 @@ const BottomBarItem: React.FC<ItemProps> = ({
   onClick,
 }) => {
   return (
-    <div
+    <button
       className={c(
-        'flex-1 flex flex-col items-center justify-center m-2 py-2 rounded-md transition-all',
+        'flex-1 flex flex-col items-center justify-center mx-1 my-2 py-2 rounded-md transition-all',
         isActive ? 'bg-gray-100 text-accent-400' : 'bg-brand-400 text-text',
       )}
       onClick={onClick}
     >
       {Icon}
       <p className={c('text-xs mt-1', isActive && 'font-bold')}>{label}</p>
-    </div>
+    </button>
   )
 }
 
 const BottomBar: React.FC<Props> = ({ type }) => {
   const router = useRouter()
   return (
-    <nav className="fixed bottom-0 w-screen flex flex-row items-center bg-brand-400 shadow-lg z-30">
+    <nav
+      className="fixed bottom-0 w-screen flex flex-row items-center bg-brand-400
+        shadow-up z-30 pb-iosb pl-iosl pr-iosr"
+    >
       <BottomBarItem
         Icon={<Icon type="uparrow" className="text-2xl" />}
         label="貸す"

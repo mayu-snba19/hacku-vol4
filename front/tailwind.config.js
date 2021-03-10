@@ -26,19 +26,40 @@ module.exports = {
         sans: ["'M PLUS Rounded 1c'", 'Noto Sans JP'],
         pop: ['Yusei Magic'],
       },
+      spacing: {
+        iost: 'env(safe-area-inset-top)',
+        iosb: 'env(safe-area-inset-bottom)',
+        iosl: 'env(safe-area-inset-left)',
+        iosr: 'env(safe-area-inset-right)',
+      },
+      boxShadow: {
+        up: 'rgba(0, 0, 0, 0.35) 0px 5px 15px;',
+      },
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      boxShadow: ['active'],
+      scale: ['active'],
+      ringWidth: ['focus-visible'],
+      outline: ['focus-visible'],
+    },
   },
   plugins: [
     ({ addUtilities }) => {
       const extendUnderline = {
         '.underline': {
           textDecoration: 'underline #F57E6B 4px',
+          textDecorationThickness: '4px',
+          '-webkit-text-decoration-line': 'underline',
+          '-webkit-text-decoration-color': '#F57E6B',
+          '-webkit-text-decoration-thickness': '4px',
         },
         '.link': {
           textDecoration: 'underline #3B82F6',
+          '-webkit-text-decoration-line': 'underline',
+          '-webkit-text-decoration-color': '#F57E6B',
+          '-webkit-text-decoration': 'underline #F57E6B 4px',
           color: '#3B82F6',
         },
       }

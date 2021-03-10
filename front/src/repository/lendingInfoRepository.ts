@@ -134,7 +134,7 @@ export const fetchBorrowingList = async (
       accessToken,
     },
   })
-  const borrowingList: Record<string, unknown>[] = res.data.lendingList
+  const borrowingList: Record<string, unknown>[] = res.data.lending_list
   return borrowingList.map((data) => ({
     lendingId: `${data.lending_id}`,
     content: data.content as string,
