@@ -129,5 +129,59 @@ class LendingUseCase:
         """
         return self.repository.fetch_deadline_lending_list()
 
+    def fetch_lending(self, lending_id: int) -> LendingEntity:
+        """
+        lending_idの貸借りのエンティティを返す
+
+        Parameters
+        ----------
+        lending_id: int
+            貸借りid
+
+        Returns
+        -------
+        LendingEntity
+             貸し借りのエンティティ
+        """
+        return self.repository.fetch_lending()
+
+    def is_confirming_returned(self, lending_id: int) -> bool:
+        """
+        lending_idの貸借りが、現在返却処理中かどうかを返す
+
+        Parameters
+        ----------
+        lending_id: int
+            貸借りid
+
+        Returns
+        -------
+        bool
+             返却処理中であればTrue、そうでなければFalseを返す
+        """
+        return self.repository.is_confirming_returned(lending_id)
+
+    def start_confirming_returned(self, lending_id: int):
+        """
+        返却確認処理開始時の設定をする
+
+        Parameter
+        ---------
+        lending_id: int
+            貸借りid
+       """
+        self.repository.start_confirming_returned(lending_id)
+
+    def finish_confirming_returned(self, lending_id: int):
+        """
+        返却確認処理終了時の設定をする
+
+        Parameter
+        ---------
+        lending_id: int
+            貸借りid
+        """
+        self.repository.finish_confirming_returned(lending_id)
+
     def __repr__(self):
         return f'LendingUseCase("{self.repository}")'
