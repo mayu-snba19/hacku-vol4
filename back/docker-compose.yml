@@ -16,6 +16,9 @@ services:
       YOUR_CHANNEL_SECRET: dcffcbcc2054eaa4c4abb2231eb3a134
       FLASK_APP: __init__.py
       APP_ENV: development
+      SLACK_WEBHOOK: https://hooks.slack.com/services/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
+      SLACK_CHANNEL: '#そてそてすずめ_notify'
+      SLACK_ICON: https://avatars.slack-edge.com/2021-03-10/1848451967060_13a50ec1f6494a50b368_48.jpg
     volumes:
       - ./src:/var/app/src
     depends_on:
@@ -35,6 +38,9 @@ services:
       YOUR_CHANNEL_SECRET: dcffcbcc2054eaa4c4abb2231eb3a134
       FLASK_APP: __init__.py
       APP_ENV: development
+      SLACK_WEBHOOK: https://hooks.slack.com/services/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
+      SLACK_CHANNEL: '#そてそてすずめ_notify'
+      SLACK_ICON: https://avatars.slack-edge.com/2021-03-10/1848451967060_13a50ec1f6494a50b368_48.jpg
     volumes:
       - ./src:/var/app/src
     depends_on:

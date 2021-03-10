@@ -1,4 +1,5 @@
 import json
+import os
 
 import requests
 
@@ -10,7 +11,12 @@ class SlackService:
     channel: str
     icon_url: str
 
-    def __init__(self, webhook_url=slack_webhook_url, channel=slack_channel, icon_url=slack_icon_url):
+    def __init__(
+            self,
+            webhook_url=os.environ.get('SLACK_WEBHOOK', ''),
+            channel=os.environ.get('SLACK_CHANNEL', ''),
+            icon_url=os.environ.get('SLACK_ICON', '')
+    ):
         self.webhook_url = webhook_url
         self.channel = channel
         self.icon_url = icon_url
