@@ -3,8 +3,6 @@ import os
 
 import requests
 
-from src.consts.service import *
-
 
 class SlackService:
     webhook_url: str
@@ -22,6 +20,10 @@ class SlackService:
         self.icon_url = icon_url
 
     def notify(self, username: str, message: str):
+        if self.webhook_url == '':
+            print('self.webhook_url is empty...')
+            return
+
         payload = {
             'text': message,
             'channel': self.channel,
