@@ -9,7 +9,7 @@ class LendingEntity:
 
     Attributes
     ----------
-    id: int
+    lending_id: int
         貸借りid
     content: str
         貸したもの
@@ -21,7 +21,7 @@ class LendingEntity:
         借りたユーザーの名前
     """
     
-    id: int
+    lending_id: int
     content: str
     deadline: datetime
     owner_name: str = field(default=None)

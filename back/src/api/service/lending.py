@@ -82,7 +82,7 @@ class LendingService:
                貸出内容
            deadline: datetime
                返却日
-           borrowerName: str
+           owner_name: str
                借りた人の名前
        """
         user = get_user_profile(self.token)
