@@ -19,7 +19,19 @@ workflows:
             branches:
               only:
                 - main
-      - aws-ecr/build-and-push-image/schedule:
+      - aws-ecs/deploy-service-update:
+          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
+          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-service,tag=${CIRCLE_SHA1}"
+          family: "${AWS_RESOURCE_NAME_PREFIX}-service"
+          requires:
+            - aws-ecr/build-and-push-image
+          filters:
+            branches:
+              only:
+                - main
+  build_and_deploy-shedule:
+    jobs:
+      - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
@@ -33,16 +45,6 @@ workflows:
               only:
                 - main
       - aws-ecs/deploy-service-update:
-          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
-          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-service,tag=${CIRCLE_SHA1}"
-          family: "${AWS_RESOURCE_NAME_PREFIX}-service"
-          requires:
-            - aws-ecr/build-and-push-image
-          filters:
-            branches:
-              only:
-                - main
-      - aws-ecs/deploy-service-update/schedule:
           cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
           container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-schedule-service,tag=${CIRCLE_SHA1}-schedule"
           family: "${AWS_RESOURCE_NAME_PREFIX}-service"
