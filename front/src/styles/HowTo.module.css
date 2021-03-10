@@ -1,0 +1,57 @@
+.h {
+  color: #fff5e3;
+}
+
+.title {
+  color: #fff5e3;
+  margin: 0px;
+  font-size: 1.3rem;
+  background-color: #699bac;
+  padding: 20px;
+  text-align: center;
+  margin: 0px;
+  font-weight: 500;
+}
+
+.mainTitle {
+  background-color: #699bac;
+  padding: 20px;
+  text-align: center;
+  margin: 0px;
+  color: #fff5e3;
+}
+
+.description {
+  text-align: center;
+  padding: 20px;
+}
+
+.secondTitle {
+  padding: 10px;
+  border-bottom: medium dashed #699bac;
+  color: #fff5e3;
+  margin: 8px;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.lender {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.footer {
+  height: 60px;
+  background-color: #699bac;
+  margin: 0;
+  color: #fff5e3;
+  padding: 10px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.procedure {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
