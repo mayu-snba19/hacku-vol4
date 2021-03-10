@@ -11,8 +11,8 @@ jobs:
       - image: buildpack-deps:trusty
     steps:
       - slack/status:
-          success_message: '$CIRCLE_BRANCH のデプロイが完了しました\nUser：$CIRCLE_USERNAME'
-          failure_message: '$CIRCLE_BRANCH のデプロイが失敗しました\nUser：$CIRCLE_USERNAME'
+          success_message: '$CIRCLE_BRANCH のデプロイが完了したチュン！\nUser：$CIRCLE_USERNAME'
+          failure_message: '$CIRCLE_BRANCH のデプロイが失敗したチュン...\nUser：$CIRCLE_USERNAME'
           webhook: '${SLACK_WEBHOOK}'
 
 workflows:
