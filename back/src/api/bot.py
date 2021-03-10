@@ -7,7 +7,7 @@ api = Blueprint("api_bot", __name__)
 
 
 @api.route("/", methods=["POST"])
-def hoge():
+def callback():
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
 

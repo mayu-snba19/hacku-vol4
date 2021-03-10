@@ -18,5 +18,6 @@ COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY uwsgi /var/app/uwsgi
 COPY app.py /var/app/app.py
 COPY startup.sh /var/app/startup.sh
+COPY schedule.py /var/app/schedule.py
 
 CMD ["/bin/bash", "/var/app/startup.sh"]
