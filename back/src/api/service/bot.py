@@ -13,6 +13,7 @@ from src.consts.line import random_messages
 from src.consts.system import root_path
 from src.data import LendingRepositoryImpl, UserRepositoryImpl
 from src.domain.use_case import LendingUseCase
+from .slack import SlackService
 
 
 class BotService:
@@ -20,6 +21,7 @@ class BotService:
         self.line_bot_api = LineBotApi(os.environ.get('YOUR_CHANNEL_ACCESS_TOKEN'))
         self.handler = WebhookHandler(os.environ.get('YOUR_CHANNEL_SECRET'))
         self.lending_use_case = LendingUseCase(LendingRepositoryImpl(UserRepositoryImpl()))
+        self.slack_service = SlackService()
 
         @self.handler.add(MessageEvent, message=TextMessage)
         def handle_message(event: MessageEvent):
@@ -78,8 +80,22 @@ class BotService:
     def handle_hook(self, body, signature):
         self.handler.handle(body, signature)
 
-    def send_message_for_deadline_lendings(self):
+    def send_message_for_deadline_lendings(self, notify: bool = True):
         deadline_lending_list = self.lending_use_case.fetch_deadline_lending_list()
+
+        if notify:
+            list_len = len(deadline_lending_list)
+
+            if list_len == 0:
+                message = '今日が期限の貸借りはなかったチュン！\nみんなちゃんと返しててえらいチュン！'
+            else:
+                message = f"今日が締め切りの貸借りは{list_len}件だチュン！みんな返してもらえてるか確認してくるチュン！"
+
+            webhook_username = 'Batch Notify'
+            try:
+                self.slack_service.notify(webhook_username, message)
+            except Exception as e:
+                print(e)
 
         with open(f"{root_path}/src/api/service/confirm_message.json") as f:
             base_contents = json.load(f)
@@ -89,14 +105,16 @@ class BotService:
 
             for lending in lendings:
                 self.lending_use_case.start_confirming_returned(lending.id)
+
                 contents = base_contents.copy()
+
+                message = f"{lending.borrower_name}さんに貸した{lending.content}帰ってきたチュン？"
+                contents['body']['contents'][0]['text'] = message
+
                 # コールバックのエンドポイントに送信されるデータの末尾に、空白区切りで貸借りidを追加する
                 contents['footer']['contents'][0]['action']['text'] += f" {lending.id}"
                 contents['footer']['contents'][1]['action']['text'] += f" {lending.id}"
 
-                messages.append(FlexSendMessage(
-                    alt_text=f"{lending.borrower_name}さんに貸した{lending.content}帰ってきたチュン？",
-                    contents=contents
-                ))
+                messages.append(FlexSendMessage(alt_text=message, contents=contents))
 
             self.line_bot_api.push_message(owner_id, messages)

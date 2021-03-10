@@ -6,6 +6,4 @@ sleep 3
 
 uwsgi --ini uwsgi/uwsgi.ini &
 
-nginx -g "daemon off;" &
-
 python3 schedule.py
