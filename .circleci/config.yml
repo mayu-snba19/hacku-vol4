@@ -3,6 +3,16 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
   aws-ecs: circleci/aws-ecs@2.0.0
+  slack: circleci/slack@4.3.0
+
+jobs:
+  notify:
+    executor: container
+    steps:
+      - slack/status:
+          success_message: ':circleci-pass: $CIRCLE_BRANCH のデプロイが完了しました\n:github_octocat: User：$CIRCLE_USERNAME'
+          failure_message: ':circleci-fail: $CIRCLE_BRANCH のデプロイが失敗しました\n:github_octocat: User：$CIRCLE_USERNAME'
+          webhook: '${SLACK_WEBHOOK}'
 
 workflows:
   build_and_deploy:
@@ -17,8 +27,7 @@ workflows:
           path: "./back"
           filters:
             branches:
-              only:
-                - main
+              only: main
       - aws-ecs/deploy-service-update:
           cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
           container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-service,tag=${CIRCLE_SHA1}"
@@ -27,8 +36,13 @@ workflows:
             - aws-ecr/build-and-push-image
           filters:
             branches:
-              only:
-                - main
+              only: main
+      - notify:
+          requires:
+            - aws-ecs/deploy-service-update
+          filters:
+            branches:
+              only: main
   build_and_deploy-shedule:
     jobs:
       - aws-ecr/build-and-push-image:
@@ -42,8 +56,7 @@ workflows:
           dockerfile: "Dockerfile_schedule"
           filters:
             branches:
-              only:
-                - main
+              only: main
       - aws-ecs/deploy-service-update:
           cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
           container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-schedule-service,tag=${CIRCLE_SHA1}-schedule"
@@ -52,5 +65,10 @@ workflows:
             - aws-ecr/build-and-push-image
           filters:
             branches:
-              only:
-                - main
+              only: main
+      - notify:
+          requires:
+            - aws-ecs/deploy-service-update
+          filters:
+            branches:
+              only: main
