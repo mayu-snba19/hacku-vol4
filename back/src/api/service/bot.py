@@ -24,7 +24,6 @@ class BotService:
         @self.handler.add(MessageEvent, message=TextMessage)
         def handle_message(event: MessageEvent):
             request_text: str = event.message.text
-            print(request_text)
             split_request_text = request_text.split()
 
             if len(split_request_text) is not 2:

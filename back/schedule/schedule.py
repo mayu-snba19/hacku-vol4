@@ -1,8 +1,4 @@
-from flask import Flask
 from apscheduler.schedulers.blocking import BlockingScheduler
-
-app = Flask("app_name")
-app.config.from_object("src.config.BaseConfig")
 
 from src.api.service.bot import BotService
 
@@ -12,7 +8,8 @@ def schedule():
     print('start schedule job...')
     scheduler = BlockingScheduler()
     bot_service = BotService()
-    scheduler.add_job(bot_service.send_message_for_deadline_lendings, trigger='cron', hour="20")
+    scheduler.add_job(bot_service.send_message_for_deadline_lendings, trigger='cron', second="20")
+    # scheduler.add_job(bot_service.send_message_for_deadline_lendings, trigger='cron', hour="20")
     scheduler.start()
 
 
