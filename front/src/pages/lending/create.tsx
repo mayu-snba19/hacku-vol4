@@ -68,7 +68,7 @@ ${
   return (
     <>
       <Meta title="貸し出し登録" />
-      <article className="pb-20">
+      <article className="pb-20 min-h-screen">
         <div className="flex flex-col mt-8">
           <h2 className="bg-brand-400 text-text rounded-md text-sm px-4 py-2 mx-2">
             STEP1. 貸すものと期限を入力するちゅん

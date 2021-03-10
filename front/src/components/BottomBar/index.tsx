@@ -43,7 +43,7 @@ const BottomBarItem: React.FC<ItemProps> = ({
 const BottomBar: React.FC<Props> = ({ type }) => {
   const router = useRouter()
   return (
-    <nav className="fixed bottom-0 w-screen flex flex-row items-center bg-brand-400 shadow-lg">
+    <nav className="fixed bottom-0 w-screen flex flex-row items-center bg-brand-400 shadow-lg z-30">
       <BottomBarItem
         Icon={<Icon type="uparrow" className="text-2xl" />}
         label="貸す"
