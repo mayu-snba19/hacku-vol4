@@ -13,7 +13,7 @@ type Props = {
 
 const LendingListPage: React.FC<Props> = ({
   currentlyCreatedlendingId,
-  isFirstVisit,
+  // isFirstVisit,
 }) => {
   const [selectedLendingId, setSelectedLendingId] = useState<string | null>()
   const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)

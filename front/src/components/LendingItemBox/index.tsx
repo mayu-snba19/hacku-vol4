@@ -7,7 +7,7 @@ import { differenceInDays } from 'date-fns'
 
 type Props = {
   item: LendingInfo | BorrowingInfo
-  onClick: () => void
+  onClick?: () => void
 }
 
 /**
