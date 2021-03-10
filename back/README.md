@@ -61,17 +61,23 @@
 
 
 
-## デプロイ環境のマイグレーション
+## デプロイ環境のセットアップ
 デプロイ環境の管理者以外は見なくても大丈夫です。
 
 ### 手順
 1. RDSへのアクセス権限を持つEC2インスタンス等にログインし、backディレクトリに移動。             
+
    
+2. (必要があれば) `$ docker build -t hacku-vol4 .`
 
-2. `$ docker run -d --rm --name hacku-vol4 --env-file=.env --net host hacku-vol4`       
+
+3. `$ docker run -d --rm --name hacku-vol4 --env-file=.env --net host hacku-vol4`       
 
 
-3. `$ docker exec -it hacku-vol4 bash`
+4. `$ docker exec -it hacku-vol4 bash`
+
+
+5. ローカル環境と同様にマイグレーションを行う
 
 
 後はローカル環境と同様にDBの初期化やマイグレーションを行う。
