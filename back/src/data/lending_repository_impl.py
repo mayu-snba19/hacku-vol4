@@ -151,9 +151,9 @@ class LendingRepositoryImpl(LendingRepository):
             Lending.borrower_id,
             Lending.content,
             Lending.deadline,
-            User.name.label("owner_name")
+            User.name.label("borrower_name")
         ) \
-            .join(User, User.id == Lending.owner_id) \
+            .join(User, User.id == Lending.borrower_id) \
             .filter(Lending.deadline >= today_datetime) \
             .filter(Lending.deadline < tomorrow_datetime) \
             .filter(Lending.is_returned == false()) \
@@ -161,13 +161,13 @@ class LendingRepositoryImpl(LendingRepository):
 
         deadline_lending_list = {}
         for lending in lendings:
-            deadline_lending_list.setdefault(lending.borrower_id, []).append(
+            deadline_lending_list.setdefault(lending.owner_id, []).append(
                 LendingEntity(
                     lending.id,
                     lending.content,
                     lending.deadline,
-                    owner_name=lending.owner_name,
-                    owner_id=lending.owner_id
+                    borrower_name=lending.borrower_name,
+                    borrower_id=lending.borrower_id
                 )
             )
 

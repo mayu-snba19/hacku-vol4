@@ -116,14 +116,14 @@ class LendingUseCase:
 
     def fetch_deadline_lending_list(self) -> dict:
         """
-        各借りた人の、期限が本日の貸し出しのリストを取得する
+        各貸した人の、期限が当日の貸し出しのリストを取得する
 
         Returns
         -------
-        deadline_lending_list: List[object]
-           各借りた人の、期限が本日の貸し出しのidのリスト
+       dict
+           各貸した人の、期限が本日の貸し出しのidのリスト
            {
-                '<借りた人のid>': LendingEntity[],
+                '<貸した人のid>': LendingEntity[],
                 ...
            }
         """
@@ -143,7 +143,7 @@ class LendingUseCase:
         LendingEntity
              貸し借りのエンティティ
         """
-        return self.repository.fetch_lending()
+        return self.repository.fetch_lending(lending_id)
 
     def is_confirming_returned(self, lending_id: int) -> bool:
         """
