@@ -8,8 +8,6 @@ app.config.from_object("src.config.BaseConfig")
 if os.environ.get('APP_ENV', '') == 'development':
     app.config['DEBUG'] = True
 
-print(app.config['DEBUG'])
-
 from src.model import db, migrate
 
 
