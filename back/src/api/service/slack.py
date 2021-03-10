@@ -1,8 +1,7 @@
 import json
+import os
 
 import requests
-
-from src.consts.service import *
 
 
 class SlackService:
@@ -10,12 +9,21 @@ class SlackService:
     channel: str
     icon_url: str
 
-    def __init__(self, webhook_url=slack_webhook_url, channel=slack_channel, icon_url=slack_icon_url):
+    def __init__(
+            self,
+            webhook_url=os.environ.get('SLACK_WEBHOOK', ''),
+            channel=os.environ.get('SLACK_CHANNEL', ''),
+            icon_url=os.environ.get('SLACK_ICON', '')
+    ):
         self.webhook_url = webhook_url
         self.channel = channel
         self.icon_url = icon_url
 
     def notify(self, username: str, message: str):
+        if self.webhook_url == '':
+            print('self.webhook_url is empty...')
+            return
+
         payload = {
             'text': message,
             'channel': self.channel,
