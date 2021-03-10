@@ -1,4 +1,3 @@
-import json
 import os
 import random
 
@@ -6,7 +5,7 @@ from linebot import (
     LineBotApi, WebhookHandler
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, FlexSendMessage
+    MessageEvent, TextMessage, TextSendMessage
 )
 
 from src.data import LendingRepositoryImpl, UserRepositoryImpl
@@ -20,24 +19,25 @@ class BotService:
         self.lending_use_case = LendingUseCase(LendingRepositoryImpl(UserRepositoryImpl()))
 
         @self.handler.add(MessageEvent, message=TextMessage)
-        def handle_message(event):
+        def handle_message(event: MessageEvent):
             # deadline_lending_list = lending_use_case.fetch_deadline_lending_list()
             # for borrower_id, lendings in deadline_lending_list.items():
-            # borrower_id = 'U646d24344e76b9a2454a35de1403b604'
 
             request_text: str = event.message.text
-            print(request_text)
-            request_message, lending_id = request_text.split()
-            print(request_message)
-            print(lending_id)
+            split_request_text = request_text.split()
+
+            if len(split_request_text) is not 2:
+                self._response_random(event.reply_token)
+                return
+
+            request_message, lending_id = split_request_text
 
             lending = self.lending_use_case.fetch_lending(lending_id)
             is_confirming_returned = lending.is_confirming_returned
             borrower_id = lending.borrower_id
 
             if not is_confirming_returned:
-                random_message = ['チュン！', 'チュンチュン！', 'メッセージありがとチュン！']
-                self.line_bot_api.reply_message(event.reply_token, TextSendMessage(text=random.choice(random_message)))
+                self._response_random(event.reply_token)
                 return
 
             if request_message == 'はい':
@@ -55,7 +55,11 @@ class BotService:
                 )
                 self.line_bot_api.push_message(
                     borrower_id,
-                    TextSendMessage(text='早く返して欲しいチュン!（もし既に返してたら申し訳ないチュン...借りた側に通知解除してって言って欲しいチュン...')
+                    TextSendMessage(
+                        text='早く返して欲しいチュン!\n'
+                             '（もし既に返してたら申し訳ないチュン...\n'
+                             '借りた側に通知解除してって言って欲しいチュン...)'
+                    )
                 )
                 self.lending_use_case.finish_confirming_returned(lending_id)
 
@@ -71,6 +75,10 @@ class BotService:
             #         event.reply_token,
             #         FlexSendMessage(alt_text='hogeさんに貸したpiyo返ってきたチュン？', contents=confirm_message)
             #     )
+
+    def _response_random(self, reply_token: str):
+        random_message = ['チュン！', 'チュンチュン！', 'メッセージありがとチュン！', 'やっほーだチュン！']
+        self.line_bot_api.reply_message(reply_token, TextSendMessage(text=random.choice(random_message)))
 
     def handle_hook(self, body, signature):
         self.handler.handle(body, signature)

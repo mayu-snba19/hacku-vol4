@@ -143,7 +143,7 @@ class LendingUseCase:
         LendingEntity
              貸し借りのエンティティ
         """
-        return self.repository.fetch_lending()
+        return self.repository.fetch_lending(lending_id)
 
     def is_confirming_returned(self, lending_id: int) -> bool:
         """
