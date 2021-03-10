@@ -2,17 +2,18 @@ FROM nginx:latest
 
 RUN sed -i 's@archive.ubuntu.com@ftp.jaist.ac.jp/pub/Linux@g' /etc/apt/sources.list
 
+WORKDIR /var/app
+
+RUN apt-get update
+RUN apt-get install -y python3 python3-pip libpq-dev
+RUN pip3 install --upgrade pip
+
+COPY requirements.txt /var/app/requirements.txt
+RUN pip3 install -r requirements.txt
+
 RUN mkdir -p /var/app/src
 COPY src /var/app/src
 RUN chmod 777 /var/app/src/migrate.sh
-WORKDIR /var/app
-
-COPY requirements.txt /var/app/requirements.txt
-
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip libpq-dev && \
-    pip3 install --upgrade pip && \
-    pip3 install -r requirements.txt
 
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY uwsgi /var/app/uwsgi
