@@ -141,7 +141,7 @@ class LendingRepositoryImpl(LendingRepository):
 
         return lending_owner_id == user_id
 
-    def fetch_deadline_lending_list(self) -> {int: List[LendingEntity]}:
+    def fetch_deadline_lending_list(self) -> dict:
         today_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
         tomorrow_datetime = today_datetime + timedelta(days=1)
 
@@ -172,6 +172,43 @@ class LendingRepositoryImpl(LendingRepository):
             )
 
         return deadline_lending_list
+
+    def fetch_lending(self, lending_id: int) -> LendingEntity:
+        lending = db.session.query(Lending) \
+            .filter(Lending.id == lending_id) \
+            .first()
+
+        return LendingEntity(
+            lending.id,
+            lending.content,
+            lending.deadline,
+            borrower_id=lending.borrower_id,
+            is_confirming_returned=lending.is_confirming_returned
+        )
+
+    def is_confirming_returned(self, lending_id: int) -> bool:
+        return db.session.query(Lending.is_confirming_returned) \
+            .filter(Lending.id == lending_id) \
+            .first() \
+            .is_confirming_returned
+
+    def start_confirming_returned(self, lending_id: int):
+        lending = db.session.query(Lending) \
+            .filter(Lending.id == lending_id) \
+            .first()
+
+        lending.is_confirming_returned = True
+
+        db.session.commit()
+
+    def finish_confirming_returned(self, lending_id: int):
+        lending = db.session.query(Lending) \
+            .filter(Lending.id == lending_id) \
+            .first()
+
+        lending.is_confirming_returned = False
+
+        db.session.commit()
 
     def __repr__(self):
         return f'LendingRepositoryImpl("{self.user_use_case}")'

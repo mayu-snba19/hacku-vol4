@@ -12,6 +12,7 @@ class Lending(db.Model):
     content = db.Column(db.String(100), nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
     is_returned = db.Column(db.Boolean, nullable=False, default=False)
+    is_confirming_returned = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(
         db.DateTime,
         nullable=False,
@@ -37,6 +38,8 @@ class Lending(db.Model):
             borrower_id=self.borrower_id,
             content=self.content,
             deadline=self.deadline,
+            is_returned=self.is_returned,
+            is_confirming_returned=self.is_confirming_returned,
             created_at=self.created_at,
             updated_at=self.updated_at
         )
