@@ -9,7 +9,7 @@ class LendingEntity:
 
     Attributes
     ----------
-    id: int
+    lending_id: int
         貸借りid
     content: str
         貸したもの
@@ -26,8 +26,7 @@ class LendingEntity:
     is_confirming_returned: bool
         返却確認中かどうか
     """
-
-    id: int
+    lending_id: int
     content: str
     deadline: datetime
     owner_name: str = field(default=None)

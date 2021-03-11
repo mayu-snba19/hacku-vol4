@@ -109,14 +109,14 @@ def get_borrower_lending():
             貸出内容
         deadline: datetime
             返却日
-        borrowerName: str
-            借りた人の名前
+        owner_name: str
+            貸した人の名前
     """
     token = get_token()
     lending = LendingService(token)
     data = lending.get_borrower_lending()
 
-    return jsonify({"lendingList": data})
+    return jsonify({"lending_list": data})
 
 
 @api.route("/lending/<lending_id>", methods=["DELETE"])
