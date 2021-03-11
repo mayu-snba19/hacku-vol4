@@ -3,6 +3,17 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
   aws-ecs: circleci/aws-ecs@2.0.0
+  slack: circleci/slack@3.4.2
+
+jobs:
+  notify:
+    docker:
+      - image: buildpack-deps:trusty
+    steps:
+      - slack/status:
+          success_message: '$CIRCLE_BRANCH のデプロイが完了したチュン！\nUser：$CIRCLE_USERNAME'
+          failure_message: '$CIRCLE_BRANCH のデプロイが失敗したチュン...\nUser：$CIRCLE_USERNAME'
+          webhook: '${SLACK_WEBHOOK}'
 
 workflows:
   build_and_deploy:
@@ -17,8 +28,7 @@ workflows:
           path: "./back"
           filters:
             branches:
-              only:
-                - main
+              only: main
       - aws-ecs/deploy-service-update:
           cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
           container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-service,tag=${CIRCLE_SHA1}"
@@ -27,5 +37,39 @@ workflows:
             - aws-ecr/build-and-push-image
           filters:
             branches:
-              only:
-                - main
+              only: main
+      - notify:
+          requires:
+            - aws-ecs/deploy-service-update
+          filters:
+            branches:
+              only: main
+  build_and_deploy-shedule:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: AWS_DEFAULT_REGION
+          repo: "${AWS_RESOURCE_NAME_PREFIX}-schedule-repository"
+          tag: "${CIRCLE_SHA1}-schedule"
+          path: "./back"
+          dockerfile: "Dockerfile_schedule"
+          filters:
+            branches:
+              only: main
+      - aws-ecs/deploy-service-update:
+          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
+          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-schedule-service,tag=${CIRCLE_SHA1}-schedule"
+          family: "${AWS_RESOURCE_NAME_PREFIX}-service"
+          requires:
+            - aws-ecr/build-and-push-image
+          filters:
+            branches:
+              only: main
+      - notify:
+          requires:
+            - aws-ecs/deploy-service-update
+          filters:
+            branches:
+              only: main

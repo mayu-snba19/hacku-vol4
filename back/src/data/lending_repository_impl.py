@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
+from sqlalchemy import false
 
 from src import db
 from src.domain.entity import UserEntity, LendingEntity
@@ -130,7 +131,7 @@ class LendingRepositoryImpl(LendingRepository):
             lending_id,
             returned_lending.content,
             returned_lending.deadline,
-            returned_lending.borrower_name
+            borrower_name=returned_lending.borrower_name
         )
 
     def is_valid_owner(self, lending_id: int, user_id: str) -> bool:
@@ -139,6 +140,75 @@ class LendingRepositoryImpl(LendingRepository):
             .first().owner_id
 
         return lending_owner_id == user_id
+
+    def fetch_deadline_lending_list(self) -> dict:
+        today_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+        tomorrow_datetime = today_datetime + timedelta(days=1)
+
+        lendings = db.session.query(
+            Lending.id,
+            Lending.owner_id,
+            Lending.borrower_id,
+            Lending.content,
+            Lending.deadline,
+            User.name.label("borrower_name")
+        ) \
+            .join(User, User.id == Lending.borrower_id) \
+            .filter(Lending.deadline >= today_datetime) \
+            .filter(Lending.deadline < tomorrow_datetime) \
+            .filter(Lending.is_returned == false()) \
+            .all()
+
+        deadline_lending_list = {}
+        for lending in lendings:
+            deadline_lending_list.setdefault(lending.owner_id, []).append(
+                LendingEntity(
+                    lending.id,
+                    lending.content,
+                    lending.deadline,
+                    borrower_name=lending.borrower_name,
+                    borrower_id=lending.borrower_id
+                )
+            )
+
+        return deadline_lending_list
+
+    def fetch_lending(self, lending_id: int) -> LendingEntity:
+        lending = db.session.query(Lending) \
+            .filter(Lending.id == lending_id) \
+            .first()
+
+        return LendingEntity(
+            lending.id,
+            lending.content,
+            lending.deadline,
+            borrower_id=lending.borrower_id,
+            is_confirming_returned=lending.is_confirming_returned
+        )
+
+    def is_confirming_returned(self, lending_id: int) -> bool:
+        return db.session.query(Lending.is_confirming_returned) \
+            .filter(Lending.id == lending_id) \
+            .first() \
+            .is_confirming_returned
+
+    def start_confirming_returned(self, lending_id: int):
+        lending = db.session.query(Lending) \
+            .filter(Lending.id == lending_id) \
+            .first()
+
+        lending.is_confirming_returned = True
+
+        db.session.commit()
+
+    def finish_confirming_returned(self, lending_id: int):
+        lending = db.session.query(Lending) \
+            .filter(Lending.id == lending_id) \
+            .first()
+
+        lending.is_confirming_returned = False
+
+        db.session.commit()
 
     def __repr__(self):
         return f'LendingRepositoryImpl("{self.user_use_case}")'

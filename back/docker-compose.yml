@@ -1,5 +1,7 @@
 version: '3'
+
 services:
+
   flask:
     build: .
     restart: always
@@ -11,10 +13,29 @@ services:
       DATABASE_HOST: db
       DATABASE_NAME: db
       FLASK_APP: __init__.py
+      APP_ENV: development
     volumes:
       - ./src:/var/app/src
     depends_on:
       - db
+
+  schedule:
+    build:
+      context: .
+      dockerfile: Dockerfile_schedule
+    restart: always
+    environment:
+      DATABASE_USER: admin
+      DATABASE_PASSWORD: pass
+      DATABASE_HOST: db
+      DATABASE_NAME: db
+      FLASK_APP: __init__.py
+      APP_ENV: development
+    volumes:
+      - ./src:/var/app/src
+    depends_on:
+      - flask
+
   db:
     build:
       context: postgres
@@ -28,6 +49,7 @@ services:
       POSTGRES_PASSWORD: pass
     volumes:
       - ./postgres/db_data:/var/lib/postgresql/data
+
 volumes:
   src: {}
   db_data: {}
