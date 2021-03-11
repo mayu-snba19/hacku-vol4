@@ -1,11 +1,9 @@
+from datetime import datetime
 from flask import Blueprint, jsonify, request, abort
-import datetime
 
-from src.api.service.lending import LendingService
 from src.api.service.auth import required_auth, get_token
-from src.consts.exceptions import InvalidOwnerException
-
-from src.domain.entity import *
+from src.api.service.lending import LendingService
+from src.consts.exceptions import InvalidOwnerException, BorrowerAlreadyExistsException
 
 api = Blueprint("api_lending", __name__)
 
@@ -31,21 +29,22 @@ def register_lending():
         返却日
     """
     # パラメータの取得
-    payload = request.json
+    payload: dict = request.json
     token: str = get_token()
     content: str = payload.get("content")
     deadline: datetime = payload.get("deadline")
 
-    lending = LendingService(token)
-    lending_id, created_at = lending.register_lending(content, deadline)
+    lending_service = LendingService(token)
+    lending_id, created_at = lending_service.register_lending(content, deadline)
 
     return jsonify({"lending_id": lending_id, "created_at": created_at})
 
 
-@api.route("/lending/<lending_id>", methods=["PUT"])
+@api.route("/lending/<int:lending_id>", methods=["PUT"])
 @required_auth
 def register_borrower(lending_id):
     """ 借りた人の登録
+
     Parameters
     -------
     lending_id: int
@@ -55,21 +54,40 @@ def register_borrower(lending_id):
 
     Returns
     -------
-    lending_info: LendingEntity
-        lending_id: int
-            貸出ID
-        content: str
-            貸出内容
-        deadline: datetime
-            返却期限
-        owner_name: str
-            貸した人の名前
-    """
-    token: str = get_token()
-    lending = LendingService(token)
-    lending_info: LendingEntity = lending.register_borrower(lending_id)
+    正常時
+        {
+          'status': 'success',
+          'result': {
+            'lending_id': int (貸出ID),
+            'content': string (貸出内容),
+            'deadline': Datetime (返却期限),
+            'owner_name': string (貸した人の名前),
+            'is_new_user': bool (新規のユーザーだった場合true）
+          }
+        }
 
-    return jsonify(lending_info)
+    既に紐づけられていた場合
+        409 Conflict
+        {
+          'status_code': 409,
+          'error_code': 'already associated',
+          'error': 'That lending already has borrower.'
+        }
+    """
+    token = get_token()
+    lending_service = LendingService(token)
+    try:
+        response = lending_service.register_borrower(lending_id)
+    except BorrowerAlreadyExistsException as e:
+        print(e)
+
+        return jsonify({
+            'status_code': 409,
+            'error_code': 'already associated',
+            'error': 'That lending already has borrower.'
+        }), 409
+
+    return jsonify(response)
 
 
 @api.route("/owner/lending", methods=["GET"])
@@ -91,8 +109,9 @@ def get_owner_lending():
             借りた人の名前
     """
     token = get_token()
-    lending = LendingService(token)
-    lending_list = lending.get_owner_lending()
+    lending_service = LendingService(token)
+    lending_list = lending_service.get_owner_lending()
+
     return jsonify({"lending_list": lending_list})
 
 
@@ -113,8 +132,8 @@ def get_borrower_lending():
             貸した人の名前
     """
     token = get_token()
-    lending = LendingService(token)
-    data = lending.get_borrower_lending()
+    lending_service = LendingService(token)
+    data = lending_service.get_borrower_lending()
 
     return jsonify({"lending_list": data})
 
@@ -142,10 +161,10 @@ def register_lending_return(lending_id):
         借りた人の名前
     """
     token = get_token()
-    lending = LendingService(token)
+    lending_service = LendingService(token)
 
     try:
-        returned_lending = lending.register_lending_return(lending_id)
+        returned_lending = lending_service.register_lending_return(lending_id)
     except InvalidOwnerException:
         abort(403, {
             "code": "invalid_user",

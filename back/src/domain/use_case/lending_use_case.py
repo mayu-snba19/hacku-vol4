@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
 from src.domain.entity import UserEntity, LendingEntity
 from src.domain.repository import LendingRepository
@@ -29,7 +29,7 @@ class LendingUseCase:
         """
         return self.repository.add_lending(owner, content, deadline)
 
-    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> LendingEntity:
+    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> Tuple[LendingEntity, bool]:
         """
         貸借りに借りたユーザーを紐付ける
 
@@ -42,8 +42,15 @@ class LendingUseCase:
 
         Returns
         -------
-        lending: LendingEntity
+        LendingEntity
             紐づけられた貸借り
+        bool
+            新規ユーザーかどうか
+
+        Raises
+        ------
+        BorrowerAlreadyExistsException
+            既に借主が紐づけられている貸出だった場合はエラーを投げる
         """
         return self.repository.associate_borrower(lending_id, borrower)
 

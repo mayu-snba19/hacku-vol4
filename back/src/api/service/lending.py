@@ -1,12 +1,11 @@
-from typing import Tuple, List
 from datetime import datetime
+from typing import Tuple, List
 
 from src.api.service.user_profile import get_user_profile
 from src.consts.exceptions import InvalidOwnerException
-
-from src.domain.use_case import *
 from src.data import *
 from src.domain.entity import *
+from src.domain.use_case import *
 
 
 class LendingService:
@@ -37,7 +36,7 @@ class LendingService:
         lending_id: int = self.LendingUseCase.add_lending(profile, content, deadline)
         return lending_id, deadline
 
-    def register_borrower(self, lending_id: int) -> LendingEntity:
+    def register_borrower(self, lending_id: int) -> dict:
         """ 借りた人の登録
         Parameters
         ----------
@@ -46,12 +45,32 @@ class LendingService:
 
         Returns
         -------
-        lending_info: LendingEntity
-            貸出情報
+        dict
+            {
+                'status': 'success',
+                'result': {
+                    'lending_id': int (貸出ID),
+                    'content': string (貸出内容),
+                    'deadline': Datetime (返却期限),
+                    'owner_name': string (貸した人の名前),
+                    'is_new_user': bool (新規のユーザーだった場合true）
+                }
+            }
         """
-        profile: UserEntity = get_user_profile(access_token=self.token)
-        lending_info: LendingEntity = self.LendingUseCase.associate_borrower(lending_id, profile)
-        return lending_info
+        borrower = get_user_profile(access_token=self.token)
+
+        lending, is_new_user = self.LendingUseCase.associate_borrower(lending_id, borrower)
+
+        return {
+            'status': 'success',
+            'result': {
+                'lending_id': lending.lending_id,
+                'content': lending.content,
+                'deadline': lending.deadline,
+                'owner_name': lending.owner_name,
+                'is_new_user': is_new_user
+            }
+        }
 
     def get_owner_lending(self) -> List[LendingEntity]:
         """ 貸したもの一覧
