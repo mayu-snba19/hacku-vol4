@@ -1,6 +1,7 @@
 from src import db
 from src.domain.repository import WantToBorrowRepository
 from src.model import WantToBorrow
+from src.consts.exceptions import InvalidArgumentException
 
 
 class WantToBorrowRepositoryImpl(WantToBorrowRepository):
@@ -30,6 +31,12 @@ class WantToBorrowRepositoryImpl(WantToBorrowRepository):
 
         return wan_to_borrow
 
-
     def is_valid_user(self, user_id: str, want_to_borrow_id: int) -> bool:
-        pass
+        want_to_borrow = db.session.query(WantToBorrow.user_id) \
+            .filter(WantToBorrow.id == want_to_borrow_id) \
+            .first()
+
+        if want_to_borrow is None:
+            raise InvalidArgumentException(f"want_to_borrow_id {want_to_borrow_id} was not found.")
+
+        return want_to_borrow.user_id == user_id
