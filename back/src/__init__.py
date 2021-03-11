@@ -16,10 +16,7 @@ from src.model import db, migrate
 def health() -> str:
     return '200'
 
-
-from src.api.lending import api as api_lending
-from src.api.bot import api as api_bot
-from src.api_mock import api as api_mock
+from src.api import api_lending, api_bot, api_friend, api_mock
 
 app.register_blueprint(api_lending, url_prefix="/api")
 app.register_blueprint(api_bot, url_prefix="/bot")
