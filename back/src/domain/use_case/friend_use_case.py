@@ -29,7 +29,7 @@ class FriendUseCase:
         user_id_2: str
             ユーザー1とのフレンド登録を解除されるユーザー2のid
         """
-        return self.unregister_friend(user_id_1, user_id_2)
+        return self.repository.unregister_friend(user_id_1, user_id_2)
 
     def __repr__(self):
         return f'FriendUseCase("{self.repository}")'
