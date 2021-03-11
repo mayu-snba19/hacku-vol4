@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import Tuple, List
 
-from src.api.service.user_profile import get_user_profile
-from src.consts.exceptions import InvalidOwnerException, BorrowerAlreadyExistsException
+from src.api.service import get_user_profile
+from src.consts.exceptions import InvalidOwnerException
+
+from src.domain.use_case import *
 from src.data import *
 from src.domain.entity import *
 from src.domain.use_case import *

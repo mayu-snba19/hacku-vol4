@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, abort
 from linebot.exceptions import InvalidSignatureError
 
-from src.api.service.bot import BotService
+from src.api.service import BotService
 
 api = Blueprint("api_bot", __name__)
 
