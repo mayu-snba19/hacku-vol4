@@ -13,7 +13,7 @@ from src.consts.line import random_messages
 from src.consts.system import root_path
 from src.data import LendingRepositoryImpl, UserRepositoryImpl
 from src.domain.use_case import LendingUseCase
-from . import SlackService
+from .slack import SlackService
 
 
 class BotService:
