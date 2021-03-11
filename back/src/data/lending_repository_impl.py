@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Tuple
 from sqlalchemy import false
 
 from src import db
+from src.consts.exceptions import BorrowerAlreadyExistsException
 from src.domain.entity import UserEntity, LendingEntity
 from src.domain.repository import UserRepository, LendingRepository
 from src.domain.use_case import UserUseCase
@@ -30,16 +31,19 @@ class LendingRepositoryImpl(LendingRepository):
 
         return new_lending.id
 
-    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> LendingEntity:
-        fetched_borrower = db.session.query(User).filter(User.id == borrower.id).first()
-        if fetched_borrower is None:
+    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> Tuple[LendingEntity, bool]:
+        is_new_user = db.session.query(User).filter(User.id == borrower.id).first() is None
+        if is_new_user:
             self.user_use_case.add_user(borrower)
 
         lending = db.session.query(Lending) \
             .filter(Lending.id == lending_id) \
             .first()
-        lending.borrower_id = borrower.id
 
+        if lending.borrower_id is not None:
+            raise BorrowerAlreadyExistsException()
+
+        lending.borrower_id = borrower.id
         db.session.commit()
 
         associated_lending = db.session.query(
@@ -56,7 +60,7 @@ class LendingRepositoryImpl(LendingRepository):
             associated_lending.content,
             associated_lending.deadline,
             owner_name=associated_lending.owner_name,
-        )
+        ), is_new_user
 
     def fetch_lent_list(self, owner_id: str) -> List[LendingEntity]:
         owner = db.aliased(User)
