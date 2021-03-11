@@ -21,6 +21,7 @@ describe('repositoryのテスト', () => {
           deadline: expect.any(Date),
           borrowerName: expect.any(String),
           kind: 'lending',
+          status: 'concluded',
         },
       ]),
     )
