@@ -1,8 +1,8 @@
 from src import db
 from src.domain.repository import WantToBorrowRepository, UserRepository
 from src.domain.use_case import UserUseCase
-from src.domain.entity import UserEntity
-from src.model import WantToBorrow, User
+from src.domain.entity import UserEntity, WantToBorrowEntity
+from src.model import WantToBorrow, User, Friend
 from src.consts.exceptions import InvalidArgumentException
 
 
@@ -27,8 +27,40 @@ class WantToBorrowRepositoryImpl(WantToBorrowRepository):
 
         return want_to_borrow.id
 
-    def fetch_want_to_borrow_list(self, user_id: str) -> dict:
-        pass
+    def fetch_friends_want_to_borrow_list(self, user_id: str) -> dict:
+        results = db.session.query(
+            User.id.label('friend_id'),
+            User.name.label('friend_name'),
+            WantToBorrow.id.label('want_to_borrow_id'),
+            WantToBorrow.content
+        ) \
+            .join(Friend, User.id == Friend.friend_id) \
+            .outerjoin(WantToBorrow, User.id == WantToBorrow.user_id) \
+            .filter(Friend.user_id == user_id) \
+            .all()
+
+        want_to_borrow_list = {}
+        for result in results:
+            if result.friend_id not in want_to_borrow_list.keys():
+                want_to_borrow_list[result.friend_id] = {
+                    'name': result.friend_name,
+                    'want_to_borrow_list': []
+                }
+
+            # left joinしているので、WantToBorrowがないフレンドもいる
+            # その場合は要素を追加せずにスキップする
+            if result.want_to_borrow_id is None:
+                continue
+
+            want_to_borrow_list[result.friend_id]['want_to_borrow_list'].append(
+                WantToBorrowEntity(
+                    result.want_to_borrow_id,
+                    result.friend_id,
+                    result.content
+                )
+            )
+
+        return want_to_borrow_list
 
     def delete_want_to_borrow(self, want_to_borrow_id: int) -> str:
         query = db.session.query(WantToBorrow.content) \

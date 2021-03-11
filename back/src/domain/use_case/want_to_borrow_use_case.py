@@ -25,23 +25,26 @@ class WantToBorrowUseCase:
 
     def fetch_friends_want_to_borrow_list(self, user_id: str) -> dict:
         """
-        user_idのユーザーの借りたいものリストを取得する
+        user_idのユーザーの全フレンドの借りたいものリストを取得する
 
         Parameters
         ----------
         user_id: str
-            借りたいものリストを取得するユーザーのid
+            フレンドの借りたいものリストを取得するユーザーのid
 
         Returns
         -------
         dict
-            ユーザーの各フレンドの借りたいもののリスト
-            {
-              '<フレンドのuser_id: str>: WantToBorrowEntity[],
-              ...
-            }
+        {
+          '<フレンドのuser_id: str>: {
+            'user_name': str,
+            'want_to_borrow_list': WantToBorrowEntity[]
+          },
+          ...
+        }
+            ユーザーの各フレンドの名前と借りたいもののリストの一覧
         """
-        return self.repository.fetch_want_to_borrow_list(user_id)
+        return self.repository.fetch_friends_want_to_borrow_list(user_id)
 
     def delete_want_to_borrow(self, want_to_borrow_id: int) -> str:
         """

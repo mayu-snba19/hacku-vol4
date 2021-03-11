@@ -10,7 +10,7 @@ class WantToBorrowRepository(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def fetch_want_to_borrow_list(self, user_id: str) -> dict:
+    def fetch_friends_want_to_borrow_list(self, user_id: str) -> dict:
         pass
 
     @abstractmethod
