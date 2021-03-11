@@ -62,6 +62,7 @@ front/
 1. 上記の手順の1から3を行う
 
 2. `.env.local`内でLIFFをスキップするように設定する（`NEXT_PUBLIC_SKIP_LIFF`を`false`にすれば良い）
+   - →やらなくていいようになりました
 
 3. 開発サーバーの起動（デフォルトで`http://localhost:3000` ← http）
     ```bash

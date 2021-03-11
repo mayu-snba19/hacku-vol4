@@ -18,6 +18,7 @@ const ComponentsBook = () => {
             deadline: new Date(2021, 2, 6),
             borrowerName: '山田太郎',
             kind: 'lending',
+            status: 'concluded',
           }}
         />
         <LendingItemBox
@@ -27,6 +28,7 @@ const ComponentsBook = () => {
             deadline: new Date(2021, 3, 1),
             borrowerName: '田中次郎',
             kind: 'lending',
+            status: 'concluded',
           }}
         />
       </section>

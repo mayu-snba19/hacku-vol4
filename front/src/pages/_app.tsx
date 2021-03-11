@@ -4,27 +4,38 @@ import LiffProvider from '~/liff/LiffProvider'
 import '~/styles/globals.scss'
 import type { AppProps } from 'next/app'
 import Modal from 'react-modal'
+import { SWRConfig } from 'swr'
 
 Modal.setAppElement('#__next')
+
+const SWROptions = {
+  shouldRetryOnError: false,
+  revalidateOnFocus: false,
+}
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,viewport-fit=cover"
+        />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Yusei+Magic&display=swap"
           rel="stylesheet"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500&family=Yusei+Magic&display=swap"
+          href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;700;800&family=Yusei+Magic&display=swap"
           rel="stylesheet"
         />
       </Head>
-      <LiffProvider>
-        <Component {...pageProps} />
-      </LiffProvider>
+      <SWRConfig value={SWROptions}>
+        <LiffProvider>
+          <Component {...pageProps} />
+        </LiffProvider>
+      </SWRConfig>
     </>
   )
 }

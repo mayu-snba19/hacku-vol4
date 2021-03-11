@@ -20,8 +20,6 @@ export default class MyDocument extends Document {
           />
           <meta property="og:locale" content="ja_JP" />
           <meta name="twitter:card" content="summary_large_image" />
-          {/* <meta name="twitter:site" content="@Twitterユーザー名" /> */}
-          {/* TODO: favicon, PWAアイコン,  */}
         </Head>
         <body className="font-sans">
           <Main />

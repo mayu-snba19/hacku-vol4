@@ -10,7 +10,7 @@ const BorrowingPage: React.FC = () => {
       <Meta title="借りたいものリスト" />
       <article className="pb-20 min-h-screen">
         <section className="mx-2 my-8">
-          <h2 className="bg-brand-400 text-text rounded-md text-sm px-4 py-2">
+          <h2 className="bg-brand-400 text-text rounded-md px-4 py-2">
             借りたいものを登録する
           </h2>
           <form
@@ -18,11 +18,12 @@ const BorrowingPage: React.FC = () => {
             onSubmit={(e) => {
               e.preventDefault()
             }}
+            className="px-4"
           >
             <p className="mt-4 mb-2 text-sm">ものの名前</p>
             <input
               type="text"
-              className="mb-4 px-4 py-2 bg-gray-200 w-full rounded-md text-sm"
+              className="mb-4 px-4 py-2 bg-gray-100 w-full rounded-md text-sm border-2 border-brand-400 appearance-none"
               placeholder="マンガ"
             />
             <div className="flex flex-row justify-center">
@@ -34,7 +35,7 @@ const BorrowingPage: React.FC = () => {
         </section>
 
         <section>
-          <h2 className="bg-brand-400 text-text rounded-md text-sm px-4 py-2 mx-2">
+          <h2 className="bg-brand-400 text-text rounded-md px-4 py-2 mx-2">
             登録済み
           </h2>
           <div className="px-1">

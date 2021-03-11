@@ -1,12 +1,12 @@
 import React from 'react'
 import c from 'classnames'
 import Icon from '~/components/Icon/Icon'
-import { BorrowingInfo, LendingInfo } from '~/types/lendingInfo'
+import { BorrowingInfo, ConcludedLendingInfo } from '~/types/lendingInfo'
 import { formatDateDistance, formatDate } from '~/util/formatDate'
 import { differenceInDays } from 'date-fns'
 
 type Props = {
-  item: LendingInfo | BorrowingInfo
+  item: ConcludedLendingInfo | BorrowingInfo
   onClick?: () => void
 }
 
@@ -21,75 +21,89 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
   return (
     <section
       className={c(
-        'flex justify-between m-2 py-2 text-text rounded-md shadow-sm relative overflow-hidden',
-        item.kind === 'lending'
-          ? 'pr-4 bg-brand-400 flex-row'
-          : 'pl-4 bg-brand-300 flex-row-reverse',
+        'my-4 w-full flex justify-between min-h-36',
+        item.kind === 'lending' ? 'flex-row-reverse' : 'flex-row',
       )}
-      onClick={onClick}
     >
-      <Icon
-        type={item.kind === 'lending' ? 'uparrow' : 'downarrow'}
-        className={c(
-          'absolute z-0 opacity-30',
-          item.kind === 'lending'
-            ? 'top-0 left-6 text-brand-100'
-            : '-bottom-8 right-8 text-brand-400',
-        )}
-        width="10rem"
-        height="10rem"
-      />
-      <div className="flex flex-col justify-center items-center z-10 w-24">
+      <div className="flex flex-col justify-center items-center z-10 min-w-32 px-4">
         <p
           className={c(
-            'font-bold',
-            isExpired && 'bg-red-700 text-text rounded-md px-2',
+            isExpired
+              ? 'bg-red-700 text-text rounded-md px-2 font-extrabold animate-pulse'
+              : 'font-medium',
           )}
         >
-          {formatDateDistance(item.deadline, { addSuffix: true })}
+          {isExpired ? (
+            <>
+              <span className="whitespace-nowrap">
+                {formatDateDistance(item.deadline, { addSuffix: false })}
+              </span>
+              <span className="text-sm whitespace-nowrap">超過</span>
+            </>
+          ) : (
+            <>
+              <span className="text-sm">あと</span>
+              {formatDateDistance(item.deadline, {
+                addSuffix: false,
+              })}
+            </>
+          )}
         </p>
-        <p className="text-xs mt-1">{formatDate(item.deadline)}</p>
+        <p className="text-xs mt-2">{formatDate(item.deadline)}</p>
       </div>
-      <div className="flex flex-col">
-        <div
+      <button
+        className={c(
+          'flex flex-col justify-center py-6 text-text shadow-sm w-full',
+          'relative overflow-hidden shadow-md active:shadow-none transform active:opacity-70 transition-all',
+          item.kind === 'lending'
+            ? 'bg-brand-400 rounded-r-md items-end pl-3 pr-6'
+            : 'bg-brand-300 rounded-l-md items-start pl-6 pr-3',
+        )}
+        onClick={onClick}
+      >
+        <Icon
+          type={item.kind === 'lending' ? 'uparrow' : 'downarrow'}
           className={c(
-            'z-10',
+            'absolute z-0 opacity-30',
+            item.kind === 'lending'
+              ? 'top-0 left-6 text-brand-100'
+              : '-bottom-8 right-2 text-brand-400',
+          )}
+          width="10rem"
+          height="10rem"
+        />
+        <h1
+          className={c(
+            'mt-2 font-bold z-10',
             item.kind === 'lending' ? 'text-right' : 'text-left',
           )}
         >
-          <h1 className="mt-2">{item.content}</h1>
-          {isExpired ? (
-            <div
-              className={c(
-                'flex flex-row items-center text-red-700 px-2 mt-1',
-                item.kind === 'lending' ? 'justify-end' : 'justify-start',
-              )}
-            >
-              <Icon type="alert" className="mr-1" />
-              <p className="text-xs">返却期限を過ぎています</p>
-            </div>
-          ) : (
-            item.kind === 'borrowing' &&
-            remaindDays <= ALERT_BORDER && (
-              <div className="flex flex-row items-center text-red-700 px-2 mt-1">
-                <Icon type="alert" className="mr-1" />
-                <p className="text-xs">返却期限が迫っています</p>
-              </div>
-            )
-          )}
+          {item.content}
+        </h1>
+        {isExpired ? (
           <div
             className={c(
-              'mt-2 flex flex-row px-2 text-sm items-center',
+              'flex flex-row items-start text-red-700 px-1 mt-1 z-10',
               item.kind === 'lending' ? 'justify-end' : 'justify-start',
             )}
           >
-            <Icon type="user" className="mr-2" />
-            <p>
-              {item.kind === 'lending' ? item.borrowerName : item.ownerName}
-            </p>
+            <Icon type="alert" className="mr-1" />
+            <p className="text-xs text-left">返却期限を過ぎています</p>
           </div>
+        ) : (
+          item.kind === 'borrowing' &&
+          remaindDays <= ALERT_BORDER && (
+            <div className="flex flex-row items-start text-red-700 px-1 mt-1 z-10">
+              <Icon type="alert" className="mr-1" />
+              <p className="text-xs text-left">返却期限が迫っています</p>
+            </div>
+          )
+        )}
+        <div className="mt-2 flex flex-row px-1 text-sm items-center justify-start z-10">
+          <Icon type="user" className="mr-2" />
+          <p>{item.kind === 'lending' ? item.borrowerName : item.ownerName}</p>
         </div>
-      </div>
+      </button>
     </section>
   )
 }

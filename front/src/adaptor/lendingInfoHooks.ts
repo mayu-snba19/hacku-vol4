@@ -1,9 +1,14 @@
+import { useCallback } from 'react'
 import useSWR from 'swr'
 import { useLiffAccessToken } from '~/liff/liffHooks'
 import {
   fetchBorrowingList,
   fetchLendingList,
+  linkLendingInfo,
+  postHaveReturned,
+  postLendingInfo,
 } from '~/repository/lendingInfoRepository'
+import type { PostLendingInfoParams } from '~/repository/lendingInfoRepository'
 
 /**
  * 貸しているもの一覧情報を取得するSWR hooks
@@ -56,8 +61,44 @@ export const useBorrowingInfo = () => {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const useLendingAndBorrowingInfo = () => {
-  // TODO: not implemented
-  throw new Error()
+export const usePostLendingInfo = () => {
+  const accessToken = useLiffAccessToken()
+  const _postLendingInfo = useCallback(
+    async ({ content, deadline }: PostLendingInfoParams) => {
+      if (accessToken == null) {
+        return
+      }
+      return await postLendingInfo(accessToken, { content, deadline })
+    },
+    [accessToken],
+  )
+  return _postLendingInfo
+}
+
+export const usePostHaveReturned = () => {
+  const accessToken = useLiffAccessToken()
+  const _postHaveReturned = useCallback(
+    async (lendingId: string) => {
+      if (accessToken == null) {
+        return
+      }
+      return await postHaveReturned({ accessToken, lendingId })
+    },
+    [accessToken],
+  )
+  return _postHaveReturned
+}
+
+export const useLinkLendingInfo = () => {
+  const accessToken = useLiffAccessToken()
+  const _linkLendingInfo = useCallback(
+    async (lendingId: string) => {
+      if (accessToken == null) {
+        return
+      }
+      return await linkLendingInfo(accessToken, { lendingId })
+    },
+    [accessToken],
+  )
+  return _linkLendingInfo
 }
