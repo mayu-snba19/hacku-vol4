@@ -34,7 +34,7 @@ const Modal: React.FC<Props> = ({
     <>
       <div
         className={c(
-          'fixed top-0 left-0 w-full h-full bg-gray-700 z-40 transition-all',
+          'fixed top-0 left-0 w-full h-screen bg-gray-700 z-40 transition-all',
           isOpen
             ? 'opacity-70 pointer-events-auto'
             : 'opacity-0 pointer-events-none',

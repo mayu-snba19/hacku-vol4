@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import c from 'classnames'
 import BottomBar from '~/components/BottomBar'
 import Meta from '~/components/Meta'
@@ -10,6 +10,7 @@ import { useLiff, useLiffAuth } from '~/liff/liffHooks'
 import { usePostLendingInfo } from '~/adaptor/lendingInfoHooks'
 import DateInput, { DateString } from '~/components/DateInput'
 import buildLiffLinkMessage from '~/util/generateLiffLinkMessage'
+import LendingToken from '~/types/lendingToken'
 
 const CreatePage: React.FC = () => {
   const { liff } = useLiff()
@@ -22,8 +23,9 @@ const CreatePage: React.FC = () => {
     () => format(new Date(), 'yyyy-MM-dd') as DateString,
   )
 
-  const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false)
+  const [isOpenRetryDialog, setIsOpenRetryDialog] = useState(false)
   const [isOpenCompleteDialog, setIsOpenCompleteDialog] = useState(false)
+  const tokenRef = useRef<LendingToken>()
 
   const inputOk = content.length > 0 && deadline.length > 0
 
@@ -32,20 +34,36 @@ const CreatePage: React.FC = () => {
       return
     }
 
-    const token = await postLendingInfo({
-      content,
-      deadline: new Date(deadline),
-    })
+    try {
+      const token =
+        tokenRef.current ??
+        (await postLendingInfo({
+          content,
+          deadline: new Date(deadline),
+        }))
 
-    if (token == null) return
+      if (token == null) return
 
-    await liff.shareTargetPicker([
-      {
-        type: 'text',
-        text: buildLiffLinkMessage(token, user.displayName, content),
-      },
-    ])
-    setIsOpenConfirmDialog(true)
+      tokenRef.current = token
+
+      const res = await liff.shareTargetPicker([
+        {
+          type: 'text',
+          text: buildLiffLinkMessage(token, user.displayName, content),
+        },
+      ])
+
+      if (res != null && res.status === 'success') {
+        setIsOpenCompleteDialog(true)
+      }
+    } catch {
+      setIsOpenRetryDialog(true)
+    }
+  }
+
+  const handleRetry = () => {
+    setIsOpenRetryDialog(false)
+    invokeShareTargetPicker()
   }
 
   const handleCompleteRegister = () => {
@@ -136,22 +154,22 @@ const CreatePage: React.FC = () => {
       </article>
       <BottomBar type="create-lending" />
       <Modal
-        isOpen={isOpenConfirmDialog}
-        positiveLabel="送れた"
-        negativeLabel="もう一度送り直す"
-        onClickConfirm={() => {
-          setIsOpenConfirmDialog(false)
-          setIsOpenCompleteDialog(true)
-        }}
-        onClose={() => setIsOpenConfirmDialog(false)}
+        isOpen={isOpenRetryDialog}
+        positiveLabel="もう一度送り直す"
+        negativeLabel="キャンセル"
+        onClickConfirm={handleRetry}
+        onClose={() => setIsOpenRetryDialog(false)}
+        shouldCloseOnOverlayClick={false}
       >
-        <p className="text-center">友達にメッセージは送れたちゅんか？</p>
+        <p className="text-center">エラーが発生したチュン</p>
       </Modal>
+
       <Modal
         isOpen={isOpenCompleteDialog}
         positiveLabel="閉じる"
         onClickConfirm={handleCompleteRegister}
         onClose={handleCompleteRegister}
+        shouldCloseOnOverlayClick={false}
       >
         <p className="text-center">登録完了だちゅん！</p>
       </Modal>

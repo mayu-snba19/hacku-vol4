@@ -55,7 +55,7 @@ const BottomBar: React.FC<Props> = ({ type }) => {
       />
       <BottomBarItem
         Icon={<Icon type="present" className="text-2xl" />}
-        label="貸し借り"
+        label="かしかり記録"
         isActive={type === 'lending'}
         onClick={() => router.push('/lending')}
       />

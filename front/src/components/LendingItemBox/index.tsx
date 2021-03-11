@@ -1,12 +1,12 @@
 import React from 'react'
 import c from 'classnames'
 import Icon from '~/components/Icon/Icon'
-import { BorrowingInfo, LendingInfo } from '~/types/lendingInfo'
+import { BorrowingInfo, ConcludedLendingInfo } from '~/types/lendingInfo'
 import { formatDateDistance, formatDate } from '~/util/formatDate'
 import { differenceInDays } from 'date-fns'
 
 type Props = {
-  item: LendingInfo | BorrowingInfo
+  item: ConcludedLendingInfo | BorrowingInfo
   onClick?: () => void
 }
 
@@ -56,8 +56,8 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
           'flex flex-col justify-center py-6 text-text shadow-sm w-full',
           'relative overflow-hidden shadow-md active:shadow-none transform active:opacity-70 transition-all',
           item.kind === 'lending'
-            ? 'bg-brand-400 rounded-r-md items-end pl-3 pr-6 animate-slidein-l'
-            : 'bg-brand-300 rounded-l-md items-start pl-6 pr-3 animate-slidein-r',
+            ? 'bg-brand-400 rounded-r-md items-end pl-3 pr-6'
+            : 'bg-brand-300 rounded-l-md items-start pl-6 pr-3',
         )}
         onClick={onClick}
       >

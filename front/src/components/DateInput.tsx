@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import type { ComponentProps } from 'react'
 import c from 'classnames'
 import { formatDate } from '~/util/formatDate'
+import Chip from './Chip'
 
 const DateDefaultOptions = {
   明日: () => add(new Date(), { days: 1 }),
@@ -136,22 +137,17 @@ const DateInput: React.FC<Props> = ({ value, onChange, ...props }) => {
         )}
       >
         {Object.entries(DateDefaultOptions).map(([label, calc]) => (
-          <button
+          <Chip
             key={label}
-            className={c(
-              'px-4 py-1 text-white mx-1 rounded-full active:shadow-none transition',
-              selectedOption === label
-                ? 'bg-brand-400 shadow-md '
-                : 'bg-gray-300 shadow-none',
-            )}
-            aria-pressed={selectedOption === label}
+            className="mx-1"
+            selected={selectedOption === label}
             onClick={() => {
               onChange(formatDate(calc(), 'yyyy-MM-dd') as DateString)
               setSelectedOption(label as keyof typeof DateDefaultOptions)
             }}
           >
             {label}
-          </button>
+          </Chip>
         ))}
       </div>
     </>

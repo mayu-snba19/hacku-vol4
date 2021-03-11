@@ -109,13 +109,26 @@ export const fetchLendingList = async (
     },
   })
   const lendingList: Record<string, unknown>[] = res.data.lending_list
-  return lendingList.map<LendingInfo>((data) => ({
-    lendingId: `${data.lending_id}`,
-    content: data.content as string,
-    deadline: new Date(data.deadline as string),
-    borrowerName: data.borrower_name as string,
-    kind: 'lending',
-  })) as LendingInfo[]
+  return lendingList.map<LendingInfo>((data) => {
+    const lendingInfo = {
+      lendingId: `${data.lending_id}`,
+      content: data.content as string,
+      deadline: new Date(data.deadline as string),
+      kind: 'lending' as const,
+    }
+    if (data.borrowerName != null) {
+      return {
+        ...lendingInfo,
+        borrowerName: data.borrower_name as string,
+        status: 'concluded',
+      }
+    } else {
+      return {
+        ...lendingInfo,
+        status: 'waiting',
+      }
+    }
+  }) as LendingInfo[]
 }
 
 /**

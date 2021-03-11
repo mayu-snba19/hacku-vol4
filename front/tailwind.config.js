@@ -43,7 +43,7 @@ module.exports = {
             transform: 'translateX(-75%) scaleX(1.0)',
           },
           '100%': {
-            transform: 'translateX(0) scaleX(1.0)',
+            transform: 'none',
           },
         },
         'slidein-r': {
@@ -51,7 +51,7 @@ module.exports = {
             transform: 'translateX(75%) scaleX(1.0)',
           },
           '100%': {
-            transform: 'translateX(0) scaleX(1.0)',
+            transform: 'none',
           },
         },
       },
@@ -83,8 +83,8 @@ module.exports = {
         '.link': {
           textDecoration: 'underline #3B82F6',
           '-webkit-text-decoration-line': 'underline',
-          '-webkit-text-decoration-color': '#F57E6B',
-          '-webkit-text-decoration': 'underline #F57E6B 4px',
+          '-webkit-text-decoration-color': '#3B82F6',
+          '-webkit-text-decoration': 'underline #3B82F6',
           color: '#3B82F6',
         },
       }
