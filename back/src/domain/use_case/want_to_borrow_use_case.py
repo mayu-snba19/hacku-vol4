@@ -61,5 +61,23 @@ class WantToBorrowUseCase:
         """
         return self.repository.delete_want_to_borrow(want_to_borrow_id)
 
+    def is_valid_user(self, user_id: str, want_to_borrow_id: int) -> bool:
+        """
+        ユーザーが借りたいものリストの指定された項目の所有者であるかを確認する
+
+        Parameters
+        ----------
+        user_id: str
+            ユーザーid
+        want_to_borrow_id: int
+            借りたいものリストの1項目
+
+        Returns
+        --------
+        bool
+            ユーザーが借りたいものリストの項目の所有者であればTrue、そうでなければFalseを返す
+        """
+        return self.repository.is_valid_user(user_id, want_to_borrow_id)
+
     def __repr__(self):
         return f'WantToBorrowUseCase("{self.repository}")'

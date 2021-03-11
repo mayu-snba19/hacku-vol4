@@ -17,5 +17,9 @@ class WantToBorrowRepository(metaclass=ABCMeta):
     def delete_want_to_borrow(self, want_to_borrow_id: int) -> str:
         pass
 
+    @abstractmethod
+    def is_valid_user(self, user_id: str, want_to_borrow_id: int) -> bool:
+        pass
+
     def __repr__(self):
         return "WantToBorrow"
