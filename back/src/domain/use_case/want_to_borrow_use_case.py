@@ -1,6 +1,3 @@
-from typing import List
-
-from src.domain.entity import WantToBorrowEntity
 from src.domain.repository import WantToBorrowRepository
 
 
