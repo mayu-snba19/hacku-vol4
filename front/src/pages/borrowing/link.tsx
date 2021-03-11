@@ -6,7 +6,7 @@ import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import Modal from '~/components/Modal'
 import { useLinkLendingInfo } from '~/adaptor/lendingInfoHooks'
-import { LendingInfo } from '~/types/lendingInfo'
+import { BorrowingInfo } from '~/types/lendingInfo'
 import { useLiffAccessToken } from '~/liff/liffHooks'
 
 type Props = {
@@ -20,7 +20,7 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
   const router = useRouter()
   const accessToken = useLiffAccessToken()
   const linkLendingInfo = useLinkLendingInfo()
-  const [lendingInfo, setLendingInfo] = useState<LendingInfo | null>(null)
+  const [borrowingInfo, setBorrowingInfo] = useState<BorrowingInfo | null>(null)
 
   const [isOpenTermsOfUseModal, setIsOpenTermsOfUseModal] = useState(false)
 
@@ -31,13 +31,12 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
   }, [accessToken])
 
   const handleLinkLending = async () => {
-    const lendingInfo = await linkLendingInfo(lendingId)
-    console.log(lendingInfo)
-    if (lendingInfo == null) {
-      // router.push('/404')
+    const borrowingInfo = await linkLendingInfo(lendingId)
+    if (borrowingInfo == null) {
+      router.push('/lending')
       return
     }
-    setLendingInfo(lendingInfo)
+    setBorrowingInfo(borrowingInfo)
   }
 
   const handleSend = () => {
@@ -56,40 +55,42 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
         >
           <Image src="/suzume.jpg" width="200px" height="200px" />
         </div>
-        <div className="leading-9">
-          <p className="text-center mt-8">
-            こんにちは！
-            <br />
-            ボクの名前はすずめだちゅん。
-          </p>
-          <p className="mt-8 text-center">
-            <span className="underline bg-white rounded-md px-2 py-1">
-              {lendingInfo?.borrowerName}さん
-            </span>
-            <br />
-            から
-            <br />
-            <span className="underline bg-white rounded-md px-2 py-1">
-              {lendingInfo?.content}
-            </span>
-            <br />
-            を借りたって聞いたけど、あってるちゅんか？
-          </p>
-          <div className="text-center">
-            <button className="bg-gray-100 text-gray-500 px-4 py-2 my-4 rounded-md mr-8">
-              いいえ
-            </button>
-            {/* NOTE: 今後の拡張のためにbuttonで実装 */}
-            <button
-              className="bg-brand-400 text-text px-8 py-2 my-4 rounded-md"
-              onClick={() => {
-                isFirst ? setIsOpenTermsOfUseModal(true) : handleSend()
-              }}
-            >
-              はい
-            </button>
+        {borrowingInfo != null && (
+          <div className="leading-9">
+            <p className="text-center mt-8">
+              こんにちは！
+              <br />
+              ボクの名前はすずめだちゅん。
+            </p>
+            <p className="mt-8 text-center">
+              <span className="underline bg-white rounded-md px-2 py-1">
+                {borrowingInfo.ownerName}さん
+              </span>
+              <br />
+              から
+              <br />
+              <span className="underline bg-white rounded-md px-2 py-1">
+                {borrowingInfo.content}
+              </span>
+              <br />
+              を借りたって聞いたけど、あってるちゅんか？
+            </p>
+            <div className="text-center">
+              <button className="bg-gray-100 text-gray-500 px-4 py-2 my-4 rounded-md mr-8">
+                いいえ
+              </button>
+              {/* NOTE: 今後の拡張のためにbuttonで実装 */}
+              <button
+                className="bg-brand-400 text-text px-8 py-2 my-4 rounded-md"
+                onClick={() => {
+                  isFirst ? setIsOpenTermsOfUseModal(true) : handleSend()
+                }}
+              >
+                はい
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </article>
       <Modal
         isOpen={isOpenTermsOfUseModal}

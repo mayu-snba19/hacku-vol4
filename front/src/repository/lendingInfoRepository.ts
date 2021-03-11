@@ -41,7 +41,7 @@ export type PostLendingInfoParams = {
 export const linkLendingInfo = async (
   accessToken: string,
   data: PostLinkInfoParams,
-): Promise<LendingInfo> => {
+): Promise<BorrowingInfo> => {
   checkAccessToken(accessToken)
   const res = await axios.put(
     `/lending/${encodeURIComponent(data.lendingId)}`,
@@ -54,9 +54,9 @@ export const linkLendingInfo = async (
     lendingId: `${res.data.lending_id}`,
     content: res.data.content as string,
     deadline: new Date(res.data.deadline as string),
-    borrowerName: res.data.borrower_name as string,
-    kind: 'lending',
-  } as LendingInfo
+    ownerName: res.data.owner_name as string,
+    kind: 'borrowing',
+  } as BorrowingInfo
 }
 
 export type PostLinkInfoParams = {
