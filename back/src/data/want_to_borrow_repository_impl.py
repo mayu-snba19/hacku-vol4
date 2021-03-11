@@ -19,8 +19,17 @@ class WantToBorrowRepositoryImpl(WantToBorrowRepository):
         pass
 
     def delete_want_to_borrow(self, want_to_borrow_id: int) -> str:
-        pass
+        query = db.session.query(WantToBorrow.content) \
+            .filter(WantToBorrow.id == want_to_borrow_id)
+
+        wan_to_borrow = query.first().content
+
+        query.delete()
+
+        db.session.commit()
+
+        return wan_to_borrow
+
 
     def is_valid_user(self, user_id: str, want_to_borrow_id: int) -> bool:
         pass
-
