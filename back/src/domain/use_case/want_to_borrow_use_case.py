@@ -1,3 +1,4 @@
+from src.domain.entity import UserEntity
 from src.domain.repository import WantToBorrowRepository
 
 
@@ -5,14 +6,14 @@ class WantToBorrowUseCase:
     def __init__(self, repository: WantToBorrowRepository):
         self.repository = repository
 
-    def add_want_to_borrow(self, user_id: str, content: str) -> int:
+    def add_want_to_borrow(self, user: UserEntity, content: str) -> int:
         """
         借りたいものを追加する
 
         Parameters
         ----------
-        user_id: str
-            借りたいものを登録するユーザーのuser_id
+        user: UserEntity
+            借りたいものを登録するユーザー
         content: str
             借りたいもの
         Returns
@@ -20,7 +21,7 @@ class WantToBorrowUseCase:
         int
             追加された借りたいもののid
         """
-        return self.repository.add_want_to_borrow(user_id, content)
+        return self.repository.add_want_to_borrow(user, content)
 
     def fetch_friends_want_to_borrow_list(self, user_id: str) -> dict:
         """

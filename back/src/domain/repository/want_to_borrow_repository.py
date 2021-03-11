@@ -1,12 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from typing import List
 
-from src.domain.entity import WantToBorrowEntity
+from src.domain.entity import WantToBorrowEntity, UserEntity
 
 
 class WantToBorrowRepository(metaclass=ABCMeta):
     @abstractmethod
-    def add_want_to_borrow(self, user_id: str, content: str) -> int:
+    def add_want_to_borrow(self, user: UserEntity, content: str) -> int:
         pass
 
     @abstractmethod

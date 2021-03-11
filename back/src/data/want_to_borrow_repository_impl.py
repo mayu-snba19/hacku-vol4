@@ -1,16 +1,27 @@
 from src import db
-from src.domain.repository import WantToBorrowRepository
-from src.model import WantToBorrow
+from src.domain.repository import WantToBorrowRepository, UserRepository
+from src.domain.use_case import UserUseCase
+from src.domain.entity import UserEntity
+from src.model import WantToBorrow, User
 from src.consts.exceptions import InvalidArgumentException
 
 
 class WantToBorrowRepositoryImpl(WantToBorrowRepository):
-    def add_want_to_borrow(self, user_id: str, content: str) -> int:
-        want_to_borrow = WantToBorrow()
-        want_to_borrow.user_id = user_id
-        want_to_borrow.content = content
+    user_use_case: UserUseCase
 
+    def __init__(self, user_repository: UserRepository):
+        self.user_use_case = UserUseCase(user_repository)
+
+    def add_want_to_borrow(self, user: UserEntity, content: str) -> int:
+        fetched_user = db.session.query(User).filter(User.id == user.id).first()
+        if fetched_user is None:
+            self.user_use_case.add_user(user)
+
+        want_to_borrow = WantToBorrow()
+        want_to_borrow.user_id = user.id
+        want_to_borrow.content = content
         db.session.add(want_to_borrow)
+
         db.session.flush()
         db.session.commit()
 
