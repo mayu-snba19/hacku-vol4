@@ -18,8 +18,8 @@ from .slack import SlackService
 
 class BotService:
     def __init__(self):
-        self.line_bot_api = LineBotApi(os.environ.get('YOUR_CHANNEL_ACCESS_TOKEN'))
-        self.handler = WebhookHandler(os.environ.get('YOUR_CHANNEL_SECRET'))
+        self.line_bot_api = LineBotApi(os.environ.get('YOUR_CHANNEL_ACCESS_TOKEN', ''))
+        self.handler = WebhookHandler(os.environ.get('YOUR_CHANNEL_SECRET', ''))
         self.lending_use_case = LendingUseCase(LendingRepositoryImpl(UserRepositoryImpl()))
         self.slack_service = SlackService()
 
