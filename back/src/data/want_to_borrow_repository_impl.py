@@ -23,13 +23,16 @@ class WantToBorrowRepositoryImpl(WantToBorrowRepository):
         query = db.session.query(WantToBorrow.content) \
             .filter(WantToBorrow.id == want_to_borrow_id)
 
-        wan_to_borrow = query.first().content
+        want_to_borrow = query.first()
+        if want_to_borrow is None:
+            raise InvalidArgumentException(f"want_to_borrow_id {want_to_borrow_id} was not found.")
+
+        content_to_be_deleted = want_to_borrow.content
 
         query.delete()
-
         db.session.commit()
 
-        return wan_to_borrow
+        return content_to_be_deleted
 
     def is_valid_user(self, user_id: str, want_to_borrow_id: int) -> bool:
         want_to_borrow = db.session.query(WantToBorrow.user_id) \
