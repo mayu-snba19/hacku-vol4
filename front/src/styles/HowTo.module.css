@@ -6,7 +6,7 @@
   color: #fff5e3;
   margin: 0px;
   font-size: 1.3rem;
-  background-color: #699bac;
+  background-color: #f47e6b;
   padding: 20px;
   text-align: center;
   margin: 0px;
@@ -28,7 +28,7 @@
 
 .secondTitle {
   padding: 10px;
-  border-bottom: medium dashed #699bac;
+  border-bottom: medium dashed #fff5e3;
   color: #fff5e3;
   margin: 8px;
   font-size: 1.2rem;
@@ -42,7 +42,7 @@
 
 .footer {
   height: 60px;
-  background-color: #699bac;
+  background-color: #f47e6b;
   margin: 0;
   color: #fff5e3;
   padding: 10px;
@@ -54,4 +54,25 @@
 .procedure {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.img {
+  background-color: #fff5e3;
+  width: 95%;
+  padding: 2px;
+}
+
+@media (min-width: 768px) {
+  .img {
+    background-color: #fff5e3;
+    width: 50%;
+    padding: 2px;
+  }
+}
+@media (min-width: 1024px) {
+  .img {
+    background-color: #fff5e3;
+    width: 30%;
+    padding: 2px;
+  }
 }
