@@ -30,8 +30,8 @@ const LendingListPage: React.FC<Props> = ({
     add(new Date(), { days: DEADLINE_BORDER }),
   )
 
-  // const { data: lendingList } = useLendingInfo()
-  // const { data: borrowingList } = useBorrowingInfo()
+  const { data: lendingList } = useLendingInfo()
+  const { data: borrowingList } = useBorrowingInfo()
   const postHaveReturned = usePostHaveReturned()
 
   const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
@@ -43,47 +43,47 @@ const LendingListPage: React.FC<Props> = ({
   }, [])
 
   // TODO: 仮データ
-  const borrowingList = [
-    {
-      lendingId: '0003',
-      content: '微積のノート',
-      deadline: new Date(2021, 2, 10),
-      ownerName: '山田太郎',
-      kind: 'borrowing' as const,
-    },
-    {
-      lendingId: '0004',
-      content: 'マンガ',
-      deadline: new Date(2021, 2, 13),
-      ownerName: '田中次郎',
-      kind: 'borrowing' as const,
-    },
-    {
-      lendingId: '0005',
-      content: '微分積分学続論の第10回の授業ノート',
-      deadline: new Date(2021, 6, 15),
-      ownerName: '田中次郎',
-      kind: 'borrowing' as const,
-    },
-  ]
-  const { data: lendingList } = {
-    data: [
-      {
-        lendingId: '0001',
-        content: '微積のノート',
-        deadline: new Date(2021, 2, 14),
-        borrowerName: '山田太郎',
-        kind: 'lending' as const,
-      },
-      {
-        lendingId: '0002',
-        content: '微分積分学続論の第10回の授業ノート',
-        deadline: new Date(2021, 2, 15),
-        borrowerName: '田中次郎',
-        kind: 'lending' as const,
-      },
-    ],
-  }
+  // const borrowingList = [
+  //   {
+  //     lendingId: '0003',
+  //     content: '微積のノート',
+  //     deadline: new Date(2020, 10, 10),
+  //     ownerName: '山田太郎',
+  //     kind: 'borrowing' as const,
+  //   },
+  //   {
+  //     lendingId: '0004',
+  //     content: 'マンガ',
+  //     deadline: new Date(2021, 2, 13),
+  //     ownerName: '田中次郎',
+  //     kind: 'borrowing' as const,
+  //   },
+  //   {
+  //     lendingId: '0005',
+  //     content: '微分積分学続論の第10回の授業ノート',
+  //     deadline: new Date(2021, 2, 15),
+  //     ownerName: '田中次郎',
+  //     kind: 'borrowing' as const,
+  //   },
+  // ]
+  // const { data: lendingList } = {
+  //   data: [
+  //     {
+  //       lendingId: '0001',
+  //       content: '微積のノート',
+  //       deadline: new Date(2021, 2, 14),
+  //       borrowerName: '山田太郎',
+  //       kind: 'lending' as const,
+  //     },
+  //     {
+  //       lendingId: '0002',
+  //       content: '微分積分学続論の第10回の授業ノート',
+  //       deadline: new Date(2021, 6, 15),
+  //       borrowerName: '田中次郎',
+  //       kind: 'lending' as const,
+  //     },
+  //   ],
+  // }
 
   const handleReturn = async (lendingId: string | null) => {
     if (lendingId == null) {
@@ -99,29 +99,29 @@ const LendingListPage: React.FC<Props> = ({
   const borderDeadlineLendingId =
     list.find(
       (lendingInfo) => differenceInDays(lendingInfo.deadline, new Date()) >= 0,
-    )?.lendingId ?? list[list.length - 1].lendingId
+    )?.lendingId ?? list[list.length - 1]?.lendingId
 
   const alertBorderDeadlineLendingId =
     list.find(
       (lendingInfo) =>
         differenceInDays(lendingInfo.deadline, alertBorderDeadline) >= 0,
-    )?.lendingId ?? list[list.length - 1].lendingId
+    )?.lendingId ?? list[list.length - 1]?.lendingId
 
   return (
     <>
       <Meta title="貸しているもの一覧" />
-      <article className="min-h-screen">
+      <article className="min-h-screen pb-32">
         <h2 className="mt-8 mb-6 text-center">貸し借り中のもの</h2>
         {list.map((lendingInfo) => (
           <Fragment key={lendingInfo.lendingId}>
             {lendingInfo.lendingId === borderDeadlineLendingId && (
-              <HrWithMessage color="red">
-                ▲ 締め切りが過ぎています
+              <HrWithMessage color="red" className="mt-3 mb-4">
+                ▲ 返却期限が過ぎています
               </HrWithMessage>
             )}
             {lendingInfo.lendingId === alertBorderDeadlineLendingId && (
-              <HrWithMessage color="black">
-                ▲ 締め切りが近づいています
+              <HrWithMessage color="black" className="mt-3 mb-4">
+                ▲ 返却期限が近づいています
               </HrWithMessage>
             )}
             <LendingItemBox

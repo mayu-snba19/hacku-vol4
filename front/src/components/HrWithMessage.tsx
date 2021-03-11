@@ -3,12 +3,17 @@ import c from 'classnames'
 
 type Props = {
   children: string
-  color: 'red' | 'black'
+  className?: string
+  color?: 'red' | 'black'
 }
 
-const HrWithMessage: React.FC<Props> = ({ children, color }) => {
+const HrWithMessage: React.FC<Props> = ({
+  children,
+  className,
+  color = 'black',
+}) => {
   return (
-    <div className="text-center text-xs w-full relative">
+    <div className={c('text-xs text-center w-full relative', className)}>
       <span
         className={c(
           'relative bg-gray-100 z-10',

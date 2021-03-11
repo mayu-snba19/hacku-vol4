@@ -35,6 +35,30 @@ module.exports = {
       boxShadow: {
         up: 'rgba(0, 0, 0, 0.35) 0px 5px 15px;',
       },
+      minHeight: (theme) => theme('height'),
+      minWidth: (theme) => theme('width'),
+      keyframes: {
+        'slidein-l': {
+          '0%': {
+            transform: 'translateX(-75%) scaleX(1.0)',
+          },
+          '100%': {
+            transform: 'translateX(0) scaleX(1.0)',
+          },
+        },
+        'slidein-r': {
+          '0%': {
+            transform: 'translateX(75%) scaleX(1.0)',
+          },
+          '100%': {
+            transform: 'translateX(0) scaleX(1.0)',
+          },
+        },
+      },
+      animation: {
+        'slidein-l': 'slidein-l 0.3s',
+        'slidein-r': 'slidein-r 0.3s',
+      },
     },
   },
   variants: {
@@ -43,6 +67,7 @@ module.exports = {
       scale: ['active'],
       ringWidth: ['focus-visible'],
       outline: ['focus-visible'],
+      opacity: ['active'],
     },
   },
   plugins: [

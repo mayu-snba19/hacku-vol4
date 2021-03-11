@@ -27,7 +27,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
           rel="stylesheet"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;700&family=Yusei+Magic&display=swap"
+          href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;700;800&family=Yusei+Magic&display=swap"
           rel="stylesheet"
         />
       </Head>
