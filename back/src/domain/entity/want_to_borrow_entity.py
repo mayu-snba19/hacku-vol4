@@ -15,6 +15,6 @@ class WantToBorrowEntity:
     content: str
         借りたいものの内容
     """
-    id: int
+    want_to_borrow_id: int
     user_id: str
     content: str
