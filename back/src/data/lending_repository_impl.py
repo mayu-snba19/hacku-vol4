@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List, Tuple
-from sqlalchemy import false
+from sqlalchemy import false, true
 
 from src import db
 from src.consts.exceptions import BorrowerAlreadyExistsException
@@ -75,6 +75,7 @@ class LendingRepositoryImpl(LendingRepository):
             .join(owner, Lending.owner_id == owner.id) \
             .outerjoin(borrower, Lending.borrower_id == borrower.id) \
             .filter(Lending.owner_id == owner_id) \
+            .filter(Lending.is_sent_url == true()) \
             .all()
 
         lent_list = [
