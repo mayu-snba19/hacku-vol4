@@ -113,9 +113,6 @@ export const fetchLendingList = async (
   checkAccessToken(accessToken)
   const res = await axios.get('/owner/lending', {
     headers: { Authorization: `Bearer ${accessToken}` },
-    params: {
-      accessToken,
-    },
   })
   const lendingList: Record<string, unknown>[] = res.data.lending_list
   return lendingList.map<LendingInfo>((data) => {
@@ -152,9 +149,6 @@ export const fetchBorrowingList = async (
   checkAccessToken(accessToken)
   const res = await axios.get('/borrower/lending', {
     headers: { Authorization: `Bearer ${accessToken}` },
-    params: {
-      accessToken,
-    },
   })
   const borrowingList: Record<string, unknown>[] = res.data.lending_list
   return borrowingList.map((data) => ({

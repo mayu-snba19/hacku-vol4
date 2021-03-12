@@ -92,9 +92,9 @@ const FriendsList = () => {
 
   return (
     <>
-      <Meta title="ともだち一覧" />
-      <article className="pt-12 pb-20 mx-2 min-h-screen">
-        <h2 className="bg-brand-400 text-text rounded-md sticky top-0 text-sm px-4 py-2">
+      <Meta title="ともだち" />
+      <article className="pt-8 pb-20 mx-2 min-h-screen">
+        <h2 className="bg-brand-400 text-text rounded-md sticky top-0 px-4 py-2">
           ともだち追加
         </h2>
         <p className="text-sm mx-2 my-4">
@@ -111,7 +111,7 @@ const FriendsList = () => {
             <p className="text-red-700 text-sm">エラーが発生しました</p>
           )}
         </div>
-        <h2 className="bg-brand-400 text-text rounded-md sticky top-0 text-sm px-4 py-2 mt-8">
+        <h2 className="bg-brand-400 text-text rounded-md sticky top-0 px-4 py-2 mt-8">
           ともだち一覧
         </h2>
         <div>
