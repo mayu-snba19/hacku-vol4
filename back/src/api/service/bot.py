@@ -113,7 +113,7 @@ class BotService:
 
                 contents = base_contents.copy()
 
-                message = f"「{lending.borrower_name}」さんに貸した「{lending.content}」帰ってきたチュン？"
+                message = f"「{lending.borrower_name}」さんに貸した「{lending.content}」返ってきたチュン？"
                 contents['body']['contents'][0]['text'] = message
 
                 # コールバックのエンドポイントに送信されるデータの末尾に、空白区切りで貸借りidを追加する
