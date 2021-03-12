@@ -21,6 +21,11 @@ class FriendUseCase:
         -------
         user_1_name, user_2_name: [str, str]
             フレンド登録された2つのユーザー名
+
+        Raises
+        ------
+        AlreadyFriendException
+            既に2人のユーザーがフレンドだった場合に例外を投げる
         """
         return self.repository.register_friend(user_1, user_2)
 

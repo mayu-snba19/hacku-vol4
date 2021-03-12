@@ -35,10 +35,16 @@ class FriendService:
         -------
         user_name, friend_name: Tuple[str, str]
             フレンド登録されたユーザー(self.userと、friend_idのユーザー)の名前
+
+        Raises
+        ------
+        AlreadyFriendException
+            既に2人のユーザーがフレンドだった場合に例外を投げる
         """
         friend_id = self.payload.get('friend_id')
-        # フレンドは既にDBに登録されている前提
+        # note(kondo): friend_idのユーザーは既にDBに登録されている前提
         friend = self.user_use_case.fetch_user(friend_id)
+
         user_name, friend_name = self.friend_use_case.register_friend(self.user, friend)
 
         return user_name, friend_name

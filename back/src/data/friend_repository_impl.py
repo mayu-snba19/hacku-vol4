@@ -1,6 +1,7 @@
 from sqlalchemy import or_, and_
 
 from src import db
+from src.consts.exceptions import AlreadyFriendException
 from src.domain.entity import UserEntity
 from src.domain.repository import FriendRepository, UserRepository
 from src.domain.use_case import UserUseCase
@@ -24,6 +25,17 @@ class FriendRepositoryImpl(FriendRepository):
 
         # あとであるユーザーのフレンド一覧を取得する際にシンプルなクエリで取得できるように、
         # user_idとfriend_idを入れ替えた2つのレコードを作成する
+
+        existing_friend = db.session.query(Friend) \
+            .filter(
+            or_(
+                and_(Friend.user_id == user_1.id, Friend.friend_id == user_2.id),
+                and_(Friend.user_id == user_1.id, Friend.friend_id == user_2.id),
+            )
+        ).first()
+
+        if existing_friend is not None:
+            raise AlreadyFriendException(f"users(id: {user_1.id}, {user_2.id}) are already friend.")
 
         friend = Friend()
         friend.user_id = user_1.id
