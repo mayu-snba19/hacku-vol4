@@ -116,7 +116,7 @@ export const fetchLendingList = async (
       deadline: new Date(data.deadline as string),
       kind: 'lending' as const,
     }
-    if (data.borrowerName != null) {
+    if (data.borrower_name != null) {
       return {
         ...lendingInfo,
         borrowerName: data.borrower_name as string,
