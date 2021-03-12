@@ -24,8 +24,10 @@ const HowTo = () => {
           <h2 className={styles.secondTitle}>〜貸す側〜</h2>
           <div className={styles.lender}>
             <div className={styles.procedure}>
-              <h3>１. LINE botを追加しよう！</h3>
-              <p>下のボタンから「返して欲しいでチュン」を友達追加してね。</p>
+              <h3>１. LINE botを追加</h3>
+              <p>
+                下のボタンから「返して欲しいでチュン」を友達追加してください！
+              </p>
             </div>
             <a href="https://page.line.me/555pqmgv">
               <img src="/line-button.PNG" width="200px" />
@@ -42,14 +44,19 @@ const HowTo = () => {
               <h3>３. 通知が来る</h3>
               <p>設定した期限が過ぎたら確認メッセージが届きます。</p>
               <p>返してもらったらここから通知を解除してね！</p>
+              <div className={styles.img}>
+                <img src="/line-return.PNG" width="100%" />
+              </div>
             </div>
           </div>
           <div style={{ height: 20 + 'px' }}></div>
           <h2 className={styles.secondTitle}>〜借りる側〜</h2>
           <div className={styles.lender}>
             <div className={styles.procedure}>
-              <h3>１. LINE botを追加しよう！</h3>
-              <p>下のボタンから「返して欲しいでチュン」を友達追加してね。</p>
+              <h3>１. LINE botを追加</h3>
+              <p>
+                下のボタンから「返して欲しいでチュン」を友達追加してください！
+              </p>
             </div>
             <a href="https://page.line.me/555pqmgv">
               <img src="/line-button.PNG" width="200px" />
@@ -57,17 +64,17 @@ const HowTo = () => {
             <div className={styles.procedure}>
               <h3>２. 新規登録</h3>
               <p>
-                貸してくれた人に登録をしてもらってね！登録の手順は上に書いてあるよ。
+                貸してくれた人に登録をしてもらってください！登録の手順は上に書いてあります。
               </p>
               <p>
-                登録が終わったらURLつきのメッセージが届くよ。URLを踏んで登録完了！
+                登録が終わったらURLつきのメッセージが届くので、URLを踏んで登録完了！
               </p>
             </div>
             <div className={styles.procedure}>
               <h3>３. 通知</h3>
-              <p>返し忘れてても大丈夫！</p>
+              <p>返し忘れてても大丈夫です！</p>
               <p>
-                期限を過ぎたら毎日20:00にLINEが届くようになるよ。通知を確認したらちゃんと返そう！
+                期限を過ぎたら毎日20:00にLINEが届くようになります。通知を確認したらちゃんと返しましょう！
               </p>
             </div>
           </div>
