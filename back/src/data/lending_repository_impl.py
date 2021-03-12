@@ -3,7 +3,7 @@ from typing import List, Tuple
 from sqlalchemy import false, true
 
 from src import db
-from src.consts.exceptions import BorrowerAlreadyExistsException
+from src.consts.exceptions import BorrowerAlreadyExistsException, InvalidArgumentException
 from src.domain.entity import UserEntity, LendingEntity
 from src.domain.repository import UserRepository, LendingRepository
 from src.domain.use_case import UserUseCase
@@ -30,6 +30,15 @@ class LendingRepositoryImpl(LendingRepository):
         db.session.commit()
 
         return new_lending.id
+
+    def register_sent_url(self, lending_id: int):
+        lending = db.session.query(Lending).filter(Lending.id == lending_id).first()
+
+        if lending is None:
+            raise InvalidArgumentException(f"lending(id: {lending_id} does not exist.")
+
+        lending.is_sent_url = True
+        db.session.commit()
 
     def associate_borrower(self, lending_id: int, borrower: UserEntity) -> Tuple[LendingEntity, bool]:
         is_new_user = db.session.query(User).filter(User.id == borrower.id).first() is None
