@@ -11,6 +11,7 @@ import {
   useLinkAsBorrower,
 } from '~/adaptor/lendingInfoHooks'
 import LendingToken from '~/types/lendingToken'
+import { useLiffAuth } from '~/liff/liffHooks'
 
 type Props = {
   lendingId: LendingToken
@@ -25,6 +26,7 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
     lendingId,
   )
   const linkAsBorrower = useLinkAsBorrower()
+  const { user } = useLiffAuth()
   const [animationPhase, setAnimationPhase] = useState<0 | 1>(0)
   const [showErrorDialog, setShowErrorDialog] = useState(false)
 
@@ -33,6 +35,7 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
   )
 
   useEffect(() => {
+    // TODO: 自分かどうかの判定
     if (linkedBorrowingInfo?.isAssociated === true) {
       router.push(`/lending?modal=${linkedBorrowingInfo.lendingId}`)
     }

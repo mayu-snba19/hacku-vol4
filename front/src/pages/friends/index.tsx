@@ -8,6 +8,12 @@ import Icon from '~/components/Icon/Icon'
 import Meta from '~/components/Meta'
 import Modal from '~/components/Modal'
 import { FriendWantToBorrowList } from '~/types/wantToBorrow'
+import {
+  useLiff,
+  useLiffAuth,
+  useLiffShareTargetApiAvailable,
+} from '~/liff/liffHooks'
+import buildFriendAddMessage from '~/util/buildFriendAddMessage'
 
 const friendsList: FriendWantToBorrowList[] = [
   {
@@ -55,16 +61,57 @@ const friendsList: FriendWantToBorrowList[] = [
 ]
 
 const FriendsList = () => {
+  const { liff } = useLiff()
+  const { user } = useLiffAuth()
+  const shareTargetPickerAvailable = useLiffShareTargetApiAvailable()
   // const { data: friendsList } = useLWantToBorrowList()
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
-  const { data: lendingList } = useLendingInfo()
 
+  const { data: lendingList } = useLendingInfo()
   const { data: borrowingList } = useBorrowingInfo()
+
+  const [showCompleteDialog, setShowCompleteDialog] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const handleAddFriends = async () => {
+    if (!shareTargetPickerAvailable || user == null) {
+      return
+    }
+
+    try {
+      const res = await liff?.shareTargetPicker(
+        buildFriendAddMessage(user.userId),
+      )
+      if (res != null && res.status === 'success') {
+        setShowCompleteDialog(true)
+      }
+    } catch {
+      setErrorMessage('エラーが発生しました')
+    }
+  }
+
   return (
     <>
       <Meta title="ともだち一覧" />
       <article className="pt-12 pb-20 mx-2 min-h-screen">
         <h2 className="bg-brand-400 text-text rounded-md sticky top-0 text-sm px-4 py-2">
+          ともだち追加
+        </h2>
+        <p className="text-sm mx-2 my-4">
+          ともだち追加すると、ともだちの借りたい物リストを確認することができます。一度でも貸し借りを行なった人は、自動的にともだちに登録されています。
+        </p>
+        <div className="flex justify-center">
+          <button
+            className="text-brand-700 px-4 py-2 text-sm rounded-sm text-center transition-all border-2 border-brand-400"
+            onClick={handleAddFriends}
+          >
+            追加する友達を選ぶ
+          </button>
+          {errorMessage != null && (
+            <p className="text-red-700 text-sm">エラーが発生しました</p>
+          )}
+        </div>
+        <h2 className="bg-brand-400 text-text rounded-md sticky top-0 text-sm px-4 py-2 mt-8">
           ともだち一覧
         </h2>
         <div>
@@ -119,7 +166,7 @@ const FriendsList = () => {
                   </div>
                   <div className="text-center mt-4 mb-2">
                     <button
-                      className="text-gray-600 text-sm link"
+                      className="link text-sm"
                       onClick={() =>
                         setSelectedFriendId(friendBorrowList.friendId)
                       }
@@ -159,6 +206,18 @@ const FriendsList = () => {
         </div>
       </article>
       <BottomBar type="friends" />
+      <Modal
+        isOpen={showCompleteDialog}
+        positiveLabel="OK"
+        onClickConfirm={() => setShowCompleteDialog(false)}
+        onClose={() => setShowCompleteDialog(false)}
+      >
+        <p className="text-center leading-8">
+          ともだちに招待メッセージを送ったちゅん！！
+          <br />
+          ともだちが承認してくれるのを待つちゅん！
+        </p>
+      </Modal>
     </>
   )
 }
