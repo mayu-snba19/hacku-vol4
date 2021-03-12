@@ -1,6 +1,5 @@
 import React from 'react'
 import Meta from '~/components/Meta'
-import Image from 'next/image'
 import styles from '~/styles/HowTo.module.css'
 
 const HowTo = () => {
@@ -30,7 +29,7 @@ const HowTo = () => {
               </p>
             </div>
             <a href="https://page.line.me/555pqmgv">
-              <img src="/line-button.PNG" width="200px" />
+              <img src="/line-button.png" width="200px" />
             </a>
             <div className={styles.procedure}>
               <h3>２. 貸し借りを登録</h3>
@@ -59,7 +58,7 @@ const HowTo = () => {
               </p>
             </div>
             <a href="https://page.line.me/555pqmgv">
-              <img src="/line-button.PNG" width="200px" />
+              <img src="/line-button.png" width="200px" />
             </a>
             <div className={styles.procedure}>
               <h3>２. 新規登録</h3>
