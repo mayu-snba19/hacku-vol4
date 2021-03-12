@@ -41,8 +41,9 @@ def register_lending():
 
 
 @api.route("/lending/<int:lending_id>", methods=["GET"])
+@required_auth
 def fetch_lending(lending_id):
-    lending_service = LendingService('')
+    lending_service = LendingService(get_token())
     lending = lending_service.fetch_lending(lending_id)
 
     return jsonify({
