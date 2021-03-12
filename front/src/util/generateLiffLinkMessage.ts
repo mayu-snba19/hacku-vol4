@@ -135,8 +135,8 @@ const buildLiffLinkMessage = (
           paddingAll: '0px',
         },
       },
-    } as any,
-  ]
+    },
+  ] as SendMessagesParams
 }
 
 export default buildLiffLinkMessage
