@@ -35,6 +35,25 @@ export type PostLendingInfoParams = {
 }
 
 /**
+ * メッセージの送付完了を報告する
+ * @param accessToken アクセストークン
+ * @param lendingId 貸し出しID
+ */
+export const putLendingProcessFinished = async (
+  accessToken: string,
+  lendingToken: LendingToken,
+) => {
+  checkAccessToken(accessToken)
+  await axios.put(
+    `lending/${encodeURIComponent(lendingToken)}/sent-url`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  )
+}
+
+/**
  * 貸し出し情報と借りる人を紐付ける
  */
 

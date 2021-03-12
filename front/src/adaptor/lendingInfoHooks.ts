@@ -7,8 +7,10 @@ import {
   linkLendingInfo,
   postHaveReturned,
   postLendingInfo,
+  putLendingProcessFinished,
 } from '~/repository/lendingInfoRepository'
 import type { PostLendingInfoParams } from '~/repository/lendingInfoRepository'
+import LendingToken from '~/types/lendingToken'
 
 /**
  * 貸しているもの一覧情報を取得するSWR hooks
@@ -97,6 +99,20 @@ export const useLinkLendingInfo = () => {
         return
       }
       return await linkLendingInfo(accessToken, { lendingId })
+    },
+    [accessToken],
+  )
+  return _linkLendingInfo
+}
+
+export const usePutLendingProcessFinished = () => {
+  const accessToken = useLiffAccessToken()
+  const _linkLendingInfo = useCallback(
+    async (lendingId: LendingToken) => {
+      if (accessToken == null) {
+        return
+      }
+      return await putLendingProcessFinished(accessToken, lendingId)
     },
     [accessToken],
   )
