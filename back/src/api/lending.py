@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request, abort
 
 from src.api.service.auth import required_auth, get_token
 from src.api.service.lending import LendingService
-from src.consts.exceptions import InvalidOwnerException, BorrowerAlreadyExistsException
+from src.consts.exceptions import *
 
 api = Blueprint("api_lending", __name__)
 
@@ -38,6 +38,19 @@ def register_lending():
     lending_id, created_at = lending_service.register_lending(content, deadline)
 
     return jsonify({"lending_id": lending_id, "created_at": created_at})
+
+
+@api.route("/lending/<int:lending_id>/sent-url", methods=["PUT"])
+@required_auth
+def register_sent_url(lending_id):
+    lending_service = LendingService(get_token())
+    try:
+        lending_service.register_sent_url(lending_id)
+    except InvalidArgumentException as e:
+        print(e)
+        return jsonify({'status': 'error', 'message': e.message})
+
+    return jsonify({'status': 'success'})
 
 
 @api.route("/lending/<int:lending_id>", methods=["GET"])
