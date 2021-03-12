@@ -1,10 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
+import {
+  useDeleteWantToBorrowItem,
+  usePostWantToBorrowItem,
+} from '~/adaptor/wantToBorrowHooks'
 import BottomBar from '~/components/BottomBar'
 import Icon from '~/components/Icon/Icon'
 import Meta from '~/components/Meta'
 
 // 優先順 低
 const BorrowingPage: React.FC = () => {
+  const postWantToBorrowItem = usePostWantToBorrowItem()
+  const deleteWantToBorrowItem = useDeleteWantToBorrowItem()
+  const [content, setContent] = useState('')
+  const handleSubmitWantToBorrowItem = async () => {
+    await postWantToBorrowItem({ content })
+    setContent('')
+  }
+
+  const handleDeleteWantToBorrowItem = async (wantToBorrowId: string) => {
+    await deleteWantToBorrowItem(wantToBorrowId)
+  }
   return (
     <>
       <Meta title="借りたいものリスト" />
@@ -16,7 +31,9 @@ const BorrowingPage: React.FC = () => {
           <form
             action=""
             onSubmit={(e) => {
+              console.log('SUBMIT')
               e.preventDefault()
+              handleSubmitWantToBorrowItem()
             }}
             className="px-4"
           >
@@ -25,10 +42,16 @@ const BorrowingPage: React.FC = () => {
               type="text"
               className="mb-4 px-4 py-2 bg-gray-100 w-full rounded-md text-sm border-2 border-brand-400 appearance-none"
               placeholder="マンガ"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
             />
             <div className="flex flex-row justify-center">
-              <button className="bg-brand-400 text-text px-8 py-2 text-sm rounded-sm text-center">
-                登録
+              <button
+                type="submit"
+                className="bg-brand-400 text-text px-8 py-2 text-sm rounded-sm text-center"
+                disabled={content.length === 0}
+              >
+                登録[未実装]
               </button>
             </div>
           </form>
@@ -53,7 +76,10 @@ const BorrowingPage: React.FC = () => {
                     <button className="p-3 mr-1">
                       <Icon type="edit" />
                     </button>
-                    <button className="p-3">
+                    <button
+                      className="p-3"
+                      onClick={() => handleDeleteWantToBorrowItem('XXX')}
+                    >
                       <Icon type="trash" />
                     </button>
                   </div>

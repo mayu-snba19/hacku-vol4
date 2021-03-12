@@ -1,22 +1,12 @@
 import axios from '~/util/axios'
 import { BorrowingInfo, LendingInfo } from '~/types/lendingInfo'
 import LendingToken from '~/types/lendingToken'
-
-/**
- * アクセストークンの有無をチェックする
- * @param accessToken アクセストークン
- */
-const checkAccessToken = (accessToken: string) => {
-  if (accessToken == null || accessToken === '') {
-    throw new Error('アクセストークンが指定されていません')
-  }
-}
+import checkAccessToken from '~/util/checkAccessToken'
 
 /**
  * 貸す物を登録する
  * @params accessToken
  * @params data 登録するデータ
- * @return token: 貸出トークン
  */
 export const postLendingInfo = async (
   accessToken: string,
