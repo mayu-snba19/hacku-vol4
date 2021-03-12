@@ -1,7 +1,7 @@
 import React from 'react'
 import Icon from '~/components/Icon/Icon'
 import c from 'classnames'
-import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 export type PageType =
   | 'create-lending'
@@ -17,31 +17,26 @@ type ItemProps = {
   Icon: React.ReactElement
   label: string
   isActive: boolean
-  onClick: () => void
+  url: string
 }
 
-const BottomBarItem: React.FC<ItemProps> = ({
-  Icon,
-  label,
-  isActive,
-  onClick,
-}) => {
+const BottomBarItem: React.FC<ItemProps> = ({ Icon, label, isActive, url }) => {
   return (
-    <button
-      className={c(
-        'flex-1 flex flex-col items-center justify-center mx-1 my-2 py-2 rounded-md transition-all',
-        isActive ? 'bg-gray-100 text-accent-400' : 'bg-brand-400 text-text',
-      )}
-      onClick={onClick}
-    >
-      {Icon}
-      <p className={c('text-xs mt-1', isActive && 'font-bold')}>{label}</p>
-    </button>
+    <Link href={url}>
+      <a
+        className={c(
+          'flex-1 flex flex-col items-center justify-center mx-1 my-2 py-2 rounded-md transition-all',
+          isActive ? 'bg-gray-100 text-accent-400' : 'bg-brand-400 text-text',
+        )}
+      >
+        {Icon}
+        <p className={c('text-xs mt-1', isActive && 'font-bold')}>{label}</p>
+      </a>
+    </Link>
   )
 }
 
 const BottomBar: React.FC<Props> = ({ type }) => {
-  const router = useRouter()
   return (
     <nav
       className="fixed bottom-0 w-screen flex flex-row items-center bg-brand-400
@@ -51,25 +46,25 @@ const BottomBar: React.FC<Props> = ({ type }) => {
         Icon={<Icon type="uparrow" className="text-2xl" />}
         label="貸す"
         isActive={type === 'create-lending'}
-        onClick={() => router.push('/lending/create')}
+        url="/lending/create"
       />
       <BottomBarItem
         Icon={<Icon type="present" className="text-2xl" />}
         label="かしかり記録"
         isActive={type === 'lending'}
-        onClick={() => router.push('/lending')}
+        url="/lending"
       />
       <BottomBarItem
         Icon={<Icon type="list" className="text-2xl" />}
         label="借りたい"
         isActive={type === 'want-to-borrow'}
-        onClick={() => router.push('/want-to-borrow')}
+        url="/want-to-borrow"
       />
       <BottomBarItem
         Icon={<Icon type="friends" className="text-2xl" />}
         label="みんな"
         isActive={type === 'timeline'}
-        onClick={() => router.push('/timeline')}
+        url="/timeline"
       />
     </nav>
   )
