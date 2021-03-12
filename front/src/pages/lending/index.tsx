@@ -289,24 +289,26 @@ const LendingListPage: React.FC<Props> = ({
             </Chip>
           </nav>
         ) : (
-          <button
-            className="flex justify-between items-center flex-wrap px-8 py-2 sticky top-0 z-30 bg-gray-100 w-full"
-            onClick={() => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const { mode: _, ...restQuery } = router.query
-              router.push(
-                {
-                  pathname: '/lending',
-                  query: { ...restQuery, filter: 'all' },
-                },
-                undefined,
-                { shallow: true },
-              )
-            }}
-          >
+          <div className="flex justify-between items-center flex-wrap pl-8 pr-4 py-2 sticky top-0 z-30 bg-gray-100">
             <h1 className="underline">返却されたものを選んでね</h1>
-            <Icon type="close" className="text-xl" />
-          </button>
+            <button
+              className="bg-gray-400 rounded-md px-2 text-white"
+              onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { mode: _, ...restQuery } = router.query
+                router.push(
+                  {
+                    pathname: '/lending',
+                    query: { ...restQuery, filter: 'all' },
+                  },
+                  undefined,
+                  { shallow: true },
+                )
+              }}
+            >
+              キャンセル
+            </button>
+          </div>
         )}
         {filteredList.map((lendingInfo) => (
           <Fragment key={lendingInfo.lendingId}>
