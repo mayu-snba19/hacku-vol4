@@ -13,6 +13,7 @@ class Lending(db.Model):
     deadline = db.Column(db.DateTime, nullable=False)
     is_returned = db.Column(db.Boolean, nullable=False, default=False)
     is_confirming_returned = db.Column(db.Boolean, nullable=False, default=False)
+    is_sent_url = db.Column(db.Boolean, nullable=False, default=False, server_default='f')
     created_at = db.Column(
         db.DateTime,
         nullable=False,

@@ -39,6 +39,19 @@ def register_lending():
     return jsonify({"lending_id": lending_id, "created_at": created_at})
 
 
+@api.route("/lending/<int:lending_id>/sent-url", methods=["PUT"])
+@required_auth
+def register_sent_url(lending_id):
+    lending_service = LendingService(get_token())
+    try:
+        lending_service.register_sent_url(lending_id)
+    except InvalidArgumentException as e:
+        print(e)
+        return jsonify({'status': 'error', 'message': e.message})
+
+    return jsonify({'status': 'success'})
+
+
 @api.route("/lending/<int:lending_id>", methods=["GET"])
 @required_auth
 def fetch_lending(lending_id):

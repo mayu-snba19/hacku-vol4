@@ -36,6 +36,15 @@ class LendingService:
         lending_id: int = self.LendingUseCase.add_lending(profile, content, deadline)
         return lending_id, deadline
 
+    def register_sent_url(self, lending_id: int):
+        """ 借りた人へのURL送信済み登録
+        Parameters
+        ----------
+        lending_id: int
+            貸借ID
+        """
+        self.LendingUseCase.register_sent_url(lending_id)
+
     def fetch_lending(self, lending_id: int) -> LendingEntity:
         """
         貸出情報の取得
