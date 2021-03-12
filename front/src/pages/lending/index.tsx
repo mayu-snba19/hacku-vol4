@@ -112,6 +112,7 @@ const LendingListPage: React.FC<Props> = ({
     isValidating: lendingListIsValidating,
     revalidate,
   } = useLendingInfo()
+
   const {
     data: borrowingList,
     isValidating: borrowingListIsValidating,
@@ -168,19 +169,18 @@ const LendingListPage: React.FC<Props> = ({
   const filteredList =
     filter === 'all' ? list : list.filter((item) => filter === item.kind)
 
-  const borderDeadlineLendingIndex =
-    filteredList.findIndex((lendingInfo) =>
-      isAfter(lendingInfo.deadline, new Date()),
-    ) ?? null
+  const borderDeadlineLendingIndex = filteredList.findIndex((lendingInfo) =>
+    isAfter(lendingInfo.deadline, new Date()),
+  )
   const borderDeadlineLendingId =
     borderDeadlineLendingIndex === 0
       ? null
       : filteredList[borderDeadlineLendingIndex]?.lendingId
 
-  const alertBorderDeadlineLendingIndex =
-    filteredList.findIndex((lendingInfo) =>
+  const alertBorderDeadlineLendingIndex = filteredList.findIndex(
+    (lendingInfo) =>
       isAfter(lendingInfo.deadline, add(new Date(), { days: DEADLINE_BORDER })),
-    ) ?? null
+  )
 
   const alertBorderDeadlineLendingId =
     alertBorderDeadlineLendingIndex === 0 ||
@@ -225,38 +225,17 @@ const LendingListPage: React.FC<Props> = ({
         { shallow: true },
       )
     }
-  }, [selectedLendingId])
-
-  // リストが変更された場合にURLを追従させる
-  useEffect(() => {
-    if (
-      !list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
-    ) {
-      router.push(
-        {
-          pathname: '/lending',
-          query: { ...router.query, filter },
-        },
-        undefined,
-        { shallow: true },
-      )
-    }
-  }, [lendingList, borrowingList])
+  }, [selectedLendingId, lendingListIsValidating, borrowingListIsValidating])
 
   // URLが変更された場合にモーダルを追従させる
   useEffect(() => {
     const selectedLendingId = router.query.modal
-    if (
-      selectedLendingId != null &&
-      filteredList.find(
-        (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
-      )
-    ) {
+    if (selectedLendingId != null) {
       setSelectedLendingId(selectedLendingId as string)
     } else {
       setSelectedLendingId(null)
     }
-  }, [router.query.modal])
+  }, [router.query.modal, lendingListIsValidating, borrowingListIsValidating])
 
   const [isUnassociatedListOpen, setIsUnassociatedListOpen] = useState(false)
 
