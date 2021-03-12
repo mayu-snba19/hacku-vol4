@@ -129,8 +129,9 @@ export const useLiffContext = (): LiffContext => {
  */
 export const useLiffShareTargetApiAvailable = (): boolean | null => {
   const { liff } = useLiff()
-  if (liff == null) return null
   const context = useLiffContext()
+
+  if (liff == null) return null
   const isApiAvailable = liff.isApiAvailable('shareTargetPicker')
 
   if (context.isLiffBrowser) {
