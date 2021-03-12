@@ -1,5 +1,3 @@
-import { version } from 'prettier'
-
 export type SemanticVersioning = {
   major: number
   minor: number

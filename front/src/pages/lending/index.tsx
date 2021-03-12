@@ -14,11 +14,7 @@ import Icon from '~/components/Icon/Icon'
 import LendingItemBox from '~/components/LendingItemBox'
 import Meta from '~/components/Meta'
 import Modal from '~/components/Modal'
-import {
-  BorrowingInfo,
-  ConcludedLendingInfo,
-  LendingInfo,
-} from '~/types/lendingInfo'
+import { BorrowingInfo, ConcludedLendingInfo } from '~/types/lendingInfo'
 import { formatDate } from '~/util/formatDate'
 
 type Filter = 'all' | 'lending' | 'borrowing'
