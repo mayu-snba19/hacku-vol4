@@ -314,8 +314,8 @@ const LendingListPage: React.FC<Props> = ({
               <div className="flex flex-row items-center">
                 <Icon type="alert" className="text-3xl mr-2" />
                 <h2 className="text-sm text-gray-600">
-                  友達が未承認の貸出が{unassociatedList.length}件あるチュン。
-                  友達の承認を待つチュン。
+                  友達がまだ承認していない貸出が{unassociatedList.length}
+                  件あるチュン。 友達の承認を待つチュン。
                   {!isUnassociatedListOpen && (
                     <button
                       className="bg-gray-400 rounded-md px-2 text-white flex-shrink-0"
