@@ -8,6 +8,10 @@ const Timeline = () => {
 
   return (
     <div>
+      <p className="text-center m-5 text-sm">
+        <span className="text-red-700">[未実装] </span>
+        この機能は今後実装予定です。
+      </p>
       <Meta title="タイムライン" />
       <article className="pb-20 min-h-screen">
         <div className="px-1 my-8">
