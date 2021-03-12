@@ -72,18 +72,15 @@ class LendingRepositoryImpl(LendingRepository):
         ), is_new_user
 
     def fetch_lent_list(self, owner_id: str) -> List[LendingEntity]:
-        owner = db.aliased(User)
-        borrower = db.aliased(User)
-
         result = db.session.query(
             Lending.id,
             Lending.content,
             Lending.deadline,
-            borrower.name.label('borrower_name')
+            User.name.label('borrower_name')
         ) \
-            .join(owner, Lending.owner_id == owner.id) \
-            .outerjoin(borrower, Lending.borrower_id == borrower.id) \
+            .outerjoin(User, Lending.borrower_id == User.id) \
             .filter(Lending.owner_id == owner_id) \
+            .filter(Lending.is_returned == false()) \
             .filter(Lending.is_sent_url == true()) \
             .all()
 
@@ -99,17 +96,14 @@ class LendingRepositoryImpl(LendingRepository):
         return lent_list
 
     def fetch_borrowed_list(self, borrower_id: str) -> List[LendingEntity]:
-        owner = db.aliased(User)
-        borrower = db.aliased(User)
-
         result = db.session.query(
             Lending.id,
             Lending.content,
             Lending.deadline,
-            owner.name.label('owner_name'),
+            User.name.label('owner_name'),
         ) \
-            .join(owner, Lending.owner_id == owner.id) \
-            .outerjoin(borrower, Lending.borrower_id == borrower.id) \
+            .join(User, Lending.owner_id == User.id) \
+            .filter(Lending.is_returned == false()) \
             .filter(Lending.borrower_id == borrower_id) \
             .all()
 
