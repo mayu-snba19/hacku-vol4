@@ -191,3 +191,76 @@ export const fetchLendingAndBorrowingList = async (
   ])
   return [...lendingList, ...borrowingList]
 }
+
+/**
+ * 貸し出しトークンから貸出情報を取得するURL
+ * @param accessToken アクセストークン
+ * @param lendingToken 貸し出しトークン
+ */
+export const getBorrowingInfoFromToken = async (
+  accessToken: string,
+  lendingToken: LendingToken,
+): Promise<GetBorrowingInfoFromTokenResponse> => {
+  checkAccessToken(accessToken)
+  try {
+    const res = await axios.get(
+      `/lending/${encodeURIComponent(lendingToken)}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    return {
+      lendingId: `${res.data.lending_id}`,
+      content: res.data.content as string,
+      deadline: new Date(res.data.deadline as string),
+      ownerName: res.data.owner_name as string,
+      isAssociated: res.data.is_associated as boolean,
+      kind: 'borrowing',
+    }
+  } catch (e) {
+    console.log(e)
+    if (e.error_code === 'Not Found') {
+      throw new LendingTokenNotFoundError()
+    }
+    throw e
+  }
+}
+
+export type GetBorrowingInfoFromTokenResponse = BorrowingInfo & {
+  isAssociated: boolean
+}
+
+export class LendingTokenNotFoundError extends Error {}
+
+/**
+ * 貸し出し情報の借り手として自分を登録する
+ * @param accessToken アクセストークン
+ * @param lendingToken 貸し出しトークン
+ */
+export const linkAsBorrower = async (
+  accessToken: string,
+  lendingToken: LendingToken,
+) => {
+  const res = await axios.put(
+    `lending/${encodeURIComponent(lendingToken)}`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  )
+  return {
+    isNewUser: res.data.is_new_user as boolean,
+    borrowingInfo: {
+      lendingId: `${res.data.lending_id}`,
+      content: res.data.content as string,
+      deadline: new Date(res.data.deadline as string),
+      ownerName: res.data.owner_name as string,
+      kind: 'borrowing',
+    } as BorrowingInfo,
+  }
+}
+
+export type LinkAsBorrowerResponse = {
+  isNewUser: boolean
+  borrowingInfo: BorrowingInfo
+}

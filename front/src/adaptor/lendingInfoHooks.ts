@@ -1,9 +1,13 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { useLiffAccessToken } from '~/liff/liffHooks'
 import {
   fetchBorrowingList,
   fetchLendingList,
+  getBorrowingInfoFromToken,
+  GetBorrowingInfoFromTokenResponse,
+  LendingTokenNotFoundError,
+  linkAsBorrower,
   linkLendingInfo,
   postHaveReturned,
   postLendingInfo,
@@ -107,7 +111,7 @@ export const useLinkLendingInfo = () => {
 
 export const usePutLendingProcessFinished = () => {
   const accessToken = useLiffAccessToken()
-  const _linkLendingInfo = useCallback(
+  const _putLendingProcessFinished = useCallback(
     async (lendingId: LendingToken) => {
       if (accessToken == null) {
         return
@@ -116,5 +120,55 @@ export const usePutLendingProcessFinished = () => {
     },
     [accessToken],
   )
-  return _linkLendingInfo
+  return _putLendingProcessFinished
+}
+
+export const useGetBorrowingInfoFromToken = (lendingToken: LendingToken) => {
+  const [data, setData] = useState<GetBorrowingInfoFromTokenResponse | null>(
+    null,
+  )
+  const [notFoundError, setNotFoundError] = useState<
+    'notfound' | 'unknown' | null
+  >(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const accessToken = useLiffAccessToken()
+  useEffect(() => {
+    if (accessToken != null) {
+      const func = async () => {
+        try {
+          const borrowingInfo = await getBorrowingInfoFromToken(
+            accessToken,
+            lendingToken,
+          )
+          setData(borrowingInfo)
+          setNotFoundError(null)
+        } catch (e) {
+          if (e instanceof LendingTokenNotFoundError) {
+            setNotFoundError('notfound')
+          } else {
+            setNotFoundError('unknown')
+          }
+        } finally {
+          setIsLoading(false)
+        }
+      }
+      func()
+    }
+  }, [accessToken])
+
+  return { data, errorCode: notFoundError, isLoading }
+}
+
+export const useLinkAsBorrower = () => {
+  const accessToken = useLiffAccessToken()
+  const _linkAsBorrower = useCallback(
+    async (lendingToken: LendingToken) => {
+      if (accessToken == null) {
+        return
+      }
+      return await linkAsBorrower(accessToken, lendingToken)
+    },
+    [accessToken],
+  )
+  return _linkAsBorrower
 }
