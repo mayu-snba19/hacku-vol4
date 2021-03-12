@@ -1,6 +1,5 @@
 import React from 'react'
 import Meta from '~/components/Meta'
-import Image from 'next/image'
 import styles from '~/styles/HowTo.module.css'
 
 const HowTo = () => {
@@ -29,7 +28,7 @@ const HowTo = () => {
                 下のボタンから「返して欲しいでチュン」を友達追加してください！
               </p>
             </div>
-            <a href="https://page.line.me/555pqmgv">
+            <a href="https://lin.ee/KvjNz6j">
               <img src="/line-button.PNG" width="200px" />
             </a>
             <div className={styles.procedure}>
