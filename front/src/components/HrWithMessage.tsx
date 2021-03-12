@@ -2,7 +2,6 @@ import React from 'react'
 import c from 'classnames'
 
 type Props = {
-  children: string
   className?: string
   color?: 'red' | 'black'
 }

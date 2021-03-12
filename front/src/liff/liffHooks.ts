@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import User from '~/types/user'
+import {
+  getSemanticVersioning,
+  isNewerOrEqualTo,
+} from '~/util/semanticVersioning'
 
 import { useLiff } from './LiffProvider'
 
@@ -117,5 +121,25 @@ export const useLiffContext = (): LiffContext => {
       type: type ?? null,
       isLiffBrowser: false,
     }
+  }
+}
+
+/**
+ * ShareTargetPickerAPIの**最新版**が利用可能かを判定する。
+ */
+export const useLiffShareTargetApiAvailable = (): boolean | null => {
+  const { liff } = useLiff()
+  if (liff == null) return null
+  const context = useLiffContext()
+  const isApiAvailable = liff.isApiAvailable('shareTargetPicker')
+
+  if (context.isLiffBrowser) {
+    const lineVersionStr = liff.getLineVersion()
+    if (lineVersionStr == null) return null
+    const lineVersion = getSemanticVersioning(lineVersionStr)
+    if (lineVersion == null) return null
+    return isNewerOrEqualTo(lineVersion, { major: 10, minor: 11, patch: 0 })
+  } else {
+    return isApiAvailable
   }
 }

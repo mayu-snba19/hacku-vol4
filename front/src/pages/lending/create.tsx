@@ -6,14 +6,21 @@ import Icon from '~/components/Icon/Icon'
 import { format } from 'date-fns'
 import { formatDate } from '~/util/formatDate'
 import Modal from '~/components/Modal'
-import { useLiff, useLiffAuth } from '~/liff/liffHooks'
+import {
+  useLiff,
+  useLiffAuth,
+  useLiffShareTargetApiAvailable,
+} from '~/liff/liffHooks'
 import { usePostLendingInfo } from '~/adaptor/lendingInfoHooks'
 import DateInput, { DateString } from '~/components/DateInput'
 import buildLiffLinkMessage from '~/util/generateLiffLinkMessage'
 import LendingToken from '~/types/lendingToken'
+import HrWithMessage from '~/components/HrWithMessage'
 
 const CreatePage: React.FC = () => {
   const { liff } = useLiff()
+  // const accessToken = useLiffAccessToken()
+  const shareTargetPickerAvailable = useLiffShareTargetApiAvailable()
   const { user } = useLiffAuth()
   const postLendingInfo = usePostLendingInfo()
   const [focusingOnField, setFocusingOnField] = useState(false)
@@ -22,14 +29,17 @@ const CreatePage: React.FC = () => {
   const [deadline, setDeadline] = useState<DateString>(
     () => format(new Date(), 'yyyy-MM-dd') as DateString,
   )
+  const resetForm = () => {
+    setContent('')
+    setDeadline(formatDate(new Date(), 'yyyy-MM-dd') as DateString)
+  }
 
   const [isOpenRetryDialog, setIsOpenRetryDialog] = useState(false)
   const [isOpenCompleteDialog, setIsOpenCompleteDialog] = useState(false)
   const tokenRef = useRef<LendingToken>()
-
   const inputOk = content.length > 0 && deadline.length > 0
 
-  const invokeShareTargetPicker = async () => {
+  const sendLendingInfo = async () => {
     if (liff == null || user == null) {
       return
     }
@@ -46,6 +56,10 @@ const CreatePage: React.FC = () => {
 
       tokenRef.current = token
 
+      if (!shareTargetPickerAvailable) {
+        return
+      }
+
       const res = await liff.shareTargetPicker([
         {
           type: 'text',
@@ -54,6 +68,7 @@ const CreatePage: React.FC = () => {
       ])
 
       if (res != null && res.status === 'success') {
+        resetForm()
         setIsOpenCompleteDialog(true)
       }
     } catch {
@@ -63,13 +78,12 @@ const CreatePage: React.FC = () => {
 
   const handleRetry = () => {
     setIsOpenRetryDialog(false)
-    invokeShareTargetPicker()
+    sendLendingInfo()
   }
 
   const handleCompleteRegister = () => {
     setIsOpenCompleteDialog(false)
-    setContent('')
-    setDeadline(formatDate(new Date(), 'yyyy-MM-dd') as DateString)
+    resetForm
   }
 
   return (
@@ -133,21 +147,44 @@ const CreatePage: React.FC = () => {
           )}
 
           <h2 className="bg-brand-400 text-text rounded-md text-md px-4 py-2 mx-2 mt-4">
-            STEP2. 貸す友達を選択するちゅん
+            STEP2. 貸す友達にメッセージを送るちゅん
           </h2>
-          <h3 className="text-gray-600 mt-8 mx-8">
+          <h3 className="text-gray-600 mt-8 mb-4 mx-8">
             貸す友達にメッセージを送ろう
           </h3>
-          <div className="flex flex-row justify-center my-4">
+          <div className="flex flex-col items-stretch mx-auto my-4 justify-stretch px-8 max-w-xs">
             <button
               className={c(
-                'text-text px-12 py-4 text-sm rounded-sm text-center transition-all',
-                inputOk ? 'bg-accent-400 shadow-lg' : 'bg-accent-100',
+                'text-text px-8 py-4 text-sm rounded-sm text-center transition-all',
+                inputOk && shareTargetPickerAvailable
+                  ? 'bg-accent-400 '
+                  : 'bg-accent-100',
+              )}
+              disabled={!inputOk || !shareTargetPickerAvailable}
+              onClick={sendLendingInfo}
+            >
+              友達を選択する（おすすめ）
+            </button>
+            {!shareTargetPickerAvailable && (
+              <p className="text-red-700 text-xs">
+                お使いのLINEバージョンではこの機能はご利用いただけません。
+                バージョン10.11.0以上にアップデートしてください
+              </p>
+            )}
+            <HrWithMessage
+              className={c('mt-6 mb-2', inputOk ? 'opacity-100' : 'opacity-30')}
+            >
+              <span className="bg-gray-100 px-3">または</span>
+            </HrWithMessage>
+            <button
+              className={c(
+                'px-8 py-4 mb-4 text-xs rounded-sm text-center transition-all',
+                inputOk ? 'text-gray-500' : 'text-gray-300',
               )}
               disabled={!inputOk}
-              onClick={invokeShareTargetPicker}
+              // onClick={sendLendingInfo}
             >
-              友達を選択する
+              [未実装]手動でメッセージを送る
             </button>
           </div>
         </div>
