@@ -111,7 +111,7 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
                 {borrowingInfo.content}
               </span>
               <br />
-              を借りたって聞いたけど、あってるちゅんか？
+              を借りたってことであってるちゅんか？
             </p>
             <div
               className={c(
