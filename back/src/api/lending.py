@@ -51,6 +51,7 @@ def fetch_lending(lending_id):
         'content': lending.content,
         'deadline': lending.deadline,
         'owner_name': lending.owner_name,
+        'is_associated': lending.borrower_id is not None
     })
 
 
