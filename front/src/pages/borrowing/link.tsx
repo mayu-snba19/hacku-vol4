@@ -33,6 +33,7 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
   )
 
   useEffect(() => {
+    // TODO: 自分かどうかの判定
     if (linkedBorrowingInfo?.isAssociated === true) {
       router.push(`/lending?modal=${linkedBorrowingInfo.lendingId}`)
     }

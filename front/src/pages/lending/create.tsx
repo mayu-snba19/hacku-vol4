@@ -16,7 +16,7 @@ import {
   usePutLendingProcessFinished,
 } from '~/adaptor/lendingInfoHooks'
 import DateInput, { DateString } from '~/components/DateInput'
-import buildLiffLinkMessage from '~/util/generateLiffLinkMessage'
+import buildLiffLinkMessage from '~/util/buildLiffLinkMessage'
 import LendingToken from '~/types/lendingToken'
 import HrWithMessage from '~/components/HrWithMessage'
 
@@ -159,7 +159,7 @@ const CreatePage: React.FC = () => {
               className={c(
                 'text-text px-8 py-4 text-sm rounded-sm text-center transition-all',
                 inputOk && shareTargetPickerAvailable
-                  ? 'bg-accent-400 '
+                  ? 'bg-accent-400'
                   : 'bg-accent-100',
               )}
               disabled={!inputOk || !shareTargetPickerAvailable}
