@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Tuple, List
 
 from src.api.service.user_profile import get_user_profile
-from src.consts.exceptions import InvalidOwnerException
+from src.consts.exceptions import InvalidOwnerException, BorrowerAlreadyExistsException
 from src.data import *
 from src.domain.entity import *
 from src.domain.use_case import *
@@ -49,8 +49,21 @@ class LendingService:
         -------
         LendingEntity
             貸出情報
+
+        Raises
+        ------
+        BorrowerAlreadyExistsException
+            既に他のユーザーが紐づけられていた場合は例外を投げる
         """
-        return self.LendingUseCase.fetch_lending(lending_id)
+        request_user = get_user_profile(access_token=self.token)
+
+        lending = self.LendingUseCase.fetch_lending(lending_id)
+        borrower_id = lending.borrower_id
+
+        if borrower_id is not None and request_user.id != borrower_id:
+            raise BorrowerAlreadyExistsException()
+
+        return lending
 
     def register_borrower(self, lending_id: int) -> dict:
         """ 借りた人の登録
@@ -76,7 +89,7 @@ class LendingService:
         Raises
         ------
         BorrowerAlreadyExistsException
-            既に借主が紐づけられている貸出だった場合はエラーを投げる
+            既に借主が紐づけられている貸出だった場合は例外を投げる
         """
         borrower = get_user_profile(access_token=self.token)
 

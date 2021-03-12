@@ -44,7 +44,16 @@ def register_lending():
 @required_auth
 def fetch_lending(lending_id):
     lending_service = LendingService(get_token())
-    lending = lending_service.fetch_lending(lending_id)
+
+    try:
+        lending = lending_service.fetch_lending(lending_id)
+    except BorrowerAlreadyExistsException as e:
+        print(e)
+
+        return jsonify({
+            'status_code': 404,
+            'error_code': 'Not Found'
+        }), 404
 
     return jsonify({
         'lending_id': lending.lending_id,
