@@ -28,11 +28,7 @@ const Timeline = () => {
                     </div>
                     <div className="text-sm flex flex-row items-center">
                       <Icon type="calendar" className="mr-2" />
-                      <p>
-                        {formatDateDistance(new Date(2021, 4, 3), {
-                          addSuffix: false,
-                        }) + '前'}
-                      </p>
+                      <p>{formatDateDistance(new Date(2021, 4, 3)) + '前'}</p>
                     </div>
                   </div>
                 </section>

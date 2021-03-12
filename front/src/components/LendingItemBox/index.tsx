@@ -19,7 +19,7 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
   const remaindDays = differenceInDays(item.deadline, new Date())
   const isExpired = item.deadline < new Date()
   const remaindDaysFormat = formatDateDistance(item.deadline, {
-    addSuffix: false,
+    approximately: isExpired,
   })
   return (
     <section

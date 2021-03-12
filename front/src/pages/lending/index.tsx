@@ -440,10 +440,7 @@ const LendingListPage: React.FC<Props> = ({
         onClose={() => setIsOpenFirstModal(false)}
         shouldCloseOnOverlayClick={false}
       >
-        <p>
-          {'マンガ'}
-          の貸し借りを登録したちゅん！この画面から返却期限を確認できるちゅん
-        </p>
+        <p>貸し借りを登録したちゅん！この画面から返却期限を確認できるちゅん</p>
       </Modal>
       <Modal
         isOpen={isOpenReturnConfirmDialog}
