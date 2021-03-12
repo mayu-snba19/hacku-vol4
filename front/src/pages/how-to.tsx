@@ -28,8 +28,8 @@ const HowTo = () => {
                 下のボタンから「返して欲しいでチュン」を友達追加してください！
               </p>
             </div>
-            <a href="https://page.line.me/555pqmgv">
-              <img src="/line-button.png" width="200px" />
+            <a href="https://lin.ee/KvjNz6j">
+              <img src="/line-button.PNG" width="200px" />
             </a>
             <div className={styles.procedure}>
               <h3>２. 貸し借りを登録</h3>
