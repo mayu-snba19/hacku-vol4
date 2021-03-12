@@ -1,4 +1,5 @@
 import { add, isAfter, isBefore } from 'date-fns'
+import c from 'classnames'
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
@@ -21,6 +22,7 @@ import {
   WaitingLendingInfo,
 } from '~/types/lendingInfo'
 import { formatDate } from '~/util/formatDate'
+import { useLiffContext } from '~/liff/liffHooks'
 
 type Filter = 'all' | 'lending' | 'borrowing'
 
@@ -94,6 +96,7 @@ const LendingListPage: React.FC<Props> = ({
   // isFirstVisit,
 }) => {
   const router = useRouter()
+  const { isLiffBrowser } = useLiffContext()
   const filter: Filter =
     router.query.mode === 'return'
       ? 'lending'
@@ -192,59 +195,68 @@ const LendingListPage: React.FC<Props> = ({
     () => (router.query?.modal as string) ?? null,
   )
 
+  // NOTE: 無限にリダイレクトしてしまうバグが発生したためコメントアウト
   // モーダルの開閉が起こったときにURLを追従させる
-  useEffect(() => {
-    if (selectedLendingId == null) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { modal: _, ...restQuery } = router.query
-      router.push({ pathname: '/lending', query: restQuery }, undefined, {
-        shallow: true,
-      })
-    } else if (
-      filteredList.find(
-        (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
-      )
-    ) {
-      router.push(
-        {
-          pathname: '/lending',
-          query: { ...router.query, modal: selectedLendingId },
-        },
-        undefined,
-        { shallow: true },
-      )
-    } else if (
-      list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
-    ) {
-      router.push(
-        {
-          pathname: '/lending',
-          query: { ...router.query, filter: null, modal: selectedLendingId },
-        },
-        undefined,
-        { shallow: true },
-      )
-    }
-  }, [selectedLendingId, lendingListIsValidating, borrowingListIsValidating])
+  // useEffect(() => {
+  //   if (selectedLendingId == null) {
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //     const { modal: _, ...restQuery } = router.query
+  //     router.push({ pathname: '/lending', query: restQuery }, undefined, {
+  //       shallow: true,
+  //     })
+  //   } else if (
+  //     filteredList.find(
+  //       (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
+  //     )
+  //   ) {
+  //     router.push(
+  //       {
+  //         pathname: '/lending',
+  //         query: { ...router.query, modal: selectedLendingId },
+  //       },
+  //       undefined,
+  //       { shallow: true },
+  //     )
+  //   } else if (
+  //     list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
+  //   ) {
+  //     router.push(
+  //       {
+  //         pathname: '/lending',
+  //         query: { ...router.query, filter: null, modal: selectedLendingId },
+  //       },
+  //       undefined,
+  //       { shallow: true },
+  //     )
+  //   }
+  // }, [selectedLendingId, lendingListIsValidating, borrowingListIsValidating])
 
   // URLが変更された場合にモーダルを追従させる
-  useEffect(() => {
-    const selectedLendingId = router.query.modal
-    if (selectedLendingId != null) {
-      setSelectedLendingId(selectedLendingId as string)
-    } else {
-      setSelectedLendingId(null)
-    }
-  }, [router.query.modal, lendingListIsValidating, borrowingListIsValidating])
+  // useEffect(() => {
+  //   const selectedLendingId = router.query.modal
+  //   if (selectedLendingId != null) {
+  //     setSelectedLendingId(selectedLendingId as string)
+  //   } else {
+  //     setSelectedLendingId(null)
+  //   }
+  // }, [router.query.modal, lendingListIsValidating, borrowingListIsValidating])
 
   const [isUnassociatedListOpen, setIsUnassociatedListOpen] = useState(false)
+  console.log(lendingList)
 
   return (
     <>
-      <Meta title="かしかり記録" />
-      <article className="pt-4 pb-36">
+      <Meta title={isReturnMode ? '返却登録' : 'かしかり記録'} />
+      <article className={c('pb-36', isLiffBrowser ? 'pt-20' : 'pt-4')}>
         {!isReturnMode ? (
-          <nav className="flex justify-center items-center flex-wrap py-2 sticky top-0 z-30 bg-gray-100">
+          <nav
+            className={c(
+              'flex justify-center items-center flex-wrap top-0 z-30 shadow-md',
+              isLiffBrowser
+                ? 'fixed bg-white pb-4 pt-2 w-full'
+                : 'sticky bg-gray-100 py-2',
+            )}
+          >
             <Chip
               className="mx-2 mt-1 flex items-center"
               selected={filter === 'all'}
@@ -284,10 +296,17 @@ const LendingListPage: React.FC<Props> = ({
             </Chip>
           </nav>
         ) : (
-          <div className="flex justify-between items-center flex-wrap pl-8 pr-4 py-2 sticky top-0 z-30 bg-gray-100">
-            <h1 className="underline">返却されたものを選んでね</h1>
+          <div
+            className={c(
+              'flex justify-between items-center flex-wrap pl-8 pr-4 top-0 z-30 shadow-md',
+              isLiffBrowser
+                ? 'fixed bg-white py-4 w-full'
+                : 'sticky bg-gray-100 py-3',
+            )}
+          >
+            <h1>返却されたものを選んでください</h1>
             <button
-              className="bg-gray-400 rounded-md px-2 text-white"
+              className="bg-gray-400 rounded-md p-1 text-white"
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { mode: _, ...restQuery } = router.query
@@ -301,11 +320,12 @@ const LendingListPage: React.FC<Props> = ({
                 )
               }}
             >
-              キャンセル
+              <Icon type="close" />
             </button>
           </div>
         )}
-        {(filter === 'all' || filter === 'lending') &&
+        {!isReturnMode &&
+          (filter === 'all' || filter === 'lending') &&
           unassociatedList.length > 0 && (
             <section
               className="mt-2 mx-4 px-2 py-2 bg-gray-200 rounded-md"
@@ -314,8 +334,8 @@ const LendingListPage: React.FC<Props> = ({
               <div className="flex flex-row items-center">
                 <Icon type="alert" className="text-3xl mr-2" />
                 <h2 className="text-sm text-gray-600">
-                  友達が未承認の貸出が{unassociatedList.length}件あるチュン。
-                  友達の承認を待つチュン。
+                  友達がまだ承認していない貸出が{unassociatedList.length}
+                  件あるチュン。 友達の承認を待つチュン。
                   {!isUnassociatedListOpen && (
                     <button
                       className="bg-gray-400 rounded-md px-2 text-white flex-shrink-0"

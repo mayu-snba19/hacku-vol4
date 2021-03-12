@@ -7,7 +7,7 @@ export type PageType =
   | 'create-lending'
   | 'lending'
   | 'want-to-borrow'
-  | 'timeline'
+  | 'friends'
 
 export type Props = {
   type: PageType
@@ -62,9 +62,9 @@ const BottomBar: React.FC<Props> = ({ type }) => {
       />
       <BottomBarItem
         Icon={<Icon type="friends" className="text-2xl" />}
-        label="みんな"
-        isActive={type === 'timeline'}
-        url="/timeline"
+        label="ともだち"
+        isActive={type === 'friends'}
+        url="/friends"
       />
     </nav>
   )
