@@ -69,7 +69,7 @@ const CreatePage: React.FC = () => {
       )
 
       if (res != null && res.status === 'success') {
-        // await putLendingProcessFinished(token)
+        await putLendingProcessFinished(token)
         setIsOpenCompleteDialog(true)
         resetForm()
       }

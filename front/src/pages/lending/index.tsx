@@ -15,7 +15,11 @@ import Icon from '~/components/Icon/Icon'
 import LendingItemBox from '~/components/LendingItemBox'
 import Meta from '~/components/Meta'
 import Modal from '~/components/Modal'
-import { BorrowingInfo, ConcludedLendingInfo } from '~/types/lendingInfo'
+import {
+  BorrowingInfo,
+  ConcludedLendingInfo,
+  WaitingLendingInfo,
+} from '~/types/lendingInfo'
 import { formatDate } from '~/util/formatDate'
 
 type Filter = 'all' | 'lending' | 'borrowing'
@@ -103,8 +107,15 @@ const LendingListPage: React.FC<Props> = ({
 
   const isReturnMode = router.query.mode === 'return'
 
-  const { data: lendingList } = useLendingInfo()
-  const { data: borrowingList } = useBorrowingInfo()
+  const {
+    data: lendingList,
+    isValidating: lendingListIsValidating,
+    revalidate,
+  } = useLendingInfo()
+  const {
+    data: borrowingList,
+    isValidating: borrowingListIsValidating,
+  } = useBorrowingInfo()
   const postHaveReturned = usePostHaveReturned()
 
   const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
@@ -121,9 +132,8 @@ const LendingListPage: React.FC<Props> = ({
 
   const handleReturn = async (lendingId: string) => {
     await postHaveReturned(lendingId)
-
     setSelectedLendingId(null)
-
+    revalidate()
     setIsOpenReturnConfirmDialog(true)
   }
 
@@ -149,6 +159,11 @@ const LendingListPage: React.FC<Props> = ({
     .sort((a, b) =>
       a.deadline > b.deadline ? 1 : a.deadline < b.deadline ? -1 : 0,
     )
+
+  const unassociatedList = (lendingList ?? []).filter(
+    (item): item is WaitingLendingInfo =>
+      item.kind === 'lending' && item.status === 'waiting',
+  )
 
   const filteredList =
     filter === 'all' ? list : list.filter((item) => filter === item.kind)
@@ -243,6 +258,8 @@ const LendingListPage: React.FC<Props> = ({
     }
   }, [router.query.modal])
 
+  const [isUnassociatedListOpen, setIsUnassociatedListOpen] = useState(false)
+
   return (
     <>
       <Meta title="かしかり記録" />
@@ -309,6 +326,40 @@ const LendingListPage: React.FC<Props> = ({
             </button>
           </div>
         )}
+        {(filter === 'all' || filter === 'lending') &&
+          unassociatedList.length > 0 && (
+            <section
+              className="mt-2 mx-4 px-2 py-2 bg-gray-200 rounded-md"
+              onClick={() => setIsUnassociatedListOpen(!isUnassociatedListOpen)}
+            >
+              <div className="flex flex-row items-center">
+                <Icon type="alert" className="text-3xl mr-2" />
+                <h2 className="text-sm text-gray-600">
+                  友達が未承認の貸出が{unassociatedList.length}件あるチュン。
+                  友達の承認を待つチュン。
+                  {!isUnassociatedListOpen && (
+                    <button
+                      className="bg-gray-400 rounded-md px-2 text-white flex-shrink-0"
+                      onClick={() =>
+                        setIsUnassociatedListOpen(!isUnassociatedListOpen)
+                      }
+                    >
+                      全て見る
+                    </button>
+                  )}
+                </h2>
+              </div>
+              {isUnassociatedListOpen && (
+                <ul className="px-8">
+                  {unassociatedList.map((lendingInfo, i) => (
+                    <li key={lendingInfo.lendingId} className="mt-2 text-sm">
+                      ・{lendingInfo.content}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
         {filteredList.map((lendingInfo) => (
           <Fragment key={lendingInfo.kind + lendingInfo.lendingId}>
             {lendingInfo.lendingId === borderDeadlineLendingId && (
@@ -393,7 +444,9 @@ const LendingListPage: React.FC<Props> = ({
               <Image src="/suzume.jpg" width="200px" height="200px" />
             </div>
             <p className="mt-8 text-center text-gray-500">
-              {list.length === 0
+              {lendingListIsValidating || borrowingListIsValidating
+                ? 'ローディング中...'
+                : list.length === 0
                 ? '現在登録されている貸し借りは無いチュン'
                 : '該当する貸し借りは無いチュン'}
             </p>
