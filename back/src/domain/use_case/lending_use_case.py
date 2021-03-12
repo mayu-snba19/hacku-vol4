@@ -29,6 +29,17 @@ class LendingUseCase:
         """
         return self.repository.add_lending(owner, content, deadline)
 
+    def register_sent_url(self, lending_id: int):
+        """
+        借りた人にURLを送信したことを登録する
+
+        Parameters
+        ----------
+        lending_id: int
+            貸借ID
+        """
+        self.repository.register_sent_url(lending_id)
+
     def associate_borrower(self, lending_id: int, borrower: UserEntity) -> Tuple[LendingEntity, bool]:
         """
         貸借りに借りたユーザーを紐付ける

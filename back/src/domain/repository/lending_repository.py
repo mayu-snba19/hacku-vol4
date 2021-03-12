@@ -11,6 +11,10 @@ class LendingRepository(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def register_sent_url(self, lending_id: int):
+        pass
+
+    @abstractmethod
     def associate_borrower(self, lending_id: int, borrower: UserEntity) -> Tuple[LendingEntity, bool]:
         pass
 

@@ -150,9 +150,8 @@ const LendingListPage: React.FC<Props> = ({
       a.deadline > b.deadline ? 1 : a.deadline < b.deadline ? -1 : 0,
     )
 
-  const filteredList = list.filter(
-    (item) => filter === 'all' || filter === item.kind,
-  )
+  const filteredList =
+    filter === 'all' ? list : list.filter((item) => filter === item.kind)
 
   const borderDeadlineLendingIndex =
     filteredList.findIndex((lendingInfo) =>
@@ -311,7 +310,7 @@ const LendingListPage: React.FC<Props> = ({
           </div>
         )}
         {filteredList.map((lendingInfo) => (
-          <Fragment key={lendingInfo.lendingId}>
+          <Fragment key={lendingInfo.kind + lendingInfo.lendingId}>
             {lendingInfo.lendingId === borderDeadlineLendingId && (
               <HrWithMessage color="red" className="mt-3 mb-4">
                 ▲ 返却期限が過ぎています
