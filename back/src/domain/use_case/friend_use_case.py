@@ -44,6 +44,11 @@ class FriendUseCase:
         -------
         user_1_name, user_2_name: [str, str]
             フレンド登録解除された2つのユーザー名
+
+        Raises
+        ------
+        InvalidArgumentException
+            user_id_1, user_id_2の組み合わせのフレンド登録がなかった場合、例外を投げる
         """
         return self.repository.unregister_friend(user_id_1, user_id_2)
 
