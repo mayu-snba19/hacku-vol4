@@ -330,7 +330,7 @@ const LendingListPage: React.FC<Props> = ({
               </div>
               {isUnassociatedListOpen && (
                 <ul className="px-8">
-                  {unassociatedList.map((lendingInfo, i) => (
+                  {unassociatedList.map((lendingInfo) => (
                     <li key={lendingInfo.lendingId} className="mt-2 text-sm">
                       ・{lendingInfo.content}
                     </li>
