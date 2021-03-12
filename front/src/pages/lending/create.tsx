@@ -60,12 +60,9 @@ const CreatePage: React.FC = () => {
         return
       }
 
-      const res = await liff.shareTargetPicker([
-        {
-          type: 'text',
-          text: buildLiffLinkMessage(token, user.displayName, content),
-        },
-      ])
+      const res = await liff.shareTargetPicker(
+        buildLiffLinkMessage(token, content),
+      )
 
       if (res != null && res.status === 'success') {
         resetForm()
