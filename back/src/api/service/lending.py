@@ -72,6 +72,11 @@ class LendingService:
                     'is_new_user': bool (新規のユーザーだった場合true）
                 }
             }
+
+        Raises
+        ------
+        BorrowerAlreadyExistsException
+            既に借主が紐づけられている貸出だった場合はエラーを投げる
         """
         borrower = get_user_profile(access_token=self.token)
 
