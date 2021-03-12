@@ -19,9 +19,11 @@ def health() -> str:
 
 from src.api.lending import api as api_lending
 from src.api.bot import api as api_bot
+from src.api.want_to_borrow import api as api_want_to_borrow
 from src.api_mock import api as api_mock
 
 app.register_blueprint(api_lending, url_prefix="/api")
+app.register_blueprint(api_want_to_borrow, url_prefix="/api")
 app.register_blueprint(api_bot, url_prefix="/bot")
 app.register_blueprint(api_mock, url_prefix="/mock")
 
