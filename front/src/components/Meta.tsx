@@ -11,9 +11,9 @@ type Props = {
 }
 
 const Meta: React.FC<Props> = ({
-  title = '返してほしいでチュン',
+  title = '返して欲しいでチュン',
   url,
-  imageUrl = '/ogp/default',
+  imageUrl = '/suzume.jpg',
   children,
 } = {}) => {
   const router = useRouter()
