@@ -28,7 +28,7 @@ const HowTo = () => {
               <p>下のボタンから「返して欲しいでチュン」を友達追加してね。</p>
             </div>
             <a href="https://page.line.me/555pqmgv">
-              <Image src="/line-button.png" width="118px" height="30px" />
+              <img src="/line-button.PNG" width="200px" />
             </a>
             <div className={styles.procedure}>
               <h3>２. 貸し借りを登録</h3>
@@ -36,7 +36,7 @@ const HowTo = () => {
               <p>LINEの友達一覧から貸した人を選んで登録完了！</p>
             </div>
             <div className={styles.img}>
-              <img src="/line-create.png" width="100%"></img>
+              <img src="/line-create.PNG" width="100%" />
             </div>
             <div className={styles.procedure}>
               <h3>３. 通知が来る</h3>
@@ -52,7 +52,7 @@ const HowTo = () => {
               <p>下のボタンから「返して欲しいでチュン」を友達追加してね。</p>
             </div>
             <a href="https://page.line.me/555pqmgv">
-              <Image src="/line-button.png" width="118px" height="30px" />
+              <img src="/line-button.PNG" width="200px" />
             </a>
             <div className={styles.procedure}>
               <h3>２. 新規登録</h3>
@@ -60,7 +60,7 @@ const HowTo = () => {
                 貸してくれた人に登録をしてもらってね！登録の手順は上に書いてあるよ。
               </p>
               <p>
-                お友達の操作が終わったらURLつきのメッセージが届くよ。URLを踏んで登録完了！
+                登録が終わったらURLつきのメッセージが届くよ。URLを踏んで登録完了！
               </p>
             </div>
             <div className={styles.procedure}>
