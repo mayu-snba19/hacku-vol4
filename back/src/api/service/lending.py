@@ -36,6 +36,22 @@ class LendingService:
         lending_id: int = self.LendingUseCase.add_lending(profile, content, deadline)
         return lending_id, deadline
 
+    def fetch_lending(self, lending_id: int) -> LendingEntity:
+        """
+        貸出情報の取得
+
+        Parameters
+        ----------
+        lending_id: int
+            貸出id
+
+        Returns
+        -------
+        LendingEntity
+            貸出情報
+        """
+        return self.LendingUseCase.fetch_lending(lending_id)
+
     def register_borrower(self, lending_id: int) -> dict:
         """ 借りた人の登録
         Parameters

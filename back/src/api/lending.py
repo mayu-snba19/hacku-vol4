@@ -40,6 +40,19 @@ def register_lending():
     return jsonify({"lending_id": lending_id, "created_at": created_at})
 
 
+@api.route("/lending/<int:lending_id>", methods=["GET"])
+def fetch_lending(lending_id):
+    lending_service = LendingService('')
+    lending = lending_service.fetch_lending(lending_id)
+
+    return jsonify({
+        'lending_id': lending.lending_id,
+        'content': lending.content,
+        'deadline': lending.deadline,
+        'owner_name': lending.owner_name,
+    })
+
+
 @api.route("/lending/<int:lending_id>", methods=["PUT"])
 @required_auth
 def register_borrower(lending_id):

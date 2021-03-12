@@ -178,7 +178,15 @@ class LendingRepositoryImpl(LendingRepository):
         return deadline_lending_list
 
     def fetch_lending(self, lending_id: int) -> LendingEntity:
-        lending = db.session.query(Lending) \
+        lending = db.session.query(
+            Lending.id,
+            Lending.content,
+            Lending.deadline,
+            Lending.borrower_id,
+            Lending.is_confirming_returned,
+            User.name.label('owner_name')
+        ) \
+            .join(User, Lending.owner_id == User.id) \
             .filter(Lending.id == lending_id) \
             .first()
 
@@ -186,6 +194,7 @@ class LendingRepositoryImpl(LendingRepository):
             lending.id,
             lending.content,
             lending.deadline,
+            owner_name=lending.owner_name,
             borrower_id=lending.borrower_id,
             is_confirming_returned=lending.is_confirming_returned
         )

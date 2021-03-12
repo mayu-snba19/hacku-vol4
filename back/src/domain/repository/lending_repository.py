@@ -35,7 +35,7 @@ class LendingRepository(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def fetch_lending(selfself, lending_id: int) -> LendingEntity:
+    def fetch_lending(self, lending_id: int) -> LendingEntity:
         pass
 
     @abstractmethod
