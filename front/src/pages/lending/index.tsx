@@ -1,6 +1,7 @@
 import { add, isAfter, isBefore } from 'date-fns'
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 import React, { useState, useEffect, Fragment } from 'react'
 import {
   useBorrowingInfo,
@@ -26,7 +27,7 @@ type Props = {
 
 const DEADLINE_BORDER = 3
 
-// TODO: 仮データ
+// // TODO: 仮データ
 // const borrowingList: BorrowingInfo[] = [
 //   {
 //     lendingId: '0003',
@@ -258,7 +259,7 @@ const LendingListPage: React.FC<Props> = ({
                 })
               }
             >
-              貸し借り
+              全て
             </Chip>
             <Chip
               className="mx-2 mt-1 flex items-center"
@@ -382,6 +383,21 @@ const LendingListPage: React.FC<Props> = ({
             )}
           </Fragment>
         ))}
+        {filteredList.length === 0 && (
+          <div className="mt-16 mx-4">
+            <div
+              className="rounded-full overflow-hidden mx-auto"
+              style={{ width: '200px', height: '200px' }}
+            >
+              <Image src="/suzume.jpg" width="200px" height="200px" />
+            </div>
+            <p className="mt-8 text-center text-gray-500">
+              {list.length === 0
+                ? '現在登録されている貸し借りは無いチュン'
+                : '該当する貸し借りは無いチュン'}
+            </p>
+          </div>
+        )}
       </article>
       <BottomBar type="lending" />
       <Modal
