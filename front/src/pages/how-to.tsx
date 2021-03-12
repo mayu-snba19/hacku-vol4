@@ -29,7 +29,7 @@ const HowTo = () => {
               </p>
             </div>
             <a href="https://lin.ee/KvjNz6j">
-              <img src="/line-button.PNG" width="200px" />
+              <img src="/line-button.png" width="200px" />
             </a>
             <div className={styles.procedure}>
               <h3>２. 貸し借りを登録</h3>
@@ -37,14 +37,14 @@ const HowTo = () => {
               <p>LINEの友達一覧から貸した人を選んで登録完了！</p>
             </div>
             <div className={styles.img}>
-              <img src="/line-create.PNG" width="100%" />
+              <img src="/line-create.png" width="100%" />
             </div>
             <div className={styles.procedure}>
               <h3>３. 通知が来る</h3>
               <p>設定した期限が過ぎたら確認メッセージが届きます。</p>
               <p>返してもらったらここから通知を解除してね！</p>
               <div className={styles.img}>
-                <img src="/line-return.PNG" width="100%" />
+                <img src="/line-return.png" width="100%" />
               </div>
             </div>
           </div>
