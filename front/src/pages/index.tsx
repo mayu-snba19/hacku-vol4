@@ -1,88 +1,41 @@
-import { useRouter } from 'next/router'
 import Link from 'next/link'
-import React from 'react'
-import Button from '~/components/Button'
-import styles from '~/styles/Home.module.css'
+import React, { useEffect } from 'react'
+import Image from 'next/image'
 import Meta from '~/components/Meta'
+import { useLiffAuth } from '~/liff/liffHooks'
+import { useRouter } from 'next/router'
 
 const Home: React.FC = () => {
+  const { user } = useLiffAuth()
   const router = useRouter()
 
-  const handleClickButton = async () => {
-    await router.push('example/tailwind-example')
-  }
+  useEffect(() => {
+    if (user != null) {
+      router.push('/lending')
+    }
+  }, [user])
 
   return (
-    <div className={styles.container}>
-      <Meta />
-      <div>asa</div>
+    <>
+      <Meta title="返して欲しいでチュン" />
+      <div
+        className="rounded-full overflow-hidden shadow-lg mx-auto mt-16 relative"
+        style={{ width: '200px', height: '200px' }}
+      >
+        <Image src="/suzume.jpg" width="200px" height="200px" />
+      </div>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <div className="animate-pulse my-16 mx-8 text-center leading-9">
+        <p>しばらくするとページが遷移します</p>
+        <p>少々お待ちください</p>
+      </div>
 
-        <div className="my-16">
-          <Link href="/example/tailwind-example">
-            <a className="underline hover:no-underline">
-              tailwindを使ったページへのリンク
-            </a>
-          </Link>
-        </div>
-
-        <div className="my-16">
-          <Button onClick={handleClickButton}>
-            tailwindを使ったページへ移動（↑と同じ）
-          </Button>
-        </div>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+      <div className="my-16 mx-8 text-center">
+        <Link href="/lending" passHref>
+          <a className="link">自動で遷移しない場合はこちら</a>
+        </Link>
+      </div>
+    </>
   )
 }
 

@@ -1,23 +1,113 @@
+import { add, isAfter, isBefore } from 'date-fns'
 import type { GetServerSideProps } from 'next'
-import React, { useState, useEffect } from 'react'
-// import { useLendingInfo } from '~/adaptor/lendingInfoHooks'
+import { useRouter } from 'next/router'
+import Image from 'next/image'
+import React, { useState, useEffect, Fragment } from 'react'
+import {
+  useBorrowingInfo,
+  useLendingInfo,
+  usePostHaveReturned,
+} from '~/adaptor/lendingInfoHooks'
 import BottomBar from '~/components/BottomBar'
+import Chip from '~/components/Chip'
+import HrWithMessage from '~/components/HrWithMessage'
+import Icon from '~/components/Icon/Icon'
 import LendingItemBox from '~/components/LendingItemBox'
 import Meta from '~/components/Meta'
 import Modal from '~/components/Modal'
+import { BorrowingInfo, ConcludedLendingInfo } from '~/types/lendingInfo'
+import { formatDate } from '~/util/formatDate'
+
+type Filter = 'all' | 'lending' | 'borrowing'
 
 type Props = {
   currentlyCreatedlendingId: string | null
   isFirstVisit: boolean | null
 }
 
+const DEADLINE_BORDER = 3
+
+// // TODO: 仮データ
+// const borrowingList: BorrowingInfo[] = [
+//   {
+//     lendingId: '0003',
+//     content: '微積のノート',
+//     deadline: new Date(2020, 10, 10),
+//     ownerName: '山田太郎',
+//     kind: 'borrowing' as const,
+//   },
+//   {
+//     lendingId: '0004',
+//     content: 'マンガ',
+//     deadline: new Date(2021, 2, 13),
+//     ownerName: '田中次郎',
+//     kind: 'borrowing' as const,
+//   },
+//   {
+//     lendingId: '0005',
+//     content: '微分積分学続論の第10回の授業ノート',
+//     deadline: new Date(2021, 2, 15),
+//     ownerName: '田中次郎',
+//     kind: 'borrowing' as const,
+//   },
+// ]
+// const lendingList: LendingInfo[] = [
+//   {
+//     lendingId: '0001',
+//     content: '微積のノート',
+//     deadline: new Date(2021, 2, 14),
+//     borrowerName: '山田太郎',
+//     kind: 'lending' as const,
+//     status: 'concluded' as const,
+//   },
+//   {
+//     lendingId: '0006',
+//     content: '微分積分学続論の第10回の授業ノート',
+//     deadline: new Date(2021, 2, 14),
+//     borrowerName: '山田太郎',
+//     kind: 'lending' as const,
+//     status: 'concluded' as const,
+//   },
+//   {
+//     lendingId: '0007',
+//     content: 'マンガ',
+//     deadline: new Date(2021, 2, 14),
+//     borrowerName: '山田太郎',
+//     kind: 'lending' as const,
+//     status: 'concluded' as const,
+//   },
+//   {
+//     lendingId: '0002',
+//     content: '微分積分学続論の第10回の授業ノート',
+//     deadline: new Date(2021, 6, 15),
+//     kind: 'lending' as const,
+//     status: 'waiting' as const,
+//   },
+// ]
+
 const LendingListPage: React.FC<Props> = ({
   currentlyCreatedlendingId,
   // isFirstVisit,
 }) => {
-  const [selectedLendingId, setSelectedLendingId] = useState<string | null>()
-  const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
+  const router = useRouter()
+  const filter: Filter =
+    router.query.mode === 'return'
+      ? 'lending'
+      : router.query.filter == null
+      ? 'all'
+      : router.query.filter === 'lending'
+      ? 'lending'
+      : router.query.filter === 'borrowing'
+      ? 'borrowing'
+      : 'all'
 
+  const isReturnMode = router.query.mode === 'return'
+
+  const { data: lendingList } = useLendingInfo()
+  const { data: borrowingList } = useBorrowingInfo()
+  const postHaveReturned = usePostHaveReturned()
+
+  const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
   useEffect(() => {
     if (currentlyCreatedlendingId != null) {
       const timer = setTimeout(() => setIsOpenFirstModal(true), 300)
@@ -25,85 +115,293 @@ const LendingListPage: React.FC<Props> = ({
     }
   }, [])
 
-  // TODO: 仮データ
-  const { data: lendingList } = {
-    data: [
-      {
-        lendingId: '0001',
-        content: '微積のノート',
-        deadline: new Date(2021, 2, 6),
-        borrowerName: '山田太郎',
-        kind: 'lending' as const,
-      },
-      {
-        lendingId: '0002',
-        content: '微分積分学続論の第10回の授業ノート',
-        deadline: new Date(2021, 3, 1),
-        borrowerName: '田中次郎',
-        kind: 'lending' as const,
-      },
-      {
-        lendingId: '0003',
-        content: '微積のノート',
-        deadline: new Date(2021, 2, 6),
-        ownerName: '山田太郎',
-        kind: 'borrowing' as const,
-      },
-      {
-        lendingId: '0004',
-        content: 'マンガ',
-        deadline: new Date(2021, 3, 1),
-        ownerName: '田中次郎',
-        kind: 'borrowing' as const,
-      },
-    ],
+  const [isOpenReturnConfirmDialog, setIsOpenReturnConfirmDialog] = useState(
+    false,
+  )
+
+  const handleReturn = async (lendingId: string) => {
+    await postHaveReturned(lendingId)
+
+    setSelectedLendingId(null)
+
+    setIsOpenReturnConfirmDialog(true)
   }
 
-  const selectedLendingInfo =
-    selectedLendingId == null
+  const closeReturnConfirmDialog = () => {
+    setIsOpenReturnConfirmDialog(false)
+    if (router.query.mode === 'return') {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { mode: _, modal: __, ...restQuery } = router.query
+      router.push(
+        { pathname: '/lending', query: { ...restQuery, filter: 'all' } },
+        undefined,
+        { shallow: true },
+      )
+    }
+  }
+
+  const list = [...(borrowingList ?? []), ...(lendingList ?? [])]
+    .filter(
+      (item): item is ConcludedLendingInfo | BorrowingInfo =>
+        (item.kind === 'lending' && item.status === 'concluded') ||
+        item.kind === 'borrowing',
+    )
+    .sort((a, b) =>
+      a.deadline > b.deadline ? 1 : a.deadline < b.deadline ? -1 : 0,
+    )
+
+  const filteredList = list.filter(
+    (item) => filter === 'all' || filter === item.kind,
+  )
+
+  const borderDeadlineLendingIndex =
+    filteredList.findIndex((lendingInfo) =>
+      isAfter(lendingInfo.deadline, new Date()),
+    ) ?? null
+  const borderDeadlineLendingId =
+    borderDeadlineLendingIndex === 0
       ? null
-      : lendingList.find((item) => item.lendingId === selectedLendingId)
+      : filteredList[borderDeadlineLendingIndex]?.lendingId
 
-  const handleReturn = () => {
-    console.log('返却処理')
-  }
+  const alertBorderDeadlineLendingIndex =
+    filteredList.findIndex((lendingInfo) =>
+      isAfter(lendingInfo.deadline, add(new Date(), { days: DEADLINE_BORDER })),
+    ) ?? null
+
+  const alertBorderDeadlineLendingId =
+    alertBorderDeadlineLendingIndex === 0 ||
+    alertBorderDeadlineLendingIndex === borderDeadlineLendingIndex
+      ? null
+      : filteredList[alertBorderDeadlineLendingIndex]?.lendingId
+
+  const [selectedLendingId, setSelectedLendingId] = useState<string | null>(
+    () => (router.query?.modal as string) ?? null,
+  )
+
+  // モーダルの開閉が起こったときにURLを追従させる
+  useEffect(() => {
+    if (selectedLendingId == null) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { modal: _, ...restQuery } = router.query
+      router.push({ pathname: '/lending', query: restQuery }, undefined, {
+        shallow: true,
+      })
+    } else if (
+      filteredList.find(
+        (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
+      )
+    ) {
+      router.push(
+        {
+          pathname: '/lending',
+          query: { ...router.query, modal: selectedLendingId },
+        },
+        undefined,
+        { shallow: true },
+      )
+    } else if (
+      list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
+    ) {
+      router.push(
+        {
+          pathname: '/lending',
+          query: { ...router.query, filter: null, modal: selectedLendingId },
+        },
+        undefined,
+        { shallow: true },
+      )
+    }
+  }, [selectedLendingId])
+
+  // リストが変更された場合にURLを追従させる
+  useEffect(() => {
+    if (
+      !list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
+    ) {
+      router.push(
+        {
+          pathname: '/lending',
+          query: { ...router.query, filter },
+        },
+        undefined,
+        { shallow: true },
+      )
+    }
+  }, [lendingList, borrowingList])
+
+  // URLが変更された場合にモーダルを追従させる
+  useEffect(() => {
+    const selectedLendingId = router.query.modal
+    if (
+      selectedLendingId != null &&
+      filteredList.find(
+        (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
+      )
+    ) {
+      setSelectedLendingId(selectedLendingId as string)
+    } else {
+      setSelectedLendingId(null)
+    }
+  }, [router.query.modal])
 
   return (
     <>
-      <Meta title="貸しているもの一覧" />
-      <article>
-        <h2 className="mt-8 mb-6 text-center">貸し借り中のもの</h2>
-        {lendingList?.map((lendingInfo) => (
-          <LendingItemBox
-            key={lendingInfo.lendingId}
-            item={lendingInfo}
-            onClick={() => {
-              setSelectedLendingId(lendingInfo.lendingId)
-              console.log('クリックされた')
-            }}
-          />
+      <Meta title="かしかり記録" />
+      <article className="pt-4 pb-36">
+        {!isReturnMode ? (
+          <nav className="flex justify-center items-center flex-wrap py-2 sticky top-0 z-30 bg-gray-100">
+            <Chip
+              className="mx-2 mt-1 flex items-center"
+              selected={filter === 'all'}
+              onClick={() =>
+                router.push('/lending?filter=all', '/lending?filter=all', {
+                  shallow: true,
+                })
+              }
+            >
+              全て
+            </Chip>
+            <Chip
+              className="mx-2 mt-1 flex items-center"
+              selected={filter === 'lending'}
+              onClick={() =>
+                router.push(
+                  '/lending?filter=lending',
+                  '/lending?filter=lending',
+                  { shallow: true },
+                )
+              }
+            >
+              <Icon type="uparrow" className="mr-1" /> 貸し
+            </Chip>
+            <Chip
+              className="mx-2 mt-1 flex items-center"
+              selected={filter === 'borrowing'}
+              onClick={() =>
+                router.push(
+                  '/lending?filter=borrowing',
+                  '/lending?filter=borrowing',
+                  { shallow: true },
+                )
+              }
+            >
+              <Icon type="downarrow" className="mr-1" /> 借り
+            </Chip>
+          </nav>
+        ) : (
+          <div className="flex justify-between items-center flex-wrap pl-8 pr-4 py-2 sticky top-0 z-30 bg-gray-100">
+            <h1 className="underline">返却されたものを選んでね</h1>
+            <button
+              className="bg-gray-400 rounded-md px-2 text-white"
+              onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { mode: _, ...restQuery } = router.query
+                router.push(
+                  {
+                    pathname: '/lending',
+                    query: { ...restQuery, filter: 'all' },
+                  },
+                  undefined,
+                  { shallow: true },
+                )
+              }}
+            >
+              キャンセル
+            </button>
+          </div>
+        )}
+        {filteredList.map((lendingInfo) => (
+          <Fragment key={lendingInfo.lendingId}>
+            {lendingInfo.lendingId === borderDeadlineLendingId && (
+              <HrWithMessage color="red" className="mt-3 mb-4">
+                ▲ 返却期限が過ぎています
+              </HrWithMessage>
+            )}
+            {lendingInfo.lendingId === alertBorderDeadlineLendingId && (
+              <HrWithMessage color="black" className="mt-3 mb-4">
+                ▲ 返却期限が近づいています
+              </HrWithMessage>
+            )}
+            <LendingItemBox
+              key={lendingInfo.lendingId}
+              item={lendingInfo}
+              onClick={() => {
+                setSelectedLendingId(lendingInfo.lendingId)
+                console.log('click')
+              }}
+            />
+            {lendingInfo.kind === 'lending' ? (
+              <Modal
+                isOpen={selectedLendingId === lendingInfo.lendingId}
+                positiveLabel="返却された"
+                negativeLabel="まだ"
+                onClickConfirm={() => handleReturn(lendingInfo.lendingId)}
+                onClose={() => setSelectedLendingId(null)}
+                shouldCloseOnOverlayClick={false}
+              >
+                <p>
+                  {lendingInfo.borrowerName} さんに貸していた{' '}
+                  <span className="inline-block underline ">
+                    「{lendingInfo.content}」
+                  </span>
+                  は返却されたちゅんか？
+                </p>
+              </Modal>
+            ) : (
+              <Modal
+                isOpen={selectedLendingId === lendingInfo.lendingId}
+                positiveLabel="わかった"
+                onClickConfirm={() => setSelectedLendingId(null)}
+                onClose={() => setSelectedLendingId(null)}
+              >
+                <p className="text-center">
+                  {lendingInfo.ownerName}さんから{' '}
+                  <span className="inline-block underline ">
+                    「{lendingInfo.content}」
+                  </span>
+                  を借りてるチュン。
+                  <br />
+                  {isBefore(new Date(), lendingInfo.deadline) ? (
+                    <>
+                      <span className="inline-block underline ">
+                        {formatDate(
+                          lendingInfo.deadline,
+                          'yyyy年M月d日（ccc）',
+                        )}
+                      </span>
+                      までに返すチュン。
+                    </>
+                  ) : (
+                    <>
+                      返却期限
+                      <span className="inline-block underline mx-1">
+                        {formatDate(lendingInfo.deadline)}
+                      </span>
+                      が過ぎてるチュン。早く返すチュン。
+                    </>
+                  )}
+                </p>
+              </Modal>
+            )}
+          </Fragment>
         ))}
+        {filteredList.length === 0 && (
+          <div className="mt-16 mx-4">
+            <div
+              className="rounded-full overflow-hidden mx-auto"
+              style={{ width: '200px', height: '200px' }}
+            >
+              <Image src="/suzume.jpg" width="200px" height="200px" />
+            </div>
+            <p className="mt-8 text-center text-gray-500">
+              {list.length === 0
+                ? '現在登録されている貸し借りは無いチュン'
+                : '該当する貸し借りは無いチュン'}
+            </p>
+          </div>
+        )}
       </article>
       <BottomBar type="lending" />
-      <Modal
-        isOpen={selectedLendingInfo != null}
-        positiveLabel={
-          selectedLendingInfo?.kind === 'lending' ? '返却された' : 'とじる'
-        }
-        negativeLabel={
-          selectedLendingInfo?.kind === 'lending' ? 'まだ' : undefined
-        }
-        onClickConfirm={handleReturn}
-        onClose={() => setSelectedLendingId(null)}
-      >
-        <p>
-          {selectedLendingInfo?.borrowerName} さんに貸していた{' '}
-          <span className="inline-block underline ">
-            「{selectedLendingInfo?.content}」
-          </span>
-          は返却されたちゅんか？
-        </p>
-      </Modal>
       <Modal
         isOpen={isOpenFirstModal}
         positiveLabel="わかった"
@@ -114,6 +412,17 @@ const LendingListPage: React.FC<Props> = ({
         <p>
           {'マンガ'}
           の貸し借りを登録したちゅん！この画面から返却期限を確認できるちゅん
+        </p>
+      </Modal>
+      <Modal
+        isOpen={isOpenReturnConfirmDialog}
+        positiveLabel="OK"
+        onClickConfirm={closeReturnConfirmDialog}
+        onClose={closeReturnConfirmDialog}
+        shouldCloseOnOverlayClick={false}
+      >
+        <p className="text-center">
+          返却できたチュン！今後もスズメをよろしくチュン！
         </p>
       </Modal>
     </>

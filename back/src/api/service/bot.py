@@ -18,8 +18,8 @@ from .slack import SlackService
 
 class BotService:
     def __init__(self):
-        self.line_bot_api = LineBotApi(os.environ.get('YOUR_CHANNEL_ACCESS_TOKEN'))
-        self.handler = WebhookHandler(os.environ.get('YOUR_CHANNEL_SECRET'))
+        self.line_bot_api = LineBotApi(os.environ.get('YOUR_CHANNEL_ACCESS_TOKEN', ''))
+        self.handler = WebhookHandler(os.environ.get('YOUR_CHANNEL_SECRET', ''))
         self.lending_use_case = LendingUseCase(LendingRepositoryImpl(UserRepositoryImpl()))
         self.slack_service = SlackService()
 
@@ -35,8 +35,10 @@ class BotService:
             request_message, lending_id = split_request_text
 
             lending = self.lending_use_case.fetch_lending(lending_id)
-            is_confirming_returned = lending.is_confirming_returned
+            content = lending.content
+            owner_name = lending.owner_name
             borrower_id = lending.borrower_id
+            is_confirming_returned = lending.is_confirming_returned
 
             if not is_confirming_returned:
                 self._response_random(event.reply_token)
@@ -44,7 +46,10 @@ class BotService:
 
             if request_message == 'はい':
                 self.line_bot_api.reply_message(event.reply_token, TextSendMessage(text='返ってきてよかったチュン！'))
-                self.line_bot_api.push_message(borrower_id, TextSendMessage(text='返してくれてありがとチュン！'))
+                self.line_bot_api.push_message(
+                    borrower_id,
+                    TextSendMessage(text=f"「{owner_name}」さんから借りた「{content}」返してくれてありがとチュン！")
+                )
                 self.lending_use_case.register_return_lending(lending_id)
                 self.lending_use_case.finish_confirming_returned(lending_id)
 
@@ -58,9 +63,9 @@ class BotService:
                 self.line_bot_api.push_message(
                     borrower_id,
                     TextSendMessage(
-                        text='早く返して欲しいチュン!\n'
-                             '（もし既に返してたら申し訳ないチュン...\n'
-                             '借りた側に通知解除してって言って欲しいチュン...)'
+                        text=f"「{owner_name}」さんに借りた「{content}」返して欲しいチュン\n\n"
+                             f"もし既に返してたら申し訳ないチュン...\n"
+                             f"「{owner_name}」さんに通知解除してって言って欲しいチュン..."
                     )
                 )
                 self.lending_use_case.finish_confirming_returned(lending_id)
@@ -68,7 +73,7 @@ class BotService:
             else:
                 self.line_bot_api.reply_message(
                     event.reply_token,
-                    TextSendMessage(text='「はい」か「いいえ」で答えて欲しいチュン。')
+                    TextSendMessage(text='上のボタンをタップして答えて欲しいチュン。')
                 )
 
     def _response_random(self, reply_token: str):
@@ -104,16 +109,16 @@ class BotService:
             messages = []
 
             for lending in lendings:
-                self.lending_use_case.start_confirming_returned(lending.id)
+                self.lending_use_case.start_confirming_returned(lending.lending_id)
 
                 contents = base_contents.copy()
 
-                message = f"{lending.borrower_name}さんに貸した{lending.content}帰ってきたチュン？"
+                message = f"「{lending.borrower_name}」さんに貸した「{lending.content}」返ってきたチュン？"
                 contents['body']['contents'][0]['text'] = message
 
                 # コールバックのエンドポイントに送信されるデータの末尾に、空白区切りで貸借りidを追加する
-                contents['footer']['contents'][0]['action']['text'] += f" {lending.id}"
-                contents['footer']['contents'][1]['action']['text'] += f" {lending.id}"
+                contents['footer']['contents'][0]['action']['text'] += f" {lending.lending_id}"
+                contents['footer']['contents'][1]['action']['text'] += f" {lending.lending_id}"
 
                 messages.append(FlexSendMessage(alt_text=message, contents=contents))
 

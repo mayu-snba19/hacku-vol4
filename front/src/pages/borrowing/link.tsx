@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import c from 'classnames'
 import Meta from '~/components/Meta'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import Modal from '~/components/Modal'
+import { useLinkLendingInfo } from '~/adaptor/lendingInfoHooks'
+import { BorrowingInfo } from '~/types/lendingInfo'
+import { useLiffAccessToken } from '~/liff/liffHooks'
 
 type Props = {
   lendingId: string
@@ -15,14 +19,51 @@ const isFirst = true
 
 const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
   const router = useRouter()
+  const accessToken = useLiffAccessToken()
+  const linkLendingInfo = useLinkLendingInfo()
+  const [borrowingInfo, setBorrowingInfo] = useState<BorrowingInfo | null>(null)
+  const [animationPhase, setAnimationPhase] = useState<0 | 1>(0)
 
-  const [isOpenTermsOfUseModal, setIsOpenTermsOfUseModal] = useState(false)
+  const [isOpenTermsOfUseModal, setIsOpenTermsOfUseModal] = useState(
+    router.query.modal === 'open',
+  )
+
+  useEffect(() => {
+    if (accessToken != null) {
+      handleLinkLending()
+    }
+  }, [accessToken])
+
+  const handleOpenDialog = () => {
+    if (isFirst) {
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, modal: 'open' },
+        },
+        undefined,
+        { shallow: true },
+      )
+      setIsOpenTermsOfUseModal(true)
+    } else {
+      handleSend()
+    }
+  }
+
+  const handleLinkLending = async () => {
+    const borrowingInfo = await linkLendingInfo(lendingId)
+    if (borrowingInfo == null) {
+      router.push('/lending')
+      return
+    }
+    setBorrowingInfo(borrowingInfo)
+  }
 
   const handleSend = () => {
     const url = isFirst
       ? `/lending?first=true&lendingId=${encodeURIComponent(lendingId)}`
       : `/lending?lendingId=${encodeURIComponent(lendingId)}`
-    router.push(url, '/lending', {})
+    router.replace(url, '/lending', {})
   }
   return (
     <>
@@ -34,38 +75,63 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
         >
           <Image src="/suzume.jpg" width="200px" height="200px" />
         </div>
-        <div className="leading-9">
-          <p className="text-center mt-8">
-            こんにちは！
-            <br />
-            ボクの名前はすずめだちゅん。
-          </p>
-          <p className="mt-8 text-center">
-            <span className="underline bg-white rounded-md px-2 py-1">
-              田中太郎さん
-            </span>
-            <br />
-            から
-            <br />
-            <span className="underline bg-white rounded-md px-2 py-1">
-              微積のノート
-            </span>
-            <br />
-            を借りたって聞いたけど、あってるちゅんか？
-          </p>
-          <div className="text-center">
-            <button className="bg-gray-100 text-gray-500 px-4 py-2 my-4 rounded-md mr-8">
-              いいえ
-            </button>
-            {/* NOTE: 今後の拡張のためにbuttonで実装 */}
-            <button
-              className="bg-brand-400 text-text px-8 py-2 my-4 rounded-md"
-              onClick={() => setIsOpenTermsOfUseModal(true)}
+        {borrowingInfo != null && (
+          <div className="leading-9">
+            <p className="text-center mt-8">
+              こんにちは！
+              <br />
+              ボクの名前はすずめだチュン。
+            </p>
+            {animationPhase === 0 && (
+              <div className="w-full flex justify-end px-16 mt-8">
+                <button
+                  className="w-8 h-8 relative"
+                  onClick={() => setAnimationPhase(1)}
+                >
+                  <span className="flex h-8 w-8">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-8 w-8 bg-purple-500 opacity-50"></span>
+                  </span>
+                </button>
+              </div>
+            )}
+            <p
+              className={c(
+                'mt-8 text-center transition',
+                1 <= animationPhase ? 'opacity-100' : 'opacity-0',
+              )}
             >
-              はい
-            </button>
+              <span className="underline bg-white rounded-md px-2 py-1">
+                {borrowingInfo.ownerName}さん
+              </span>
+              <br />
+              から
+              <br />
+              <span className="underline bg-white rounded-md px-2 py-1">
+                {borrowingInfo.content}
+              </span>
+              <br />
+              を借りたってことであってるちゅんか？
+            </p>
+            <div
+              className={c(
+                'text-center transform',
+                1 <= animationPhase ? 'opacity-100' : 'opacity-0',
+              )}
+            >
+              <button className="bg-gray-100 text-gray-500 px-4 py-2 my-4 rounded-md mr-8">
+                いいえ
+              </button>
+              {/* NOTE: 今後の拡張のためにbuttonで実装 */}
+              <button
+                className="bg-brand-400 text-text px-8 py-2 my-4 rounded-md"
+                onClick={handleOpenDialog}
+              >
+                はい
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </article>
       <Modal
         isOpen={isOpenTermsOfUseModal}
@@ -76,7 +142,6 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
         shouldCloseOnOverlayClick={false}
       >
         <p>
-          貸し借りサポートアプリの「返してほしいチュン」の
           <Link href="/termsOfUse">
             <a className="link">利用規約</a>
           </Link>

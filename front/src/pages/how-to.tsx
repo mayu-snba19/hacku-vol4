@@ -58,7 +58,7 @@ const HowTo = () => {
               </p>
             </div>
             <a href="https://page.line.me/555pqmgv">
-              <img src="/line-button.PNG" width="200px" />
+              <img src="/line-button.png" width="200px" />
             </a>
             <div className={styles.procedure}>
               <h3>２. 新規登録</h3>

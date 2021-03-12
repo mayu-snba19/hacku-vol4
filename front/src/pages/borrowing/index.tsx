@@ -38,7 +38,7 @@ const BorrowingPage = () => {
           />
         ))}
       </div>
-      <BottomBar type="lending" />
+      <BottomBar type="want-to-borrow" />
     </>
   )
 }

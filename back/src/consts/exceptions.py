@@ -12,3 +12,11 @@ class InvalidArgumentException(Exception):
 
     def __str__(self):
         return f"InvalidArgumentException: {self.message}"
+
+
+class BorrowerAlreadyExistsException(Exception):
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return f"BorrowerAlreadyExistsException"

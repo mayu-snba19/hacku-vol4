@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
 from src.domain.entity import UserEntity, LendingEntity
 
@@ -11,7 +11,7 @@ class LendingRepository(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> LendingEntity:
+    def associate_borrower(self, lending_id: int, borrower: UserEntity) -> Tuple[LendingEntity, bool]:
         pass
 
     @abstractmethod
@@ -35,7 +35,7 @@ class LendingRepository(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def fetch_lending(selfself, lending_id: int) -> LendingEntity:
+    def fetch_lending(self, lending_id: int) -> LendingEntity:
         pass
 
     @abstractmethod

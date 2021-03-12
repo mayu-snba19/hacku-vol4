@@ -1,22 +1,28 @@
 from src.domain.repository import FriendRepository
+from src.domain.entity import UserEntity
 
 
 class FriendUseCase:
     def __init__(self, repository: FriendRepository):
         self.repository = repository
 
-    def register_friend(self, user_id_1: str, user_id_2: str) -> [str, str]:
+    def register_friend(self, user_1: UserEntity, user_2: UserEntity) -> [str, str]:
         """
         フレンド登録をする
 
         Parameters
         ----------
-        user_id_1: str
-            ユーザー2とフレンド登録されるユーザー1のid
-        user_id_2: str
-            ユーザー1とフレンド登録されるユーザー2のid
+        user_1: UserEntity
+            ユーザー2とフレンド登録されるユーザー1
+        user_2: UserEntity
+            ユーザー1とフレンド登録されるユーザー2
+
+        Returns
+        -------
+        user_1_name, user_2_name: [str, str]
+            フレンド登録された2つのユーザー名
         """
-        return self.repository.register_friend(user_id_1, user_id_2)
+        return self.repository.register_friend(user_1, user_2)
 
     def unregister_friend(self, user_id_1: str, user_id_2: str) -> [str, str]:
         """
@@ -28,8 +34,13 @@ class FriendUseCase:
             ユーザー2とのフレンド登録を解除されるユーザー1のid
         user_id_2: str
             ユーザー1とのフレンド登録を解除されるユーザー2のid
+
+        Returns
+        -------
+        user_1_name, user_2_name: [str, str]
+            フレンド登録解除された2つのユーザー名
         """
-        return self.unregister_friend(user_id_1, user_id_2)
+        return self.repository.unregister_friend(user_id_1, user_id_2)
 
     def __repr__(self):
         return f'FriendUseCase("{self.repository}")'
