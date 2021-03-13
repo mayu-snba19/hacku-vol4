@@ -1,4 +1,6 @@
-from src.domain.entity import UserEntity
+from typing import List
+
+from src.domain.entity import UserEntity, WantToBorrowEntity
 from src.domain.repository import WantToBorrowRepository
 
 
@@ -22,6 +24,22 @@ class WantToBorrowUseCase:
             追加された借りたいもののid
         """
         return self.repository.add_want_to_borrow(user, content)
+
+    def fetch_want_to_borrow_list(self, user_id: str) -> List[WantToBorrowEntity]:
+        """
+        あるユーザーの借りたいものリストを取得する
+
+        Parameters
+        ----------
+        user_id: str
+            ユーザーID
+
+        Returns
+        -------
+        List[WantToBorrowEntity]
+            借りたいものリストの一覧
+        """
+        return self.repository.fetch_want_to_borrow_list(user_id)
 
     def fetch_friends_want_to_borrow_list(self, user_id: str) -> dict:
         """

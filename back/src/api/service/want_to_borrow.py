@@ -1,3 +1,5 @@
+from typing import List
+
 from src.domain.use_case import *
 
 from src.api.service.user_profile import get_user_profile
@@ -10,7 +12,20 @@ class WantToBorrowService:
         self.token: str = token
         self.WantToBorrowUseCase = WantToBorrowUseCase(WantToBorrowRepositoryImpl(UserRepositoryImpl()))
 
-    def get_want_to_borrow_list(self) -> dict:
+    def fetch_want_to_borrow_list(self) -> dict:
+        profile = get_user_profile(self.token)
+        want_to_borrow_list = self.WantToBorrowUseCase.fetch_want_to_borrow_list(profile.id)
+
+        return {
+            'want_to_borrow_list': [
+                {
+                    'want_to_borrow_id': want_to_borrow.want_to_borrow_id,
+                    'content': want_to_borrow.content
+                } for want_to_borrow in want_to_borrow_list
+            ]
+        }
+
+    def fetch_friends_want_to_borrow_list(self) -> dict:
         profile: UserEntity = get_user_profile(self.token)
         wtb_list: dict = dict(self.WantToBorrowUseCase.fetch_friends_want_to_borrow_list(profile.id))
         return wtb_list
