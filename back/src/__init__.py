@@ -17,10 +17,11 @@ def health() -> str:
     return '200'
 
 
-from src.api import api_lending, api_bot, api_friend, api_mock
+from src.api import *
 
 app.register_blueprint(api_lending, url_prefix="/api")
 app.register_blueprint(api_friend, url_prefix="/api")
+app.register_blueprint(api_want_to_borrow, url_prefix="/api")
 app.register_blueprint(api_bot, url_prefix="/bot")
 app.register_blueprint(api_mock, url_prefix="/mock")
 
