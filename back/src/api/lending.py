@@ -1,8 +1,7 @@
 from datetime import datetime
 from flask import Blueprint, jsonify, request, abort
 
-from src.api.service.auth import required_auth, get_token
-from src.api.service.lending import LendingService
+from src.api.service import LendingService, required_auth, get_token
 from src.consts.exceptions import *
 
 api = Blueprint("api_lending", __name__)

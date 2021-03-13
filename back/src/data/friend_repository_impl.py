@@ -1,6 +1,7 @@
 from sqlalchemy import or_, and_
 
 from src import db
+from src.consts.exceptions import AlreadyFriendException, InvalidArgumentException
 from src.domain.entity import UserEntity
 from src.domain.repository import FriendRepository, UserRepository
 from src.domain.use_case import UserUseCase
@@ -25,6 +26,17 @@ class FriendRepositoryImpl(FriendRepository):
         # あとであるユーザーのフレンド一覧を取得する際にシンプルなクエリで取得できるように、
         # user_idとfriend_idを入れ替えた2つのレコードを作成する
 
+        existing_friend = db.session.query(Friend) \
+            .filter(
+            or_(
+                and_(Friend.user_id == user_1.id, Friend.friend_id == user_2.id),
+                and_(Friend.user_id == user_1.id, Friend.friend_id == user_2.id),
+            )
+        ).first()
+
+        if existing_friend is not None:
+            raise AlreadyFriendException(f"users(id: {user_1.id}, {user_2.id}) are already friend.")
+
         friend = Friend()
         friend.user_id = user_1.id
         friend.friend_id = user_2.id
@@ -40,15 +52,18 @@ class FriendRepositoryImpl(FriendRepository):
         return [user_1.name, user_2.name]
 
     def unregister_friend(self, user_id_1: str, user_id_2: str) -> [str, str]:
-        db.session.query(Friend) \
+        query = db.session.query(Friend) \
             .filter(
             or_(
                 and_(Friend.user_id == user_id_1, Friend.friend_id == user_id_2),
                 and_(Friend.user_id == user_id_2, Friend.friend_id == user_id_1),
             )
-        ) \
-            .delete()
+        )
 
+        if query.first() is None:
+            raise InvalidArgumentException(f"users(id: {user_id_1, user_id_2} are not friends.")
+
+        query.delete()
         db.session.commit()
 
         user_1 = db.session.query(User.name) \

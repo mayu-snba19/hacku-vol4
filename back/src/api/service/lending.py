@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Tuple, List
 
-from src.api.service.user_profile import get_user_profile
-from src.consts.exceptions import InvalidOwnerException, BorrowerAlreadyExistsException
-from src.data import *
-from src.domain.entity import *
-from src.domain.use_case import *
+from .user_profile import get_user_profile
+from src.consts.exceptions import *
+from src.domain.use_case import LendingUseCase
+from src.data import LendingRepositoryImpl, UserRepositoryImpl
+from src.domain.entity import LendingEntity, UserEntity
 
 
 class LendingService:
