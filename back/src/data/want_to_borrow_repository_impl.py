@@ -1,3 +1,5 @@
+from typing import List
+
 from src import db
 from src.domain.repository import WantToBorrowRepository, UserRepository
 from src.domain.use_case import UserUseCase
@@ -26,6 +28,19 @@ class WantToBorrowRepositoryImpl(WantToBorrowRepository):
         db.session.commit()
 
         return want_to_borrow.id
+
+    def fetch_want_to_borrow_list(self, user_id: str) -> List[WantToBorrowEntity]:
+        want_to_borrows = db.session.query(WantToBorrow.id, WantToBorrow.content) \
+            .filter(WantToBorrow.user_id == user_id) \
+            .all()
+
+        return [
+            WantToBorrowEntity(
+                want_to_borrow.id,
+                user_id,
+                want_to_borrow.content
+            ) for want_to_borrow in want_to_borrows
+        ]
 
     def fetch_friends_want_to_borrow_list(self, user_id: str) -> dict:
         results = db.session.query(
