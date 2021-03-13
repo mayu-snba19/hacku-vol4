@@ -1,5 +1,5 @@
 # 返してほしいでチュン
-[Open Hack U 2020 Online Vol.4](https://hacku.connpass.com/event/201528/)
+[Open Hack U 2020 Online Vol.4](https://hacku.yahoo.co.jp/hacku2020online4/)
 での **そてそてすずめ** の制作物です。
 
 ## サービス概要
