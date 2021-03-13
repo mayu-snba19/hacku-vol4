@@ -5,6 +5,7 @@ import Meta from '~/components/Meta'
 import { useAddFriend } from '~/adaptor/friendHooks'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useLiffAccessToken } from '~/liff/liffHooks'
 
 type Props = {
   friendId: string
@@ -12,6 +13,7 @@ type Props = {
 
 const FriendsAdd: React.FC<Props> = ({ friendId }) => {
   const { addFriend, friendName } = useAddFriend()
+  const accessToken = useLiffAccessToken()
   const router = useRouter()
   //TODO: 初めて利用する人だった場合の対応。とりあえず利用履歴がある人と仮定して進める
 
@@ -24,7 +26,7 @@ const FriendsAdd: React.FC<Props> = ({ friendId }) => {
       }
     }
     func()
-  }, [])
+  }, [accessToken])
 
   return (
     <>

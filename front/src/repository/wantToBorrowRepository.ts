@@ -1,12 +1,30 @@
-import { FriendWantToBorrowList, WantToBorrowItem } from '~/types/wantToBorrow'
+import {
+  FriendWantToBorrowList,
+  FriendWantToBorrowItem,
+  WantToBorrowItem,
+} from '~/types/wantToBorrow'
 import axios from '~/util/axios'
 import checkAccessToken from '~/util/checkAccessToken'
+
+export const fetchWantToBorrowList = async (
+  accessToken: string,
+): Promise<WantToBorrowItem[]> => {
+  checkAccessToken(accessToken)
+  const res = await axios.get('/want-to-borrow/own', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  const wantToBorrowList: unknown[] = res.data.want_to_borrow_list
+  return wantToBorrowList.map<WantToBorrowItem>((data: any) => ({
+    wantToBorrowId: data.want_to_borrow_id as string,
+    content: data.content as string,
+  }))
+}
 
 /**
  * フレンドの借りたいものリストを取得する
  * @param accessToken アクセストークン
  */
-export const fetchWantToBorrowList = async (
+export const fetchFriendsWantToBorrowList = async (
   accessToken: string,
 ): Promise<FriendWantToBorrowList[]> => {
   checkAccessToken(accessToken)
@@ -17,12 +35,12 @@ export const fetchWantToBorrowList = async (
     Object.entries(res.data)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map<FriendWantToBorrowList>(([friendId, data]: [string, any]) => {
-        const friendName = data.user_name
+        const friendName = data.name
         const list: unknown[] = data.want_to_borrow_list
         return {
           friendName: friendName as string,
           friendId,
-          list: list.map<WantToBorrowItem>(
+          list: list.map<FriendWantToBorrowItem>(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (data: any) => ({
               wantToBorrowId: data.want_to_borrow_id,
@@ -57,14 +75,18 @@ export type PostWantToBorrowListItemParams = {
   content: string
 }
 
+/**
+ * 借りたい物を削除
+ * @param accessToken アクセストークン
+ * @param wantToBorrowId 借りたい物ID
+ */
 export const deleteWantToBorrowItem = async (
   accessToken: string,
   wantToBorrowId: string,
 ): Promise<DeleteWantToBorrowItemResponse> => {
   checkAccessToken(accessToken)
-  const res = await axios.post(
+  const res = await axios.delete(
     `/want-to-borrow/${encodeURIComponent(wantToBorrowId)}`,
-    {},
     {
       headers: { Authorization: `Bearer ${accessToken}` },
     },

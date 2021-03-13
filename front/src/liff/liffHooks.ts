@@ -131,14 +131,20 @@ export const useLiffShareTargetApiAvailable = (): boolean | null => {
   const { liff } = useLiff()
   const context = useLiffContext()
 
-  if (liff == null) return null
+  if (liff == null) {
+    return null
+  }
   const isApiAvailable = liff.isApiAvailable('shareTargetPicker')
 
   if (context.isLiffBrowser) {
     const lineVersionStr = liff.getLineVersion()
-    if (lineVersionStr == null) return null
+    if (lineVersionStr == null) {
+      return null
+    }
     const lineVersion = getSemanticVersioning(lineVersionStr)
-    if (lineVersion == null) return null
+    if (lineVersion == null) {
+      return null
+    }
     return isNewerOrEqualTo(lineVersion, { major: 10, minor: 11, patch: 0 })
   } else {
     return isApiAvailable
