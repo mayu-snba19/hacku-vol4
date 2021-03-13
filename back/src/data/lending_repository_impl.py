@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from typing import List, Tuple
-from sqlalchemy import false
+from sqlalchemy import false, true
 
 from src import db
-from src.consts.exceptions import BorrowerAlreadyExistsException
+from src.consts.exceptions import BorrowerAlreadyExistsException, InvalidArgumentException
 from src.domain.entity import UserEntity, LendingEntity
 from src.domain.repository import UserRepository, LendingRepository
 from src.domain.use_case import UserUseCase
@@ -30,6 +30,15 @@ class LendingRepositoryImpl(LendingRepository):
         db.session.commit()
 
         return new_lending.id
+
+    def register_sent_url(self, lending_id: int):
+        lending = db.session.query(Lending).filter(Lending.id == lending_id).first()
+
+        if lending is None:
+            raise InvalidArgumentException(f"lending(id: {lending_id} does not exist.")
+
+        lending.is_sent_url = True
+        db.session.commit()
 
     def associate_borrower(self, lending_id: int, borrower: UserEntity) -> Tuple[LendingEntity, bool]:
         is_new_user = db.session.query(User).filter(User.id == borrower.id).first() is None
@@ -63,18 +72,16 @@ class LendingRepositoryImpl(LendingRepository):
         ), is_new_user
 
     def fetch_lent_list(self, owner_id: str) -> List[LendingEntity]:
-        owner = db.aliased(User)
-        borrower = db.aliased(User)
-
         result = db.session.query(
             Lending.id,
             Lending.content,
             Lending.deadline,
-            borrower.name.label('borrower_name')
+            User.name.label('borrower_name')
         ) \
-            .join(owner, Lending.owner_id == owner.id) \
-            .outerjoin(borrower, Lending.borrower_id == borrower.id) \
+            .outerjoin(User, Lending.borrower_id == User.id) \
             .filter(Lending.owner_id == owner_id) \
+            .filter(Lending.is_returned == false()) \
+            .filter(Lending.is_sent_url == true()) \
             .all()
 
         lent_list = [
@@ -89,17 +96,14 @@ class LendingRepositoryImpl(LendingRepository):
         return lent_list
 
     def fetch_borrowed_list(self, borrower_id: str) -> List[LendingEntity]:
-        owner = db.aliased(User)
-        borrower = db.aliased(User)
-
         result = db.session.query(
             Lending.id,
             Lending.content,
             Lending.deadline,
-            owner.name.label('owner_name'),
+            User.name.label('owner_name'),
         ) \
-            .join(owner, Lending.owner_id == owner.id) \
-            .outerjoin(borrower, Lending.borrower_id == borrower.id) \
+            .join(User, Lending.owner_id == User.id) \
+            .filter(Lending.is_returned == false()) \
             .filter(Lending.borrower_id == borrower_id) \
             .all()
 

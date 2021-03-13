@@ -1,9 +1,8 @@
 from datetime import datetime
 from flask import Blueprint, jsonify, request, abort
 
-from src.api.service.auth import required_auth, get_token
-from src.api.service.lending import LendingService
-from src.consts.exceptions import InvalidOwnerException, BorrowerAlreadyExistsException
+from src.api.service import LendingService, required_auth, get_token
+from src.consts.exceptions import *
 
 api = Blueprint("api_lending", __name__)
 
@@ -40,16 +39,40 @@ def register_lending():
     return jsonify({"lending_id": lending_id, "created_at": created_at})
 
 
+@api.route("/lending/<int:lending_id>/sent-url", methods=["PUT"])
+@required_auth
+def register_sent_url(lending_id):
+    lending_service = LendingService(get_token())
+    try:
+        lending_service.register_sent_url(lending_id)
+    except InvalidArgumentException as e:
+        print(e)
+        return jsonify({'status': 'error', 'message': e.message})
+
+    return jsonify({'status': 'success'})
+
+
 @api.route("/lending/<int:lending_id>", methods=["GET"])
+@required_auth
 def fetch_lending(lending_id):
-    lending_service = LendingService('')
-    lending = lending_service.fetch_lending(lending_id)
+    lending_service = LendingService(get_token())
+
+    try:
+        lending = lending_service.fetch_lending(lending_id)
+    except BorrowerAlreadyExistsException as e:
+        print(e)
+
+        return jsonify({
+            'status_code': 404,
+            'error_code': 'Not Found'
+        }), 404
 
     return jsonify({
         'lending_id': lending.lending_id,
         'content': lending.content,
         'deadline': lending.deadline,
         'owner_name': lending.owner_name,
+        'is_associated': lending.borrower_id is not None
     })
 
 

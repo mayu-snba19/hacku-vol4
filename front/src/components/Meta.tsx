@@ -11,9 +11,9 @@ type Props = {
 }
 
 const Meta: React.FC<Props> = ({
-  title = '返してほしいでチュン',
+  title = '返して欲しいでチュン',
   url,
-  imageUrl = '/ogp/default',
+  imageUrl = '/suzume.jpg',
   children,
 } = {}) => {
   const router = useRouter()
@@ -24,7 +24,7 @@ const Meta: React.FC<Props> = ({
         property="og:url"
         content={`https://${URL}${router.asPath ?? url}`}
       />
-      <meta property="og:image" content={imageUrl} />
+      <meta property="og:image" content={`https://${URL}${imageUrl}`} />
       <title>{title}</title>
       {children}
     </Head>

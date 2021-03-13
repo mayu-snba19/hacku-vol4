@@ -1,6 +1,8 @@
 import { add, isAfter, isBefore } from 'date-fns'
+import c from 'classnames'
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
+import Image from 'next/image'
 import React, { useState, useEffect, Fragment } from 'react'
 import {
   useBorrowingInfo,
@@ -14,8 +16,13 @@ import Icon from '~/components/Icon/Icon'
 import LendingItemBox from '~/components/LendingItemBox'
 import Meta from '~/components/Meta'
 import Modal from '~/components/Modal'
-import { BorrowingInfo, ConcludedLendingInfo } from '~/types/lendingInfo'
+import {
+  BorrowingInfo,
+  ConcludedLendingInfo,
+  WaitingLendingInfo,
+} from '~/types/lendingInfo'
 import { formatDate } from '~/util/formatDate'
+import { useLiffContext } from '~/liff/liffHooks'
 
 type Filter = 'all' | 'lending' | 'borrowing'
 
@@ -26,7 +33,7 @@ type Props = {
 
 const DEADLINE_BORDER = 3
 
-// TODO: 仮データ
+// // TODO: 仮データ
 // const borrowingList: BorrowingInfo[] = [
 //   {
 //     lendingId: '0003',
@@ -89,6 +96,7 @@ const LendingListPage: React.FC<Props> = ({
   // isFirstVisit,
 }) => {
   const router = useRouter()
+  const { isLiffBrowser } = useLiffContext()
   const filter: Filter =
     router.query.mode === 'return'
       ? 'lending'
@@ -102,8 +110,16 @@ const LendingListPage: React.FC<Props> = ({
 
   const isReturnMode = router.query.mode === 'return'
 
-  const { data: lendingList } = useLendingInfo()
-  const { data: borrowingList } = useBorrowingInfo()
+  const {
+    data: lendingList,
+    isValidating: lendingListIsValidating,
+    revalidate,
+  } = useLendingInfo()
+
+  const {
+    data: borrowingList,
+    isValidating: borrowingListIsValidating,
+  } = useBorrowingInfo()
   const postHaveReturned = usePostHaveReturned()
 
   const [isOpenFirstModal, setIsOpenFirstModal] = useState(false)
@@ -120,9 +136,8 @@ const LendingListPage: React.FC<Props> = ({
 
   const handleReturn = async (lendingId: string) => {
     await postHaveReturned(lendingId)
-
     setSelectedLendingId(null)
-
+    revalidate()
     setIsOpenReturnConfirmDialog(true)
   }
 
@@ -149,23 +164,26 @@ const LendingListPage: React.FC<Props> = ({
       a.deadline > b.deadline ? 1 : a.deadline < b.deadline ? -1 : 0,
     )
 
-  const filteredList = list.filter(
-    (item) => filter === 'all' || filter === item.kind,
+  const unassociatedList = (lendingList ?? []).filter(
+    (item): item is WaitingLendingInfo =>
+      item.kind === 'lending' && item.status === 'waiting',
   )
 
-  const borderDeadlineLendingIndex =
-    filteredList.findIndex((lendingInfo) =>
-      isAfter(lendingInfo.deadline, new Date()),
-    ) ?? null
+  const filteredList =
+    filter === 'all' ? list : list.filter((item) => filter === item.kind)
+
+  const borderDeadlineLendingIndex = filteredList.findIndex((lendingInfo) =>
+    isAfter(lendingInfo.deadline, new Date()),
+  )
   const borderDeadlineLendingId =
     borderDeadlineLendingIndex === 0
       ? null
       : filteredList[borderDeadlineLendingIndex]?.lendingId
 
-  const alertBorderDeadlineLendingIndex =
-    filteredList.findIndex((lendingInfo) =>
+  const alertBorderDeadlineLendingIndex = filteredList.findIndex(
+    (lendingInfo) =>
       isAfter(lendingInfo.deadline, add(new Date(), { days: DEADLINE_BORDER })),
-    ) ?? null
+  )
 
   const alertBorderDeadlineLendingId =
     alertBorderDeadlineLendingIndex === 0 ||
@@ -177,78 +195,68 @@ const LendingListPage: React.FC<Props> = ({
     () => (router.query?.modal as string) ?? null,
   )
 
+  // NOTE: 無限にリダイレクトしてしまうバグが発生したためコメントアウト
   // モーダルの開閉が起こったときにURLを追従させる
-  useEffect(() => {
-    if (selectedLendingId == null) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { modal: _, ...restQuery } = router.query
-      router.push({ pathname: '/lending', query: restQuery }, undefined, {
-        shallow: true,
-      })
-    } else if (
-      filteredList.find(
-        (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
-      )
-    ) {
-      router.push(
-        {
-          pathname: '/lending',
-          query: { ...router.query, modal: selectedLendingId },
-        },
-        undefined,
-        { shallow: true },
-      )
-    } else if (
-      list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
-    ) {
-      router.push(
-        {
-          pathname: '/lending',
-          query: { ...router.query, filter: null, modal: selectedLendingId },
-        },
-        undefined,
-        { shallow: true },
-      )
-    }
-  }, [selectedLendingId])
-
-  // リストが変更された場合にURLを追従させる
-  useEffect(() => {
-    if (
-      !list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
-    ) {
-      router.push(
-        {
-          pathname: '/lending',
-          query: { ...router.query, filter },
-        },
-        undefined,
-        { shallow: true },
-      )
-    }
-  }, [lendingList, borrowingList])
+  // useEffect(() => {
+  //   if (selectedLendingId == null) {
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //     const { modal: _, ...restQuery } = router.query
+  //     router.push({ pathname: '/lending', query: restQuery }, undefined, {
+  //       shallow: true,
+  //     })
+  //   } else if (
+  //     filteredList.find(
+  //       (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
+  //     )
+  //   ) {
+  //     router.push(
+  //       {
+  //         pathname: '/lending',
+  //         query: { ...router.query, modal: selectedLendingId },
+  //       },
+  //       undefined,
+  //       { shallow: true },
+  //     )
+  //   } else if (
+  //     list.find((lendingInfo) => lendingInfo.lendingId === selectedLendingId)
+  //   ) {
+  //     router.push(
+  //       {
+  //         pathname: '/lending',
+  //         query: { ...router.query, filter: null, modal: selectedLendingId },
+  //       },
+  //       undefined,
+  //       { shallow: true },
+  //     )
+  //   }
+  // }, [selectedLendingId, lendingListIsValidating, borrowingListIsValidating])
 
   // URLが変更された場合にモーダルを追従させる
-  useEffect(() => {
-    const selectedLendingId = router.query.modal
-    if (
-      selectedLendingId != null &&
-      filteredList.find(
-        (lendingInfo) => lendingInfo.lendingId === selectedLendingId,
-      )
-    ) {
-      setSelectedLendingId(selectedLendingId as string)
-    } else {
-      setSelectedLendingId(null)
-    }
-  }, [router.query.modal])
+  // useEffect(() => {
+  //   const selectedLendingId = router.query.modal
+  //   if (selectedLendingId != null) {
+  //     setSelectedLendingId(selectedLendingId as string)
+  //   } else {
+  //     setSelectedLendingId(null)
+  //   }
+  // }, [router.query.modal, lendingListIsValidating, borrowingListIsValidating])
+
+  const [isUnassociatedListOpen, setIsUnassociatedListOpen] = useState(false)
+  console.log(lendingList)
 
   return (
     <>
-      <Meta title="かしかり記録" />
-      <article className="pt-4 pb-36">
+      <Meta title={isReturnMode ? '返却登録' : 'かしかり記録'} />
+      <article className={c('pb-36', isLiffBrowser ? 'pt-20' : 'pt-4')}>
         {!isReturnMode ? (
-          <nav className="flex justify-center items-center flex-wrap py-2 sticky top-0 z-30 bg-gray-100">
+          <nav
+            className={c(
+              'flex justify-center items-center flex-wrap top-0 z-30 shadow-md',
+              isLiffBrowser
+                ? 'fixed bg-white pb-4 pt-2 w-full'
+                : 'sticky bg-gray-100 py-2',
+            )}
+          >
             <Chip
               className="mx-2 mt-1 flex items-center"
               selected={filter === 'all'}
@@ -258,7 +266,7 @@ const LendingListPage: React.FC<Props> = ({
                 })
               }
             >
-              貸し借り
+              全て
             </Chip>
             <Chip
               className="mx-2 mt-1 flex items-center"
@@ -288,27 +296,71 @@ const LendingListPage: React.FC<Props> = ({
             </Chip>
           </nav>
         ) : (
-          <button
-            className="flex justify-between items-center flex-wrap px-8 py-2 sticky top-0 z-30 bg-gray-100 w-full"
-            onClick={() => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const { mode: _, ...restQuery } = router.query
-              router.push(
-                {
-                  pathname: '/lending',
-                  query: { ...restQuery, filter: 'all' },
-                },
-                undefined,
-                { shallow: true },
-              )
-            }}
+          <div
+            className={c(
+              'flex justify-between items-center flex-wrap pl-8 pr-4 top-0 z-30 shadow-md',
+              isLiffBrowser
+                ? 'fixed bg-white py-4 w-full'
+                : 'sticky bg-gray-100 py-3',
+            )}
           >
-            <h1 className="underline">返却されたものを選んでね</h1>
-            <Icon type="close" className="text-xl" />
-          </button>
+            <h1>返却されたものを選んでください</h1>
+            <button
+              className="bg-gray-400 rounded-md p-1 text-white"
+              onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { mode: _, ...restQuery } = router.query
+                router.push(
+                  {
+                    pathname: '/lending',
+                    query: { ...restQuery, filter: 'all' },
+                  },
+                  undefined,
+                  { shallow: true },
+                )
+              }}
+            >
+              <Icon type="close" />
+            </button>
+          </div>
         )}
+        {!isReturnMode &&
+          (filter === 'all' || filter === 'lending') &&
+          unassociatedList.length > 0 && (
+            <section
+              className="mt-2 mx-4 px-2 py-2 bg-gray-200 rounded-md"
+              onClick={() => setIsUnassociatedListOpen(!isUnassociatedListOpen)}
+            >
+              <div className="flex flex-row items-center">
+                <Icon type="alert" className="text-3xl mr-2" />
+                <h2 className="text-sm text-gray-600">
+                  友達がまだ承認していない貸出が{unassociatedList.length}
+                  件あるチュン。 友達の承認を待つチュン。
+                  {!isUnassociatedListOpen && (
+                    <button
+                      className="bg-gray-400 rounded-md px-2 text-white flex-shrink-0"
+                      onClick={() =>
+                        setIsUnassociatedListOpen(!isUnassociatedListOpen)
+                      }
+                    >
+                      全て見る
+                    </button>
+                  )}
+                </h2>
+              </div>
+              {isUnassociatedListOpen && (
+                <ul className="px-8">
+                  {unassociatedList.map((lendingInfo) => (
+                    <li key={lendingInfo.lendingId} className="mt-2 text-sm">
+                      ・{lendingInfo.content}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
         {filteredList.map((lendingInfo) => (
-          <Fragment key={lendingInfo.lendingId}>
+          <Fragment key={lendingInfo.kind + lendingInfo.lendingId}>
             {lendingInfo.lendingId === borderDeadlineLendingId && (
               <HrWithMessage color="red" className="mt-3 mb-4">
                 ▲ 返却期限が過ぎています
@@ -382,6 +434,23 @@ const LendingListPage: React.FC<Props> = ({
             )}
           </Fragment>
         ))}
+        {filteredList.length === 0 && (
+          <div className="mt-16 mx-4">
+            <div
+              className="rounded-full overflow-hidden mx-auto"
+              style={{ width: '200px', height: '200px' }}
+            >
+              <Image src="/suzume.jpg" width="200px" height="200px" />
+            </div>
+            <p className="mt-8 text-center text-gray-500">
+              {lendingListIsValidating || borrowingListIsValidating
+                ? 'ローディング中...'
+                : list.length === 0
+                ? '現在登録されている貸し借りは無いチュン'
+                : '該当する貸し借りは無いチュン'}
+            </p>
+          </div>
+        )}
       </article>
       <BottomBar type="lending" />
       <Modal
@@ -391,10 +460,7 @@ const LendingListPage: React.FC<Props> = ({
         onClose={() => setIsOpenFirstModal(false)}
         shouldCloseOnOverlayClick={false}
       >
-        <p>
-          {'マンガ'}
-          の貸し借りを登録したちゅん！この画面から返却期限を確認できるちゅん
-        </p>
+        <p>貸し借りを登録したちゅん！この画面から返却期限を確認できるちゅん</p>
       </Modal>
       <Modal
         isOpen={isOpenReturnConfirmDialog}

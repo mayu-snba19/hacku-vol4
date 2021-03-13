@@ -11,9 +11,12 @@ import {
   useLiffAuth,
   useLiffShareTargetApiAvailable,
 } from '~/liff/liffHooks'
-import { usePostLendingInfo } from '~/adaptor/lendingInfoHooks'
+import {
+  usePostLendingInfo,
+  usePutLendingProcessFinished,
+} from '~/adaptor/lendingInfoHooks'
 import DateInput, { DateString } from '~/components/DateInput'
-import buildLiffLinkMessage from '~/util/generateLiffLinkMessage'
+import buildLiffLinkMessage from '~/util/buildLiffLinkMessage'
 import LendingToken from '~/types/lendingToken'
 import HrWithMessage from '~/components/HrWithMessage'
 
@@ -23,6 +26,7 @@ const CreatePage: React.FC = () => {
   const shareTargetPickerAvailable = useLiffShareTargetApiAvailable()
   const { user } = useLiffAuth()
   const postLendingInfo = usePostLendingInfo()
+  const putLendingProcessFinished = usePutLendingProcessFinished()
   const [focusingOnField, setFocusingOnField] = useState(false)
 
   const [content, setContent] = useState('')
@@ -60,16 +64,14 @@ const CreatePage: React.FC = () => {
         return
       }
 
-      const res = await liff.shareTargetPicker([
-        {
-          type: 'text',
-          text: buildLiffLinkMessage(token, user.displayName, content),
-        },
-      ])
+      const res = await liff.shareTargetPicker(
+        buildLiffLinkMessage(token, content),
+      )
 
       if (res != null && res.status === 'success') {
-        resetForm()
+        await putLendingProcessFinished(token)
         setIsOpenCompleteDialog(true)
+        resetForm()
       }
     } catch {
       setIsOpenRetryDialog(true)
@@ -152,12 +154,12 @@ const CreatePage: React.FC = () => {
           <h3 className="text-gray-600 mt-8 mb-4 mx-8">
             貸す友達にメッセージを送ろう
           </h3>
-          <div className="flex flex-col items-stretch mx-auto my-4 justify-stretch px-8 max-w-xs">
+          <div className="flex flex-col items-stretch mx-auto my-4 justify-stretch px-8 pb-16 max-w-xs">
             <button
               className={c(
                 'text-text px-8 py-4 text-sm rounded-sm text-center transition-all',
                 inputOk && shareTargetPickerAvailable
-                  ? 'bg-accent-400 '
+                  ? 'bg-accent-400'
                   : 'bg-accent-100',
               )}
               disabled={!inputOk || !shareTargetPickerAvailable}

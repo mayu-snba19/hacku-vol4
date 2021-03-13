@@ -17,7 +17,10 @@ const ALERT_BORDER = 1
 
 const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
   const remaindDays = differenceInDays(item.deadline, new Date())
-  const isExpired = remaindDays < 0
+  const isExpired = item.deadline < new Date()
+  const remaindDaysFormat = formatDateDistance(item.deadline, {
+    approximately: isExpired,
+  })
   return (
     <section
       className={c(
@@ -28,6 +31,7 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
       <div className="flex flex-col justify-center items-center z-10 min-w-32 px-4">
         <p
           className={c(
+            'whitespace-nowrap',
             isExpired
               ? 'bg-red-700 text-text rounded-md px-2 font-extrabold animate-pulse'
               : 'font-medium',
@@ -35,17 +39,13 @@ const LendingItemBox: React.FC<Props> = ({ item, onClick }) => {
         >
           {isExpired ? (
             <>
-              <span className="whitespace-nowrap">
-                {formatDateDistance(item.deadline, { addSuffix: false })}
-              </span>
-              <span className="text-sm whitespace-nowrap">超過</span>
+              <span>{remaindDaysFormat}</span>
+              <span className="text-sm">超過</span>
             </>
           ) : (
             <>
               <span className="text-sm">あと</span>
-              {formatDateDistance(item.deadline, {
-                addSuffix: false,
-              })}
+              {remaindDaysFormat}
             </>
           )}
         </p>

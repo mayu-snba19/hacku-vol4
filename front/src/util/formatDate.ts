@@ -1,4 +1,9 @@
-import { formatDistance, formatDistanceToNow, format } from 'date-fns'
+import {
+  formatDistance,
+  formatDistanceToNow,
+  format,
+  differenceInDays,
+} from 'date-fns'
 import { ja } from 'date-fns/locale'
 
 export const formatDate = (date: Date, formatStr?: string) =>
@@ -6,11 +11,17 @@ export const formatDate = (date: Date, formatStr?: string) =>
 
 export const formatDateDistance = (
   date: Date,
-  { addSuffix = false, inverse = false } = {},
+  { inverse = false, approximately = false } = {},
 ) => {
   if (!inverse) {
-    return formatDistanceToNow(date, { locale: ja, addSuffix })
+    if (approximately && differenceInDays(new Date(), date) < 1) {
+      return '0日'
+    }
+    return formatDistanceToNow(date, { locale: ja })
   } else {
-    return formatDistance(date, new Date(), { locale: ja, addSuffix })
+    if (approximately && differenceInDays(date, new Date()) < 1) {
+      return '0日'
+    }
+    return formatDistance(date, new Date(), { locale: ja })
   }
 }

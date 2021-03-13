@@ -6,33 +6,44 @@ import Link from 'next/link'
 import type { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import Modal from '~/components/Modal'
-import { useLinkLendingInfo } from '~/adaptor/lendingInfoHooks'
-import { BorrowingInfo } from '~/types/lendingInfo'
-import { useLiffAccessToken } from '~/liff/liffHooks'
+import {
+  useGetBorrowingInfoFromToken,
+  useLinkAsBorrower,
+} from '~/adaptor/lendingInfoHooks'
+import LendingToken from '~/types/lendingToken'
 
 type Props = {
-  lendingId: string
+  lendingId: LendingToken
 }
 
 // 最初の利用か
-const isFirst = true
+const isFirst = false
 
 const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
   const router = useRouter()
-  const accessToken = useLiffAccessToken()
-  const linkLendingInfo = useLinkLendingInfo()
-  const [borrowingInfo, setBorrowingInfo] = useState<BorrowingInfo | null>(null)
+  const { data: linkedBorrowingInfo, errorCode } = useGetBorrowingInfoFromToken(
+    lendingId,
+  )
+  const linkAsBorrower = useLinkAsBorrower()
   const [animationPhase, setAnimationPhase] = useState<0 | 1>(0)
+  const [showErrorDialog, setShowErrorDialog] = useState(false)
 
   const [isOpenTermsOfUseModal, setIsOpenTermsOfUseModal] = useState(
     router.query.modal === 'open',
   )
 
   useEffect(() => {
-    if (accessToken != null) {
-      handleLinkLending()
+    // TODO: 自分かどうかの判定
+    if (linkedBorrowingInfo?.isAssociated === true) {
+      router.push(`/lending?modal=${linkedBorrowingInfo.lendingId}`)
     }
-  }, [accessToken])
+  }, [linkedBorrowingInfo])
+
+  useEffect(() => {
+    if (errorCode != null) {
+      setShowErrorDialog(true)
+    }
+  }, [errorCode])
 
   const handleOpenDialog = () => {
     if (isFirst) {
@@ -50,17 +61,10 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
     }
   }
 
-  const handleLinkLending = async () => {
-    const borrowingInfo = await linkLendingInfo(lendingId)
-    if (borrowingInfo == null) {
-      router.push('/lending')
-      return
-    }
-    setBorrowingInfo(borrowingInfo)
-  }
-
-  const handleSend = () => {
-    const url = isFirst
+  const handleSend = async () => {
+    const res = await linkAsBorrower(lendingId)
+    const isNewUser = res?.isNewUser ?? false
+    const url = isNewUser
       ? `/lending?first=true&lendingId=${encodeURIComponent(lendingId)}`
       : `/lending?lendingId=${encodeURIComponent(lendingId)}`
     router.replace(url, '/lending', {})
@@ -75,7 +79,7 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
         >
           <Image src="/suzume.jpg" width="200px" height="200px" />
         </div>
-        {borrowingInfo != null && (
+        {linkedBorrowingInfo != null && !linkedBorrowingInfo.isAssociated && (
           <div className="leading-9">
             <p className="text-center mt-8">
               こんにちは！
@@ -102,16 +106,16 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
               )}
             >
               <span className="underline bg-white rounded-md px-2 py-1">
-                {borrowingInfo.ownerName}さん
+                {linkedBorrowingInfo.ownerName}さん
               </span>
               <br />
               から
               <br />
               <span className="underline bg-white rounded-md px-2 py-1">
-                {borrowingInfo.content}
+                {linkedBorrowingInfo.content}
               </span>
               <br />
-              を借りたって聞いたけど、あってるちゅんか？
+              を借りたってことであってるちゅんか？
             </p>
             <div
               className={c(
@@ -119,10 +123,11 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
                 1 <= animationPhase ? 'opacity-100' : 'opacity-0',
               )}
             >
-              <button className="bg-gray-100 text-gray-500 px-4 py-2 my-4 rounded-md mr-8">
-                いいえ
-              </button>
-              {/* NOTE: 今後の拡張のためにbuttonで実装 */}
+              <Link href="/lending" passHref>
+                <a className="bg-gray-100 text-gray-500 px-4 py-2 my-4 rounded-md mr-8">
+                  いいえ
+                </a>
+              </Link>
               <button
                 className="bg-brand-400 text-text px-8 py-2 my-4 rounded-md"
                 onClick={handleOpenDialog}
@@ -152,6 +157,19 @@ const LendingLinkPage: React.FC<Props> = ({ lendingId }) => {
           に同意してほしいちゅん
         </p>
       </Modal>
+      <Modal
+        isOpen={showErrorDialog}
+        positiveLabel="ホーム画面へ"
+        onClickConfirm={() => router.push('/lending')}
+        onClose={() => router.push('/lending')}
+        shouldCloseOnOverlayClick={false}
+      >
+        <p>
+          {errorCode === 'unknown'
+            ? 'エラーが発生したチュン'
+            : 'エラーが発生したチュン。URLが間違っているか、他の人への貸し出しである可能性があるチュン。'}
+        </p>
+      </Modal>
     </>
   )
 }
@@ -173,7 +191,7 @@ export const getServerSideProps: GetServerSideProps<Props, Query> = async ({
 
   return {
     props: {
-      lendingId: query?.lendingId?.toString(),
+      lendingId: query?.lendingId?.toString() as LendingToken,
     },
   }
 }

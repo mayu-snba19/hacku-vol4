@@ -1,22 +1,12 @@
 import axios from '~/util/axios'
 import { BorrowingInfo, LendingInfo } from '~/types/lendingInfo'
 import LendingToken from '~/types/lendingToken'
-
-/**
- * アクセストークンの有無をチェックする
- * @param accessToken アクセストークン
- */
-const checkAccessToken = (accessToken: string) => {
-  if (accessToken == null || accessToken === '') {
-    throw new Error('アクセストークンが指定されていません')
-  }
-}
+import checkAccessToken from '~/util/checkAccessToken'
 
 /**
  * 貸す物を登録する
  * @params accessToken
  * @params data 登録するデータ
- * @return token: 貸出トークン
  */
 export const postLendingInfo = async (
   accessToken: string,
@@ -32,6 +22,25 @@ export const postLendingInfo = async (
 export type PostLendingInfoParams = {
   content: string
   deadline: Date
+}
+
+/**
+ * メッセージの送付完了を報告する
+ * @param accessToken アクセストークン
+ * @param lendingId 貸し出しID
+ */
+export const putLendingProcessFinished = async (
+  accessToken: string,
+  lendingToken: LendingToken,
+) => {
+  checkAccessToken(accessToken)
+  await axios.put(
+    `lending/${encodeURIComponent(lendingToken)}/sent-url`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  )
 }
 
 /**
@@ -104,9 +113,6 @@ export const fetchLendingList = async (
   checkAccessToken(accessToken)
   const res = await axios.get('/owner/lending', {
     headers: { Authorization: `Bearer ${accessToken}` },
-    params: {
-      accessToken,
-    },
   })
   const lendingList: Record<string, unknown>[] = res.data.lending_list
   return lendingList.map<LendingInfo>((data) => {
@@ -116,7 +122,7 @@ export const fetchLendingList = async (
       deadline: new Date(data.deadline as string),
       kind: 'lending' as const,
     }
-    if (data.borrowerName != null) {
+    if (data.borrower_name != null) {
       return {
         ...lendingInfo,
         borrowerName: data.borrower_name as string,
@@ -143,9 +149,6 @@ export const fetchBorrowingList = async (
   checkAccessToken(accessToken)
   const res = await axios.get('/borrower/lending', {
     headers: { Authorization: `Bearer ${accessToken}` },
-    params: {
-      accessToken,
-    },
   })
   const borrowingList: Record<string, unknown>[] = res.data.lending_list
   return borrowingList.map((data) => ({
@@ -171,4 +174,77 @@ export const fetchLendingAndBorrowingList = async (
     fetchBorrowingList(accessToken),
   ])
   return [...lendingList, ...borrowingList]
+}
+
+/**
+ * 貸し出しトークンから貸出情報を取得するURL
+ * @param accessToken アクセストークン
+ * @param lendingToken 貸し出しトークン
+ */
+export const getBorrowingInfoFromToken = async (
+  accessToken: string,
+  lendingToken: LendingToken,
+): Promise<GetBorrowingInfoFromTokenResponse> => {
+  checkAccessToken(accessToken)
+  try {
+    const res = await axios.get(
+      `/lending/${encodeURIComponent(lendingToken)}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    return {
+      lendingId: `${res.data.lending_id}`,
+      content: res.data.content as string,
+      deadline: new Date(res.data.deadline as string),
+      ownerName: res.data.owner_name as string,
+      isAssociated: res.data.is_associated as boolean,
+      kind: 'borrowing',
+    }
+  } catch (e) {
+    console.log(e)
+    if (e.error_code === 'Not Found') {
+      throw new LendingTokenNotFoundError()
+    }
+    throw e
+  }
+}
+
+export type GetBorrowingInfoFromTokenResponse = BorrowingInfo & {
+  isAssociated: boolean
+}
+
+export class LendingTokenNotFoundError extends Error {}
+
+/**
+ * 貸し出し情報の借り手として自分を登録する
+ * @param accessToken アクセストークン
+ * @param lendingToken 貸し出しトークン
+ */
+export const linkAsBorrower = async (
+  accessToken: string,
+  lendingToken: LendingToken,
+) => {
+  const res = await axios.put(
+    `lending/${encodeURIComponent(lendingToken)}`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  )
+  return {
+    isNewUser: res.data.is_new_user as boolean,
+    borrowingInfo: {
+      lendingId: `${res.data.lending_id}`,
+      content: res.data.content as string,
+      deadline: new Date(res.data.deadline as string),
+      ownerName: res.data.owner_name as string,
+      kind: 'borrowing',
+    } as BorrowingInfo,
+  }
+}
+
+export type LinkAsBorrowerResponse = {
+  isNewUser: boolean
+  borrowingInfo: BorrowingInfo
 }

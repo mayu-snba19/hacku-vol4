@@ -8,7 +8,7 @@ import Chip from './Chip'
 const DateDefaultOptions = {
   明日: () => add(new Date(), { days: 1 }),
   明後日: () => add(new Date(), { days: 2 }),
-  '1週間後': () => add(new Date(), { weeks: 7 }),
+  '1週間後': () => add(new Date(), { days: 7 }),
   '1ヶ月後': () => add(new Date(), { months: 1 }),
   半年後: () => add(new Date(), { months: 6 }),
   '1年後': () => add(new Date(), { years: 1 }),

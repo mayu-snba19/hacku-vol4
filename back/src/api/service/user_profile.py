@@ -21,6 +21,7 @@ def get_user_profile(access_token) -> UserEntity:
         "Authorization": f"Bearer {access_token}",
     }
     response = requests.get(url, headers=headers).json()
+    # todo(kondo): responseがからの時に例外を投げる
     profile: UserEntity = UserEntity(
         response.get("userId", ""),
         response.get("displayName", ""),
