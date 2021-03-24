@@ -13,12 +13,7 @@ RUN pip3 install -r requirements.txt
 
 RUN mkdir -p /var/app/src
 COPY src /var/app/src
-RUN chmod 777 /var/app/src/migrate.sh
 
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY uwsgi /var/app/uwsgi
-COPY app.py /var/app/app.py
-COPY schedule/startup.sh /var/app/startup.sh
 COPY schedule/schedule.py /var/app/schedule.py
 
-CMD ["/bin/bash", "/var/app/startup.sh"]
+CMD ["python3", "/var/app/schedule.py"]

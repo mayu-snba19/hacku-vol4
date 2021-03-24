@@ -23,7 +23,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile_schedule
-    restart: always
     environment:
       DATABASE_USER: admin
       DATABASE_PASSWORD: pass
