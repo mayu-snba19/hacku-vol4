@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react'
-import { useLWantToBorrowList } from '~/adaptor/wantToBorrowHooks'
+import { useFriendsWantToBorrowList } from '~/adaptor/wantToBorrowHooks'
 import Icon from '~/components/Icon/Icon'
 import Meta from '~/components/Meta'
 
 const Timeline = () => {
-  const { data: wantToBorrowList } = useLWantToBorrowList()
+  const { data: wantToBorrowList } = useFriendsWantToBorrowList()
 
   return (
     <div>

@@ -6,6 +6,7 @@ export const addFriend = async (
   { friendId }: AddFriendParams,
 ): Promise<AddFriendResponse> => {
   checkAccessToken(accessToken)
+  console.log(friendId)
   const res = await axios.post(
     '/friend',
     {

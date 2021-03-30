@@ -3,16 +3,25 @@ import useSWR from 'swr'
 import { useLiffAccessToken } from '~/liff/liffHooks'
 import {
   deleteWantToBorrowItem,
+  fetchFriendsWantToBorrowList,
   fetchWantToBorrowList,
   postWantToBorrowItem,
   PostWantToBorrowListItemParams,
 } from '~/repository/wantToBorrowRepository'
 
-export const useLWantToBorrowList = () => {
+export const useWantToBorrowList = () => {
   const accessToken = useLiffAccessToken()
   return useSWR(
     accessToken ? ['wantToBorrowList', accessToken] : null,
     (_, accessToken) => fetchWantToBorrowList(accessToken),
+  )
+}
+
+export const useFriendsWantToBorrowList = () => {
+  const accessToken = useLiffAccessToken()
+  return useSWR(
+    accessToken ? ['friendsWantToBorrowList', accessToken] : null,
+    (_, accessToken) => fetchFriendsWantToBorrowList(accessToken),
   )
 }
 

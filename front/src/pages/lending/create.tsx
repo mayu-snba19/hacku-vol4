@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import c from 'classnames'
 import BottomBar from '~/components/BottomBar'
 import Meta from '~/components/Meta'
@@ -17,18 +17,17 @@ import {
 } from '~/adaptor/lendingInfoHooks'
 import DateInput, { DateString } from '~/components/DateInput'
 import buildLiffLinkMessage from '~/util/buildLiffLinkMessage'
-import LendingToken from '~/types/lendingToken'
 import HrWithMessage from '~/components/HrWithMessage'
 
 const CreatePage: React.FC = () => {
   const { liff } = useLiff()
-  // const accessToken = useLiffAccessToken()
   const shareTargetPickerAvailable = useLiffShareTargetApiAvailable()
   const { user } = useLiffAuth()
   const postLendingInfo = usePostLendingInfo()
   const putLendingProcessFinished = usePutLendingProcessFinished()
   const [focusingOnField, setFocusingOnField] = useState(false)
 
+  const [isLoading, setIsLoading] = useState(false)
   const [content, setContent] = useState('')
   const [deadline, setDeadline] = useState<DateString>(
     () => format(new Date(), 'yyyy-MM-dd') as DateString,
@@ -40,7 +39,6 @@ const CreatePage: React.FC = () => {
 
   const [isOpenRetryDialog, setIsOpenRetryDialog] = useState(false)
   const [isOpenCompleteDialog, setIsOpenCompleteDialog] = useState(false)
-  const tokenRef = useRef<LendingToken>()
   const inputOk = content.length > 0 && deadline.length > 0
 
   const sendLendingInfo = async () => {
@@ -48,17 +46,15 @@ const CreatePage: React.FC = () => {
       return
     }
 
+    setIsLoading(true)
+
     try {
-      const token =
-        tokenRef.current ??
-        (await postLendingInfo({
-          content,
-          deadline: new Date(deadline),
-        }))
+      const token = await postLendingInfo({
+        content,
+        deadline: new Date(deadline),
+      })
 
       if (token == null) return
-
-      tokenRef.current = token
 
       if (!shareTargetPickerAvailable) {
         return
@@ -75,6 +71,8 @@ const CreatePage: React.FC = () => {
       }
     } catch {
       setIsOpenRetryDialog(true)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -158,19 +156,19 @@ const CreatePage: React.FC = () => {
             <button
               className={c(
                 'text-text px-8 py-4 text-sm rounded-sm text-center transition-all',
-                inputOk && shareTargetPickerAvailable
+                inputOk && shareTargetPickerAvailable && !isLoading
                   ? 'bg-accent-400'
                   : 'bg-accent-100',
               )}
-              disabled={!inputOk || !shareTargetPickerAvailable}
+              disabled={!inputOk || isLoading}
               onClick={sendLendingInfo}
             >
               友達を選択する（おすすめ）
             </button>
-            {!shareTargetPickerAvailable && (
+            {shareTargetPickerAvailable === false && (
               <p className="text-red-700 text-xs">
-                お使いのLINEバージョンではこの機能はご利用いただけません。
-                バージョン10.11.0以上にアップデートしてください
+                正常に動作しない可能性があります。
+                （お使いのLINEバージョンが10.11.0未満である場合アップデートをお考えください。そうでない場合はリロード等をお試しください。）
               </p>
             )}
             <HrWithMessage

@@ -39,7 +39,8 @@ const buildLiffLinkMessage = (userId: string): SendMessagesParams => {
                       contents: [
                         {
                           type: 'span',
-                          text: '「返して欲しいでチュン」への招待が届いたよ。',
+                          text:
+                            '「返して欲しいでチュン」のともだち申請が届いたよ。',
                         },
                       ],
                       size: 'sm',
@@ -79,7 +80,7 @@ const buildLiffLinkMessage = (userId: string): SendMessagesParams => {
                   type: 'button',
                   action: {
                     type: 'uri',
-                    label: '使ってみる！',
+                    label: '承認する！',
                     uri: `${LIFF_URL}/friends/add?friendId=${userId}`,
                   },
                   style: 'primary',

@@ -1,70 +1,71 @@
 import React, { Fragment, useState } from 'react'
 import c from 'classnames'
 import { useBorrowingInfo, useLendingInfo } from '~/adaptor/lendingInfoHooks'
-// import { useLWantToBorrowList } from '~/adaptor/wantToBorrowHooks'
 import BottomBar from '~/components/BottomBar'
 import Chip from '~/components/Chip'
 import Icon from '~/components/Icon/Icon'
 import Meta from '~/components/Meta'
 import Modal from '~/components/Modal'
-import { FriendWantToBorrowList } from '~/types/wantToBorrow'
+// import { FriendWantToBorrowList } from '~/types/wantToBorrow'
 import {
   useLiff,
   useLiffAuth,
   useLiffShareTargetApiAvailable,
 } from '~/liff/liffHooks'
 import buildFriendAddMessage from '~/util/buildFriendAddMessage'
+import { useFriendsWantToBorrowList } from '~/adaptor/wantToBorrowHooks'
+import IllustMessage from '~/components/IllustMessage'
 
-const friendsList: FriendWantToBorrowList[] = [
-  {
-    friendId: '0001',
-    friendName: '田中太郎',
-    list: [
-      {
-        friendId: '0001',
-        friendName: '田中太郎',
-        wantToBorrowId: '0001',
-        content: '授業ノート',
-      },
-    ],
-  },
-  {
-    friendId: '0002',
-    friendName: '田中次郎',
-    list: [
-      {
-        friendId: '0002',
-        friendName: '田中太郎',
-        wantToBorrowId: '0002',
-        content: '鬼滅の刃',
-      },
-      {
-        friendId: '0002',
-        friendName: '田中太郎',
-        wantToBorrowId: '0004',
-        content: '進撃の巨人',
-      },
-    ],
-  },
-  {
-    friendId: '0003',
-    friendName: '田中三郎',
-    list: [
-      {
-        friendId: '0003',
-        friendName: '田中太郎',
-        wantToBorrowId: '0003',
-        content: '進撃の巨人',
-      },
-    ],
-  },
-]
+// const friendsList: FriendWantToBorrowList[] = [
+//   {
+//     friendId: '0001',
+//     friendName: '田中太郎',
+//     list: [
+//       {
+//         friendId: '0001',
+//         friendName: '田中太郎',
+//         wantToBorrowId: '0001',
+//         content: '授業ノート',
+//       },
+//     ],
+//   },
+//   {
+//     friendId: '0002',
+//     friendName: '田中次郎',
+//     list: [
+//       {
+//         friendId: '0002',
+//         friendName: '田中太郎',
+//         wantToBorrowId: '0002',
+//         content: '鬼滅の刃',
+//       },
+//       {
+//         friendId: '0002',
+//         friendName: '田中太郎',
+//         wantToBorrowId: '0004',
+//         content: '進撃の巨人',
+//       },
+//     ],
+//   },
+//   {
+//     friendId: '0003',
+//     friendName: '田中三郎',
+//     list: [
+//       {
+//         friendId: '0003',
+//         friendName: '田中太郎',
+//         wantToBorrowId: '0003',
+//         content: '進撃の巨人',
+//       },
+//     ],
+//   },
+// ]
 
 const FriendsList = () => {
   const { liff } = useLiff()
   const { user } = useLiffAuth()
   const shareTargetPickerAvailable = useLiffShareTargetApiAvailable()
-  // const { data: friendsList } = useLWantToBorrowList()
+  const { data: friendsList } = useFriendsWantToBorrowList()
   const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null)
 
   const { data: lendingList } = useLendingInfo()
@@ -115,6 +116,9 @@ const FriendsList = () => {
           ともだち一覧
         </h2>
         <div>
+          {friendsList?.length === 0 && (
+            <IllustMessage>まだ友達は登録されていないチュン</IllustMessage>
+          )}
           {friendsList?.map((friendBorrowList) => {
             // FIXME: ユーザー名ベースで判定しているので修正する必要あり
             const lendingCount = lendingList?.filter(
